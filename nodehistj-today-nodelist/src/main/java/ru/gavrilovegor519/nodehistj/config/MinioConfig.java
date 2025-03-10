@@ -12,11 +12,11 @@ public class MinioConfig {
     private final String minioPassword;
 
     public MinioConfig(@Value("${minio.url}") String minioUrl,
-                       @Value("${minio.user}") String minioRootUser,
-                       @Value("${minio.password}") String minioRootPassword) {
+                       @Value("${minio.user}") String minioUser,
+                       @Value("${minio.password}") String minioPassword) {
         this.minioUrl = minioUrl;
-        this.minioUser = minioRootUser;
-        this.minioPassword = minioRootPassword;
+        this.minioUser = minioUser;
+        this.minioPassword = minioPassword;
     }
 
     @Bean

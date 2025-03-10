@@ -49,6 +49,8 @@ public class FtpClient {
     }
 
     public void close() throws IOException {
-        ftp.disconnect();
+        if (ftp != null) {
+            ftp.disconnect();
+        }
     }
 }
