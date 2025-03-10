@@ -1,6 +1,7 @@
 package ru.gavrilovegor519.nodehistj.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.gavrilovegor519.Nodelist;
 import ru.gavrilovegor519.dto.NodelistEntryDto;
@@ -22,6 +23,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return Nodelist entry
      */
     @Override
+    @Cacheable(value = "nodelist", key = "#zone + '-' + #network + '-' + #node")
     public NodelistEntryDto getNodelistEntry(int zone, int network, int node) {
         return nodelist.getNodelistEntry(zone, network, node);
     }
@@ -33,6 +35,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return List of nodelist entries
      */
     @Override
+    @Cacheable(value = "nodelist", key = "#zone")
     public NodelistEntryDto getZoneNodelistEntries(int zone) {
         return nodelist.getZoneNodelistEntries(zone);
     }
@@ -45,6 +48,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return List of nodelist entries
      */
     @Override
+    @Cacheable(value = "nodelist", key = "#zone + '-' + #network")
     public NodelistEntryDto getNetworkNodelistEntries(int zone, int network) {
         return nodelist.getNetworkNodelistEntries(zone, network);
     }
@@ -55,6 +59,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return Map of nodelist entries
      */
     @Override
+    @Cacheable(value = "nodelist")
     public Map<Integer, NodelistEntryDto> getAllNodelistEntries() {
         return nodelist.getNodelistEntries();
     }

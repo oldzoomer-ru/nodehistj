@@ -28,6 +28,8 @@ dependencies {
 	implementation 'io.minio:minio:8.5.17'
 	implementation 'ru.gavrilovegor519:nodelistj:1.0-SNAPSHOT'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'com.github.therapi:therapi-runtime-javadoc:0.13.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	compileOnly 'org.projectlombok:lombok'
