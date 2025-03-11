@@ -7,6 +7,8 @@ services:
       - "9001:9001"
     volumes:
       - minio_storage:/data
+    networks:
+      - nodehistj
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9001/minio/health/live" ]
       interval: 30s
@@ -24,6 +26,8 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_USER=${REDIS_USER}
       - REDIS_USER_PASSWORD=${REDIS_USER_PASSWORD}
+    networks:
+      - nodehistj
     ports:
       - "6379:6379"
     volumes:
@@ -47,6 +51,10 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+
+networks:
+  nodehistj:
+    driver: bridge
 
 volumes:
   minio_storage:

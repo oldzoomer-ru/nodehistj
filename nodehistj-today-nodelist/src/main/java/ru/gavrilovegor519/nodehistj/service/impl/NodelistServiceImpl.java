@@ -15,52 +15,52 @@ public class NodelistServiceImpl implements NodelistService {
     private final Nodelist nodelist;
 
     /**
-     * Get nodelist entry
-     *
-     * @param zone zone
-     * @param network network
-     * @param node node address
-     * @return Nodelist entry
-     */
-    @Override
-    @Cacheable(value = "nodelist", key = "#zone + '-' + #network + '-' + #node")
-    public NodelistEntryDto getNodelistEntry(int zone, int network, int node) {
-        return nodelist.getNodelistEntry(zone, network, node);
-    }
-
-    /**
-     * Get zone nodelist entries
-     *
-     * @param zone zone
-     * @return List of nodelist entries
-     */
-    @Override
-    @Cacheable(value = "nodelist", key = "#zone")
-    public NodelistEntryDto getZoneNodelistEntries(int zone) {
-        return nodelist.getZoneNodelistEntries(zone);
-    }
-
-    /**
-     * Get network nodelist entries
-     *
-     * @param zone    zone
-     * @param network network
-     * @return List of nodelist entries
-     */
-    @Override
-    @Cacheable(value = "nodelist", key = "#zone + '-' + #network")
-    public NodelistEntryDto getNetworkNodelistEntries(int zone, int network) {
-        return nodelist.getNetworkNodelistEntries(zone, network);
-    }
-
-    /**
      * Get all nodelist entries
      *
      * @return Map of nodelist entries
      */
     @Override
-    @Cacheable(value = "nodelist")
-    public Map<Integer, NodelistEntryDto> getAllNodelistEntries() {
+    @Cacheable(value = "allDataOfNodelist")
+    public Map<Integer, NodelistEntryDto> getNodelistEntries() {
         return nodelist.getNodelistEntries();
+    }
+
+    /**
+     * Get zone nodelist entry
+     *
+     * @param zone zone
+     * @return Zone nodelist entry
+     */
+    @Override
+    @Cacheable(value = "zoneNodelistEntry", key = "#zone")
+    public NodelistEntryDto getNodelistEntry(int zone) {
+        return nodelist.getZoneNodelistEntries(zone);
+    }
+
+    /**
+     * Get network nodelist entry
+     *
+     * @param zone    zone
+     * @param network network
+     * @return Network nodelist entry
+     */
+    @Override
+    @Cacheable(value = "networkNodelistEntry", key = "#zone + '-' + #network")
+    public NodelistEntryDto getNodelistEntry(int zone, int network) {
+        return nodelist.getNetworkNodelistEntries(zone, network);
+    }
+
+    /**
+     * Get node nodelist entry
+     *
+     * @param zone zone
+     * @param network network
+     * @param node node address
+     * @return Node nodelist entry
+     */
+    @Override
+    @Cacheable(value = "nodeNodelistEntry", key = "#zone + '-' + #network + '-' + #node")
+    public NodelistEntryDto getNodelistEntry(int zone, int network, int node) {
+        return nodelist.getNodelistEntry(zone, network, node);
     }
 }

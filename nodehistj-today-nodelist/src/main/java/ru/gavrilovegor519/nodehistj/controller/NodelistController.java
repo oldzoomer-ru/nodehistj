@@ -23,36 +23,36 @@ public class NodelistController {
      */
     @GetMapping("/nodelist")
     public Map<Integer, NodelistEntryDto> getNodelist() {
-        return nodelistService.getAllNodelistEntries();
+        return nodelistService.getNodelistEntries();
     }
 
     /**
-     * Get zone nodelist entries
+     * Get zone nodelist entry
      * @param zone zone
-     * @return List of nodelist entries
+     * @return Zone nodelist entry
      */
     @GetMapping("/nodelist/{zone}")
     public NodelistEntryDto getNodelist(@PathVariable int zone) {
-        return nodelistService.getZoneNodelistEntries(zone);
+        return nodelistService.getNodelistEntry(zone);
     }
 
     /**
-     * Get network nodelist entries
+     * Get network nodelist entry
      * @param zone zone
      * @param network network
-     * @return List of nodelist entries
+     * @return Network nodelist entry
      */
     @GetMapping("/nodelist/{zone}/{network}")
     public NodelistEntryDto getNodelist(@PathVariable int zone, @PathVariable int network) {
-        return nodelistService.getNetworkNodelistEntries(zone, network);
+        return nodelistService.getNodelistEntry(zone, network);
     }
 
     /**
-     * Get nodelist entry
+     * Get node nodelist entry
      * @param zone zone
      * @param network network
      * @param node node address
-     * @return Nodelist entry
+     * @return Node nodelist entry
      */
     @GetMapping("/nodelist/{zone}/{network}/{node}")
     public NodelistEntryDto getNodelistEntry(@PathVariable int zone, @PathVariable int network, @PathVariable int node) {

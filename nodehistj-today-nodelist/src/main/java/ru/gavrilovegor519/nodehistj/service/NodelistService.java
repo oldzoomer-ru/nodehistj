@@ -9,36 +9,36 @@ import java.util.Map;
  */
 public interface NodelistService {
     /**
-     * Get nodelist entry
-     *
-     * @param zone zone
-     * @param network network
-     * @param node node address
-     * @return Nodelist entry
-     */
-    NodelistEntryDto getNodelistEntry(int zone, int network, int node);
-
-    /**
-     * Get zone nodelist entries
-     *
-     * @param zone zone
-     * @return List of nodelist entries
-     */
-    NodelistEntryDto getZoneNodelistEntries(int zone);
-
-    /**
-     * Get network nodelist entries
-     *
-     * @param zone zone
-     * @param network network
-     * @return List of nodelist entries
-     */
-    NodelistEntryDto getNetworkNodelistEntries(int zone, int network);
-
-    /**
      * Get all nodelist entries
      *
      * @return Map of nodelist entries
      */
-    Map<Integer, NodelistEntryDto> getAllNodelistEntries();
+    Map<Integer, NodelistEntryDto> getNodelistEntries();
+
+    /**
+     * Get zone nodelist entry
+     *
+     * @param zone zone
+     * @return Zone nodelist entry
+     */
+    NodelistEntryDto getNodelistEntry(int zone);
+
+    /**
+     * Get network nodelist entry
+     *
+     * @param zone zone
+     * @param network network
+     * @return Network nodelist entry
+     */
+    NodelistEntryDto getNodelistEntry(int zone, int network);
+
+    /**
+     * Get node nodelist entry
+     *
+     * @param zone zone
+     * @param network network
+     * @param node node address
+     * @return Node nodelist entry
+     */
+    NodelistEntryDto getNodelistEntry(int zone, int network, int node);
 }
