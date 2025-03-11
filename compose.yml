@@ -3,7 +3,6 @@ services:
     image: minio/minio
     container_name: minio_container
     ports:
-      - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_storage:/data
@@ -23,13 +22,11 @@ services:
     image: redis:alpine
     container_name: redis_container
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_USER=${REDIS_USER}
-      - REDIS_USER_PASSWORD=${REDIS_USER_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_USER: ${REDIS_USER}
+      REDIS_USER_PASSWORD: ${REDIS_USER_PASSWORD}
     networks:
       - nodehistj
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     command: >
@@ -54,8 +51,42 @@ services:
   kafka:
     image: apache/kafka:latest
     container_name: kafka_container
+
+  nodelistj-download-nodelists:
+    image: gavrilovegor519/nodelistj-download-nodelists
+    build:
+      context: ./nodelistj-download-nodelists
+      secrets:
+        - github_username
+        - github_token
+    container_name: nodelistj-download-nodelists
+    restart: unless-stopped
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka:9092"
+      MINIO_URL: "http://minio:9000"
+      MINIO_USER: ${MINIO_ROOT_USER}
+      MINIO_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      FTP_DOWNLOAD_FROM_YEAR: ${FTP_DOWNLOAD_FROM_YEAR}
+
+  nodehistj-today-nodelist:
+    image: gavrilovegor519/nodehistj-today-nodelist
+    build:
+      context: ./nodehistj-today-nodelist
+    container_name: nodehistj-today-nodelist
     ports:
-      - "9092:9092"
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka:9092"
+      MINIO_URL: "http://minio:9000"
+      MINIO_USER: ${MINIO_ROOT_USER}
+      MINIO_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+secrets:
+  github_username:
+    environment: GITHUB_USERNAME
+  github_token:
+    environment: GITHUB_PASSWORD
 
 networks:
   nodehistj:
