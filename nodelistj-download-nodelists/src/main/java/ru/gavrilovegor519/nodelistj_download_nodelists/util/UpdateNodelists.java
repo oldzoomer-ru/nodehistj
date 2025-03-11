@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class UpdateNodelists {
     private final MinioClient minioClient;
     private final FtpClient ftpClient;
-    private final KafkaTemplate<String, Boolean> kafkaTemplate;
+    private final KafkaTemplate<Void, Boolean> kafkaTemplate;
 
     @Value("${ftp.path}")
     private String ftpPath;
@@ -34,6 +34,7 @@ public class UpdateNodelists {
         try {
             createBucket();
             ftpClient.open();
+            boolean downloaded = false;
 
             for (int i = Year.now().getValue(); i >= downloadFromYear; i--) {
                 String[] listFiles = ftpClient.listFiles(ftpPath + i);
@@ -44,12 +45,15 @@ public class UpdateNodelists {
                             minioClient.putObject(PutObjectArgs.builder().bucket("nodehist").object(file)
                                     .stream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
                                             byteArrayOutputStream.size(), -1).build());
+                            downloaded = true;
                         }
                     }
                 }
-            }
 
-            kafkaTemplate.send("download_nodelists_is_finished_topic", true);
+                if (downloaded) {
+                    kafkaTemplate.send("download_nodelists_is_finished_topic", true);
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

@@ -7,17 +7,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MinioConfig {
-    private final String minioUrl;
-    private final String minioUser;
-    private final String minioPassword;
+    @Value("${minio.url}")
+    private String minioUrl;
 
-    public MinioConfig(@Value("${minio.url}") String minioUrl,
-                       @Value("${minio.user}") String minioUser,
-                       @Value("${minio.password}") String minioPassword) {
-        this.minioUrl = minioUrl;
-        this.minioUser = minioUser;
-        this.minioPassword = minioPassword;
-    }
+    @Value("${minio.user}")
+    private String minioUser;
+
+    @Value("${minio.password}")
+    private String minioPassword;
 
     @Bean
     public MinioClient minioClient() {
