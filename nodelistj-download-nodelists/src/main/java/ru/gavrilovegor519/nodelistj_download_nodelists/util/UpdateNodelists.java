@@ -4,6 +4,7 @@ import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,13 @@ import java.util.concurrent.TimeUnit;
 public class UpdateNodelists {
     private final MinioClient minioClient;
     private final FtpClient ftpClient;
+    private final KafkaTemplate<String, Boolean> kafkaTemplate;
 
     @Value("${ftp.path}")
     private String ftpPath;
+
+    @Value("${ftp.downloadFromYear}")
+    private int downloadFromYear;
 
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void updateNodelists() throws IOException {
@@ -30,7 +35,7 @@ public class UpdateNodelists {
             createBucket();
             ftpClient.open();
 
-            for (int i = Year.now().getValue(); i >= 1984; i--) {
+            for (int i = Year.now().getValue(); i >= downloadFromYear; i--) {
                 String[] listFiles = ftpClient.listFiles(ftpPath + i);
 
                 for (String file : listFiles) {
@@ -43,6 +48,8 @@ public class UpdateNodelists {
                     }
                 }
             }
+
+            kafkaTemplate.send("download_nodelists_is_finished_topic", true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

@@ -3,22 +3,21 @@ package ru.gavrilovegor519.nodehistj.config;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.context.annotation.RequestScope;
 import ru.gavrilovegor519.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableScheduling
+@Log4j2
 public class NodelistConfig {
     private final MinioClient minioClient;
     private Nodelist nodelist;
@@ -30,12 +29,12 @@ public class NodelistConfig {
     @RequestScope
     public Nodelist nodelist() {
         if (nodelist == null) {
-            return new Nodelist(InputStream.nullInputStream());
+            updateNodelist();
         }
         return nodelist;
     }
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    @KafkaListener(topics = "download_nodelists_is_finished_topic", groupId = "nodelist_group")
     private void updateNodelist() {
         LocalDate date = LocalDate.now();
         int year = date.getYear();
@@ -46,6 +45,7 @@ public class NodelistConfig {
         try (InputStream inputStream = minioClient.getObject(GetObjectArgs
                 .builder().bucket("nodehist").object(path).build())) {
             nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+            log.info("Updated nodelist");
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve nodelist from Minio", e);
         }

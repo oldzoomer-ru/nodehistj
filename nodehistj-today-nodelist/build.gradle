@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'com.github.therapi:therapi-runtime-javadoc:0.13.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	compileOnly 'org.projectlombok:lombok'

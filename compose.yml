@@ -51,6 +51,11 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka_container
+    ports:
+      - "9092:9092"
 
 networks:
   nodehistj:
