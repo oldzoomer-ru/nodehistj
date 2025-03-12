@@ -5,14 +5,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.gavrilovegor519.Nodelist;
 import ru.gavrilovegor519.dto.NodelistEntryDto;
+import ru.gavrilovegor519.nodehistj.repo.NodelistEntityRepository;
 import ru.gavrilovegor519.nodehistj.service.NodelistService;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class NodelistServiceImpl implements NodelistService {
-    private final Nodelist nodelist;
+    private final NodelistEntityRepository nodelistEntityRepository;
 
     /**
      * Get all nodelist entries
@@ -22,6 +25,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     @Cacheable(value = "allDataOfNodelist")
     public Map<Integer, NodelistEntryDto> getNodelistEntries() {
+        Nodelist nodelist = getNodelist();
         return nodelist.getNodelistEntries();
     }
 
@@ -34,6 +38,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     @Cacheable(value = "zoneNodelistEntry", key = "#zone")
     public NodelistEntryDto getNodelistEntry(int zone) {
+        Nodelist nodelist = getNodelist();
         return nodelist.getZoneNodelistEntries(zone);
     }
 
@@ -47,6 +52,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     @Cacheable(value = "networkNodelistEntry", key = "#zone + '-' + #network")
     public NodelistEntryDto getNodelistEntry(int zone, int network) {
+        Nodelist nodelist = getNodelist();
         return nodelist.getNetworkNodelistEntries(zone, network);
     }
 
@@ -61,6 +67,13 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     @Cacheable(value = "nodeNodelistEntry", key = "#zone + '-' + #network + '-' + #node")
     public NodelistEntryDto getNodelistEntry(int zone, int network, int node) {
+        Nodelist nodelist = getNodelist();
         return nodelist.getNodelistEntry(zone, network, node);
+    }
+
+    private Nodelist getNodelist() {
+        return nodelistEntityRepository.findByNodelistYearAndNodelistName(
+                Year.now(), String.format("nodelist.%03d", LocalDate.now().getDayOfYear())
+        ).getNodelist();
     }
 }

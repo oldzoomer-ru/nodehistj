@@ -51,6 +51,20 @@ services:
   kafka:
     image: apache/kafka:latest
     container_name: kafka_container
+    restart: unless-stopped
+    networks:
+      - nodehistj
+  mongo:
+    image: mongodb/mongodb-community-server
+    container_name: mongo_container
+    networks:
+      - nodehistj
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
 
   nodelistj-download-nodelists:
     image: gavrilovegor519/nodelistj-download-nodelists
@@ -95,3 +109,4 @@ networks:
 volumes:
   minio_storage:
   redis_data:
+  mongo-data:
