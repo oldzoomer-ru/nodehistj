@@ -25,8 +25,8 @@ repositories {
 	maven {
 		url = uri("https://maven.pkg.github.com/oldzoomer-gh/nodelistj/")
 		credentials {
-			username = System.getenv("GITHUB_USERNAME")
-			password = System.getenv("GITHUB_TOKEN")
+			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
 		}
 	}
 }
@@ -34,7 +34,7 @@ repositories {
 dependencies {
 	implementation 'io.minio:minio:8.5.17'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	implementation 'ru.gavrilovegor519:nodelistj:0.5.1'
+	implementation 'ru.gavrilovegor519:nodelistj:0.6'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'

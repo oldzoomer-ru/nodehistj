@@ -7,9 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import ru.gavrilovegor519.Nodelist;
+import ru.gavrilovegor519.dto.NodelistEntryDto;
 
-import java.time.Year;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -21,13 +21,13 @@ public class NodelistEntity {
 
     @Field("nodelist_year")
     @Indexed(unique = true)
-    private Year nodelistYear;
+    private Integer nodelistYear;
 
     @Field("nodelist_name")
     @Indexed(unique = true)
     private String nodelistName;
 
     @Field("nodelist")
-    private Nodelist nodelist;
+    private Map<Integer, NodelistEntryDto> nodelist;
 
 }
