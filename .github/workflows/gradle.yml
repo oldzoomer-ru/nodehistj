@@ -23,8 +23,8 @@ jobs:
       - name: Build with Gradle
         run: gradle test --warning-mode all
         env:
-          GITHUB_USERNAME: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./nodehistj-today-nodelist
 
   build-2:
@@ -41,6 +41,6 @@ jobs:
       - name: Build with Gradle
         run: gradle test --warning-mode all
         env:
-          GITHUB_USERNAME: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./nodelistj-download-nodelists

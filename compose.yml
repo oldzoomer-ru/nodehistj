@@ -1,7 +1,7 @@
 services:
   minio:
-    image: minio/minio
-    container_name: minio_container
+    image: bitnami/minio
+    container_name: minio
     ports:
       - "9001:9001"
     volumes:
@@ -20,7 +20,7 @@ services:
     command: server --console-address ":9001" /data
   redis:
     image: redis:alpine
-    container_name: redis_container
+    container_name: redis
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_USER: ${REDIS_USER}
@@ -49,14 +49,18 @@ services:
     tty: true
     stdin_open: true
   kafka:
-    image: apache/kafka:latest
-    container_name: kafka_container
+    image: bitnami/kafka
+    container_name: kafka
     restart: unless-stopped
     networks:
       - nodehistj
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
   mongo:
-    image: mongodb/mongodb-community-server
-    container_name: mongo_container
+    image: bitnami/mongodb
+    container_name: mongo
     networks:
       - nodehistj
     restart: unless-stopped
@@ -70,10 +74,9 @@ services:
     image: gavrilovegor519/nodelistj-download-nodelists
     build:
       context: ./nodelistj-download-nodelists
-      secrets:
-        - github_username
-        - github_token
     container_name: nodelistj-download-nodelists
+    networks:
+      - nodehistj
     restart: unless-stopped
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka:9092"
@@ -86,7 +89,12 @@ services:
     image: gavrilovegor519/nodehistj-today-nodelist
     build:
       context: ./nodehistj-today-nodelist
+      secrets:
+        - github_username
+        - github_token
     container_name: nodehistj-today-nodelist
+    networks:
+      - nodehistj
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -100,7 +108,7 @@ secrets:
   github_username:
     environment: GITHUB_USERNAME
   github_token:
-    environment: GITHUB_PASSWORD
+    environment: GITHUB_TOKEN
 
 networks:
   nodehistj:

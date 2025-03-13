@@ -26,10 +26,10 @@ COPY --chown=gradle:gradle src $APP_HOME/src
 #
 # Build the application.
 #
-RUN --mount=type=secret,id=github_username \
-    --mount=type=secret,id=github_token \
-    env GITHUB_USERNAME=$(cat /run/secrets/github_username) \
-    GITHUB_TOKEN=$(cat /run/secrets/github_token) \
+RUN --mount=type=secret,id=github_username,required \
+    --mount=type=secret,id=github_token,required \
+    env USERNAME=$(cat /run/secrets/github_username) \
+    TOKEN=$(cat /run/secrets/github_token) \
     gradle --no-daemon build
 
 #
