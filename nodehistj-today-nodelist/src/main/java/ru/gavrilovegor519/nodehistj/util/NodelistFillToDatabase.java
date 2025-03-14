@@ -27,7 +27,8 @@ public class NodelistFillToDatabase {
     @Value("${minio.path}")
     private String minioPath;
 
-    @KafkaListener(topics = "download_nodelists_is_finished_topic", groupId = "nodelist_group")
+    @KafkaListener(topics = "download_nodelists_is_finished_topic", groupId = "nodelist_group",
+            containerFactory = "kafkaListenerContainerFactory")
     private void updateNodelist(List<String> modifiedObjectsDto) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjectsDto) {

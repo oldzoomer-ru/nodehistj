@@ -1,80 +1,78 @@
 services:
   minio:
-    image: minio/minio
-    container_name: minio_container
+    image: bitnami/minio
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio_storage:/data
-    networks:
-      - nodehistj
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9001/minio/health/live" ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      - minio_storage:/bitnami/minio/data
     restart: unless-stopped
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    command: server --console-address ":9001" /data
+    healthcheck:
+      test: mc ready local
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
   redis:
     image: redis:alpine
-    container_name: redis_container
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_USER: ${REDIS_USER}
       REDIS_USER_PASSWORD: ${REDIS_USER_PASSWORD}
-    networks:
-      - nodehistj
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
-    command: >
-      sh -c '
-        mkdir -p /usr/local/etc/redis &&
-        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
-        echo "requirepass $REDIS_PASSWORD" >> /usr/local/etc/redis/redis.conf &&
-        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
-        echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
-        echo "user default on nopass ~* +@all" > /usr/local/etc/redis/users.acl &&
-        echo "user $REDIS_USER on >$REDIS_USER_PASSWORD ~* +@all" >> /usr/local/etc/redis/users.acl &&
-        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
-      '
+      - ./docker/redis-init.sh:/usr/local/bin/redis-init.sh
+    command: [ "/usr/local/bin/redis-init.sh" ]
     healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping" ]
-      interval: 30s
+      test: redis-cli ping
+      start_period: 30s
+      interval: 5s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-    tty: true
-    stdin_open: true
   kafka:
-    image: apache/kafka:latest
-    container_name: kafka_container
+    image: bitnami/kafka
     restart: unless-stopped
     ports:
       - "9092:9092"
-    networks:
-      - nodehistj
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
   mongo:
-    image: mongodb/mongodb-community-server
-    container_name: mongo_container
-    networks:
-      - nodehistj
+    image: bitnami/mongodb
     ports:
       - "27017:27017"
     restart: unless-stopped
     volumes:
-      - mongo-data:/data/db
-
-networks:
-  nodehistj:
-    driver: bridge
+      - mongo-data:/bitnami/mongodb
+    environment:
+      - MONGODB_ROOT_USER=${MONGODB_ROOT_USERNAME}
+      - MONGODB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGODB_DATABASE=nodehistj
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet --eval
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
 volumes:
   minio_storage:
-  redis_data:
   mongo-data:

@@ -33,6 +33,7 @@ repositories {
 
 dependencies {
 	implementation 'io.minio:minio:8.5.17'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'ru.gavrilovegor519:nodelistj:0.6'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
