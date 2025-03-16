@@ -39,7 +39,11 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is started");
         for (String object : modifiedObjectsDto) {
             Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-            if (matcher.matches()) {
+            if (matcher.matches() &&
+                    !nodelistEntityRepository.existsByNodelistYearAndNodelistName(
+                            Integer.valueOf(matcher.group(1)), matcher.group(2)
+                    )
+            ) {
                 try (InputStream inputStream = minioUtils.getObject("nodehist", object)) {
                     Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                     NodelistEntity nodelistEntity = new NodelistEntity();

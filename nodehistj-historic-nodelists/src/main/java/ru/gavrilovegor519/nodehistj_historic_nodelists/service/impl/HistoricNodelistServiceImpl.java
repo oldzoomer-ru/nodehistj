@@ -1,6 +1,7 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.gavrilovegor519.Nodelist;
 import ru.gavrilovegor519.dto.NodelistEntryDto;
@@ -25,6 +26,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return Map of nodelist entries
      */
     @Override
+    @Cacheable(value = "historicAllDataOfNodelist")
     public Map<Integer, NodelistEntryDto> getNodelistEntries(int year, int dayOfYear) {
         return getNodelistEntriesInternal(year, dayOfYear);
     }
@@ -38,6 +40,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return Zone nodelist entry
      */
     @Override
+    @Cacheable(value = "historicGetZoneNodelistEntry",
+            key = "#year + '-' + #dayOfYear + '-' + #zone")
     public NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone) {
         return getNodelist(year, dayOfYear).getZoneNodelistEntries(zone);
     }
@@ -52,6 +56,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return Network nodelist entry
      */
     @Override
+    @Cacheable(value = "historicGetNetworkNodelistEntry",
+            key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network")
     public NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network) {
         return getNodelist(year, dayOfYear).getNetworkNodelistEntries(zone, network);
     }
@@ -67,6 +73,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return Node nodelist entry
      */
     @Override
+    @Cacheable(value = "historicGetNodeNodelistEntry",
+            key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network + '-' + #node")
     public NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         return getNodelist(year, dayOfYear).getNodelistEntry(zone, network, node);
     }
