@@ -3,6 +3,7 @@ package ru.gavrilovegor519.nodehistj.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gavrilovegor519.dto.NodelistEntryDto;
 import ru.gavrilovegor519.nodehistj.service.NodelistService;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/nodelist")
 public class NodelistController {
     private final NodelistService nodelistService;
 
@@ -21,7 +23,7 @@ public class NodelistController {
      * Get all nodelist entries
      * @return Map of nodelist entries
      */
-    @GetMapping("/nodelist")
+    @GetMapping("/")
     public Map<Integer, NodelistEntryDto> getNodelist() {
         return nodelistService.getNodelistEntries();
     }
@@ -31,7 +33,7 @@ public class NodelistController {
      * @param zone zone
      * @return Zone nodelist entry
      */
-    @GetMapping("/nodelist/{zone}")
+    @GetMapping("/{zone}")
     public NodelistEntryDto getNodelist(@PathVariable int zone) {
         return nodelistService.getNodelistEntry(zone);
     }
@@ -42,7 +44,7 @@ public class NodelistController {
      * @param network network
      * @return Network nodelist entry
      */
-    @GetMapping("/nodelist/{zone}/{network}")
+    @GetMapping("/{zone}/{network}")
     public NodelistEntryDto getNodelist(@PathVariable int zone, @PathVariable int network) {
         return nodelistService.getNodelistEntry(zone, network);
     }
@@ -54,7 +56,7 @@ public class NodelistController {
      * @param node node address
      * @return Node nodelist entry
      */
-    @GetMapping("/nodelist/{zone}/{network}/{node}")
+    @GetMapping("/{zone}/{network}/{node}")
     public NodelistEntryDto getNodelistEntry(@PathVariable int zone, @PathVariable int network, @PathVariable int node) {
         return nodelistService.getNodelistEntry(zone, network, node);
     }

@@ -25,9 +25,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     @Cacheable(value = "allDataOfNodelist")
     public Map<Integer, NodelistEntryDto> getNodelistEntries() {
-        return nodelistEntityRepository.findByNodelistYearAndNodelistName(
-                Year.now().getValue(), String.format("nodelist.%03d", LocalDate.now().getDayOfYear())
-        ).getNodelist();
+        return getNodelistEntriesInternal();
     }
 
     /**
@@ -72,9 +70,22 @@ public class NodelistServiceImpl implements NodelistService {
         return nodelist.getNodelistEntry(zone, network, node);
     }
 
+    /**
+     * Get nodelist (for internal use)
+     *
+     * @return Nodelist from DB
+     */
     private Nodelist getNodelist() {
-        return new Nodelist(nodelistEntityRepository.findByNodelistYearAndNodelistName(
+        return new Nodelist(getNodelistEntries());
+    }
+
+    /**
+     * Get nodelist entries (for internal use)
+     * @return Map of nodelist entries from DB
+     */
+    private Map<Integer, NodelistEntryDto> getNodelistEntriesInternal() {
+        return nodelistEntityRepository.findByNodelistYearAndNodelistName(
                 Year.now().getValue(), String.format("nodelist.%03d", LocalDate.now().getDayOfYear())
-        ).getNodelist());
+        ).getNodelist();
     }
 }
