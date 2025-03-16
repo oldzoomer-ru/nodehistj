@@ -1,7 +1,5 @@
 package ru.gavrilovegor519.nodehistj.util;
 
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +19,14 @@ import java.util.regex.Pattern;
 @Component
 @Log4j2
 public class NodelistFillToDatabase {
-    private final MinioClient minioClient;
+    private final MinioUtils minioUtils;
     private final NodelistEntityRepository nodelistEntityRepository;
 
     @Value("${minio.path}")
     private String minioPath;
+
+    @Value("${minio.bucket}")
+    private String minioBucket;
 
     @KafkaListener(topics = "download_nodelists_is_finished_topic", groupId = "nodelist_group",
             containerFactory = "kafkaListenerContainerFactory")
@@ -34,8 +35,7 @@ public class NodelistFillToDatabase {
         for (String object : modifiedObjectsDto) {
             Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
             if (matcher.matches()) {
-                try (InputStream inputStream = minioClient.getObject(GetObjectArgs
-                        .builder().bucket("nodehist").object(object).build())) {
+                try (InputStream inputStream = minioUtils.getObject("nodehist", object)) {
                     Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                     NodelistEntity nodelistEntity = new NodelistEntity();
                     nodelistEntity.setNodelist(nodelist.getNodelistEntries());
