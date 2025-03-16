@@ -52,7 +52,8 @@ public class UpdateNodelists {
                 }
 
                 if (!objects.isEmpty()) {
-                    kafkaTemplate.send("download_nodelists_is_finished_topic", objects);
+                    kafkaTemplate.send("download_nodelists_is_finished_topic", 0,
+                            "added_nodelists", objects);
                 }
             }
         } catch (Exception e) {

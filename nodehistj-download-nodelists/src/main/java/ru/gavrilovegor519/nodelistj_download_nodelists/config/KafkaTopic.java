@@ -9,6 +9,8 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopic {
     @Bean
     public NewTopic downloadNodelistsIsFinishedTopic() {
-        return TopicBuilder.name("download_nodelists_is_finished_topic").build();
+        return TopicBuilder.name("download_nodelists_is_finished_topic")
+                .partitions(2)
+                .build();
     }
 }

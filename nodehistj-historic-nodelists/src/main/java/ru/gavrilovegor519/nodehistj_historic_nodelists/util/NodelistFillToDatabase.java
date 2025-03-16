@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.PartitionOffset;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Component;
 import ru.gavrilovegor519.Nodelist;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntity;
@@ -28,8 +30,11 @@ public class NodelistFillToDatabase {
     @Value("${minio.bucket}")
     private String minioBucket;
 
-    @KafkaListener(topics = "download_nodelists_is_finished_topic", groupId = "nodelist_group",
-            containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "download_nodelists_is_finished_topic",
+            topicPartitions = @TopicPartition(topic = "download_nodelists_is_finished_topic",
+                    partitionOffsets = {
+                            @PartitionOffset(partition = "0", initialOffset = "0")
+                    }))
     private void updateNodelist(List<String> modifiedObjectsDto) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjectsDto) {
