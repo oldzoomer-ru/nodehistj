@@ -25,7 +25,7 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./nodehistj-today-nodelist
+        working-directory: ./nodehistj-historic-nodelists
 
   build-2:
     runs-on: ubuntu-latest
@@ -43,4 +43,4 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./nodelistj-download-nodelists
+        working-directory: ./nodehistj-download-nodelists

@@ -71,10 +71,10 @@ services:
       timeout: 10s
       retries: 5
 
-  nodelistj-download-nodelists:
-    image: gavrilovegor519/nodelistj-download-nodelists
+  nodehistj-download-nodelists:
+    image: gavrilovegor519/nodehistj-download-nodelists
     build:
-      context: ./nodelistj-download-nodelists
+      context: ./nodehistj-download-nodelists
     networks:
       - nodehistj
     restart: unless-stopped
@@ -89,13 +89,13 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      nodehistj-today-nodelist:
+      nodehistj-historic-nodelists:
         condition: service_healthy
 
-  nodehistj-today-nodelist:
-    image: gavrilovegor519/nodehistj-today-nodelist
+  nodehistj-historic-nodelists:
+    image: gavrilovegor519/nodehistj-historic-nodelists
     build:
-      context: ./nodehistj-today-nodelist
+      context: ./nodehistj-historic-nodelists
       secrets:
         - github_username
         - github_token
