@@ -6,29 +6,28 @@ services:
       - "9001:9001"
     volumes:
       - minio_storage:/bitnami/minio/data
-    restart: unless-stopped
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    networks:
+      - nodehistj
     healthcheck:
-      test: mc ready local
+      test: mc ready local || exit 1
       start_period: 30s
       interval: 5s
       timeout: 10s
       retries: 5
+    restart: unless-stopped
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
   redis:
     image: redis:alpine
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_USER: ${REDIS_USER}
-      REDIS_USER_PASSWORD: ${REDIS_USER_PASSWORD}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     ports:
       - "6379:6379"
-    volumes:
-      - ./docker/redis-init.sh:/usr/local/bin/redis-init.sh
-    command: [ "/usr/local/bin/redis-init.sh" ]
+    networks:
+      - nodehistj
     healthcheck:
-      test: redis-cli ping
+      test: redis-cli ping || exit 1
       start_period: 30s
       interval: 5s
       timeout: 10s
@@ -39,6 +38,10 @@ services:
     restart: unless-stopped
     ports:
       - "9092:9092"
+      - "9093:9093"
+    hostname: kafka
+    networks:
+      - nodehistj
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -57,21 +60,27 @@ services:
     image: bitnami/mongodb
     ports:
       - "27017:27017"
+    networks:
+      - nodehistj
     restart: unless-stopped
-    volumes:
-      - mongo-data:/bitnami/mongodb
     environment:
       - MONGODB_ROOT_USER=${MONGODB_ROOT_USERNAME}
       - MONGODB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
       - MONGODB_DATABASE=nodehistj
       - MONGODB_USERNAME=${MONGODB_USERNAME}
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+    volumes:
+      - mongo-data:/bitnami/mongodb
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet --eval
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --eval || exit 1
       start_period: 30s
       interval: 5s
       timeout: 10s
       retries: 5
+
+networks:
+  nodehistj:
+    driver: bridge
 
 volumes:
   minio_storage:

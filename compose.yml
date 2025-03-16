@@ -30,8 +30,6 @@ services:
       timeout: 10s
       retries: 5
     restart: unless-stopped
-    tty: true
-    stdin_open: true
   kafka:
     image: bitnami/kafka
     restart: unless-stopped
