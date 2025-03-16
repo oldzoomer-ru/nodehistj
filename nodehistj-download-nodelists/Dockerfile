@@ -36,6 +36,7 @@ FROM eclipse-temurin:21-jre-alpine
 #
 ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
+RUN apk add --no-cache curl
 COPY --from=build-image $APP_HOME/build/libs/nodehistj-download-nodelists-0.0.1-SNAPSHOT.jar app.jar
 
 #

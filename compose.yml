@@ -84,6 +84,12 @@ services:
       - MINIO_USER=${MINIO_ROOT_USER}
       - MINIO_PASSWORD=${MINIO_ROOT_PASSWORD}
       - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR}
+    healthcheck:
+      test: curl --fail localhost:8081/actuator/health || grep "UP" || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
     depends_on:
       minio:
         condition: service_healthy
