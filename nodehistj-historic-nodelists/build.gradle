@@ -31,20 +31,28 @@ repositories {
 	}
 }
 
+def mapstructVersion = '1.6.3'
+def therapiVersion = '0.15.0'
+def nodelistjVersion = '0.9.1'
+
 dependencies {
 	implementation 'io.minio:minio:8.5.17'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	implementation 'ru.gavrilovegor519:nodelistj:0.6'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	implementation 'org.postgresql:postgresql'
+	implementation "ru.gavrilovegor519:nodelistj:${nodelistjVersion}"
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'com.github.therapi:therapi-runtime-javadoc:0.15.0'
+	implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'com.github.therapi:therapi-runtime-javadoc-scribe:0.15.0'
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

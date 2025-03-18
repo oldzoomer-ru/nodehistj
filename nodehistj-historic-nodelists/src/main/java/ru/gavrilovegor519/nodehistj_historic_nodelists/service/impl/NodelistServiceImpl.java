@@ -3,29 +3,30 @@ package ru.gavrilovegor519.nodehistj_historic_nodelists.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.gavrilovegor519.Nodelist;
-import ru.gavrilovegor519.dto.NodelistEntryDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodelistDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntity;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodelistEntityMapper;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntityRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.service.NodelistService;
 
-import java.time.LocalDate;
-import java.time.Year;
-import java.util.Map;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NodelistServiceImpl implements NodelistService {
     private final NodelistEntityRepository nodelistEntityRepository;
+    private final NodelistEntityMapper nodelistEntityMapper;
 
     /**
      * Get all nodelist entries
      *
-     * @return Map of nodelist entries
+     * @return List of nodelist entries
      */
     @Override
     @Cacheable(value = "allDataOfNodelist")
-    public Map<Integer, NodelistEntryDto> getNodelistEntries() {
-        return getNodelistEntriesInternal();
+    public List<NodelistDto> getNodelistEntries() {
+        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get();
+        return nodelistEntityMapper.toDto(nodelistEntity);
     }
 
     /**
@@ -36,9 +37,9 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "zoneNodelistEntry", key = "#zone")
-    public NodelistEntryDto getNodelistEntry(int zone) {
-        Nodelist nodelist = getNodelist();
-        return nodelist.getZoneNodelistEntries(zone);
+    public List<NodelistDto> getNodelistEntry(int zone) {
+        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(zone);
+        return nodelistEntityMapper.toDto(nodelistEntity);
     }
 
     /**
@@ -50,42 +51,23 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "networkNodelistEntry", key = "#zone + '-' + #network")
-    public NodelistEntryDto getNodelistEntry(int zone, int network) {
-        Nodelist nodelist = getNodelist();
-        return nodelist.getNetworkNodelistEntries(zone, network);
+    public List<NodelistDto> getNodelistEntry(int zone, int network) {
+        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(zone, network);
+        return nodelistEntityMapper.toDto(nodelistEntity);
     }
 
     /**
      * Get node nodelist entry
      *
-     * @param zone zone
+     * @param zone    zone
      * @param network network
-     * @param node node address
+     * @param node    node address
      * @return Node nodelist entry
      */
     @Override
     @Cacheable(value = "nodeNodelistEntry", key = "#zone + '-' + #network + '-' + #node")
-    public NodelistEntryDto getNodelistEntry(int zone, int network, int node) {
-        Nodelist nodelist = getNodelist();
-        return nodelist.getNodelistEntry(zone, network, node);
-    }
-
-    /**
-     * Get nodelist (for internal use)
-     *
-     * @return Nodelist from DB
-     */
-    private Nodelist getNodelist() {
-        return new Nodelist(getNodelistEntries());
-    }
-
-    /**
-     * Get nodelist entries (for internal use)
-     * @return Map of nodelist entries from DB
-     */
-    private Map<Integer, NodelistEntryDto> getNodelistEntriesInternal() {
-        return nodelistEntityRepository.findByNodelistYearAndNodelistName(
-                Year.now().getValue(), String.format("nodelist.%03d", LocalDate.now().getDayOfYear())
-        ).getNodelist();
+    public NodelistDto getNodelistEntry(int zone, int network, int node) {
+        NodelistEntity nodelistEntity = nodelistEntityRepository.get(zone, network, node);
+        return nodelistEntityMapper.toDto(nodelistEntity);
     }
 }

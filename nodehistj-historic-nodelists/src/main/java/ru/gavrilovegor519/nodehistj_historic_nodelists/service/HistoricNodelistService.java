@@ -1,8 +1,8 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.service;
 
-import ru.gavrilovegor519.dto.NodelistEntryDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodelistDto;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Historic nodelist service layer interface
@@ -13,9 +13,9 @@ public interface HistoricNodelistService {
      *
      * @param year      year
      * @param dayOfYear day of year
-     * @return Map of nodelist entries
+     * @return List of nodelist entries
      */
-    Map<Integer, NodelistEntryDto> getNodelistEntries(int year, int dayOfYear);
+    List<NodelistDto> getNodelistEntries(int year, int dayOfYear);
 
     /**
      * Get zone nodelist entry
@@ -25,7 +25,7 @@ public interface HistoricNodelistService {
      * @param zone      zone
      * @return Zone nodelist entry
      */
-    NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone);
+    List<NodelistDto> getNodelistEntry(int year, int dayOfYear, int zone);
 
     /**
      * Get network nodelist entry
@@ -36,7 +36,7 @@ public interface HistoricNodelistService {
      * @param network   network
      * @return Network nodelist entry
      */
-    NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network);
+    List<NodelistDto> getNodelistEntry(int year, int dayOfYear, int zone, int network);
 
     /**
      * Get node nodelist entry
@@ -48,5 +48,5 @@ public interface HistoricNodelistService {
      * @param node      node address
      * @return Node nodelist entry
      */
-    NodelistEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node);
+    NodelistDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node);
 }

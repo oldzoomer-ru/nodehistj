@@ -26,14 +26,4 @@ public class ExceptionResolver {
     public ResponseEntity<ErrorDto> handleNotFoundException() {
         return ResponseEntity.notFound().build();
     }
-
-    /**
-     * Handle other exceptions
-     * @param ex exception
-     * @return response entity with error message
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDto> handleOtherExceptions(Exception ex) {
-        return ResponseEntity.internalServerError().body(new ErrorDto(ex.getMessage()));
-    }
 }
