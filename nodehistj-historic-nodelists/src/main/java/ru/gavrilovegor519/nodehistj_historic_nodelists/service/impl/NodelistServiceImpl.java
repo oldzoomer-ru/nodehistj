@@ -3,10 +3,10 @@ package ru.gavrilovegor519.nodehistj_historic_nodelists.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodelistDto;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntity;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodelistEntityMapper;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntityRepository;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodeEntryDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.service.NodelistService;
 
 import java.util.List;
@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NodelistServiceImpl implements NodelistService {
-    private final NodelistEntityRepository nodelistEntityRepository;
-    private final NodelistEntityMapper nodelistEntityMapper;
+    private final NodeEntryRepository nodeEntryRepository;
+    private final NodeEntryMapper nodeEntryMapper;
 
     /**
      * Get all nodelist entries
@@ -24,9 +24,9 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "allDataOfNodelist")
-    public List<NodelistDto> getNodelistEntries() {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get();
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntries() {
+        return nodeEntryMapper.toDto(nodeEntryRepository.getAll());
     }
 
     /**
@@ -37,9 +37,9 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "zoneNodelistEntry", key = "#zone")
-    public List<NodelistDto> getNodelistEntry(int zone) {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(zone);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntry(int zone) {
+        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone));
     }
 
     /**
@@ -51,9 +51,9 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "networkNodelistEntry", key = "#zone + '-' + #network")
-    public List<NodelistDto> getNodelistEntry(int zone, int network) {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(zone, network);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
+        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network));
     }
 
     /**
@@ -66,8 +66,8 @@ public class NodelistServiceImpl implements NodelistService {
      */
     @Override
     @Cacheable(value = "nodeNodelistEntry", key = "#zone + '-' + #network + '-' + #node")
-    public NodelistDto getNodelistEntry(int zone, int network, int node) {
-        NodelistEntity nodelistEntity = nodelistEntityRepository.get(zone, network, node);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
+        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network, node));
     }
 }

@@ -1,6 +1,6 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.service;
 
-import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodelistDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodeEntryDto;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface NodelistService {
      *
      * @return List of nodelist entries
      */
-    List<NodelistDto> getNodelistEntries();
+    List<NodeEntryDto> getNodelistEntries();
 
     /**
      * Get zone nodelist entry
@@ -21,7 +21,7 @@ public interface NodelistService {
      * @param zone zone
      * @return Zone nodelist entry
      */
-    List<NodelistDto> getNodelistEntry(int zone);
+    List<NodeEntryDto> getNodelistEntry(int zone);
 
     /**
      * Get network nodelist entry
@@ -30,7 +30,7 @@ public interface NodelistService {
      * @param network network
      * @return Network nodelist entry
      */
-    List<NodelistDto> getNodelistEntry(int zone, int network);
+    List<NodeEntryDto> getNodelistEntry(int zone, int network);
 
     /**
      * Get node nodelist entry
@@ -40,5 +40,5 @@ public interface NodelistService {
      * @param node    node address
      * @return Node nodelist entry
      */
-    NodelistDto getNodelistEntry(int zone, int network, int node);
+    NodeEntryDto getNodelistEntry(int zone, int network, int node);
 }

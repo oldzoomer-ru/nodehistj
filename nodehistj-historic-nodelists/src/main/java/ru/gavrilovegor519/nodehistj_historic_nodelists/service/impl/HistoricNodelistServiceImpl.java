@@ -3,10 +3,10 @@ package ru.gavrilovegor519.nodehistj_historic_nodelists.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodelistDto;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntity;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodelistEntityMapper;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntityRepository;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodeEntryDto;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.service.HistoricNodelistService;
 
 import java.util.List;
@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HistoricNodelistServiceImpl implements HistoricNodelistService {
-    private final NodelistEntityRepository nodelistEntityRepository;
-    private final NodelistEntityMapper nodelistEntityMapper;
+    private final NodeEntryRepository nodelistEntryRepository;
+    private final NodeEntryMapper nodelistEntryMapper;
 
     /**
      * Get all nodelist entries
@@ -29,9 +29,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      */
     @Override
     @Cacheable(value = "historicAllDataOfNodelist")
-    public List<NodelistDto> getNodelistEntries(int year, int dayOfYear) {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(year, String.format("%03d", year));
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.getAll(String.format("%03d", year), year));
     }
 
     /**
@@ -45,9 +45,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     @Cacheable(value = "historicGetZoneNodelistEntry",
             key = "#year + '-' + #dayOfYear + '-' + #zone")
-    public List<NodelistDto> getNodelistEntry(int year, int dayOfYear, int zone) {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(year, String.format("%03d", year), zone);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("%03d", year), zone));
     }
 
     /**
@@ -62,9 +62,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     @Cacheable(value = "historicGetNetworkNodelistEntry",
             key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network")
-    public List<NodelistDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
-        List<NodelistEntity> nodelistEntity = nodelistEntityRepository.get(year, String.format("%03d", year), zone, network);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, network, String.format("%03d", year), zone));
     }
 
     /**
@@ -80,8 +80,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     @Cacheable(value = "historicGetNodeNodelistEntry",
             key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network + '-' + #node")
-    public NodelistDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
-        NodelistEntity nodelistEntity = nodelistEntityRepository.get(year, String.format("%03d", year), zone, network, node);
-        return nodelistEntityMapper.toDto(nodelistEntity);
+    @Transactional(readOnly = true)
+    public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(
+                zone, network, node, String.format("%03d", year), zone));
     }
 }

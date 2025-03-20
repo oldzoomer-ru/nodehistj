@@ -19,6 +19,12 @@ public class FtpClient {
     @Value("${ftp.port}")
     private int port;
 
+    @Value("${ftp.user}")
+    private String user;
+
+    @Value("${ftp.password}")
+    private String password;
+
     private FTPClient ftp;
 
     public void open() throws IOException {
@@ -30,7 +36,7 @@ public class FtpClient {
         ftp.enterLocalPassiveMode();
         int reply = ftp.getReplyCode();
 
-        ftp.login("anonymous", "anonymous@");
+        ftp.login(user, password);
 
         if (!FTPReply.isPositiveCompletion(reply)) {
             ftp.disconnect();

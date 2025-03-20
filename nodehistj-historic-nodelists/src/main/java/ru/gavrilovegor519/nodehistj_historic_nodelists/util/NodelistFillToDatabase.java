@@ -2,13 +2,17 @@ package ru.gavrilovegor519.nodehistj_historic_nodelists.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.PartitionOffset;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Component;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntity;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntityRepository;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.gavrilovegor519.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +27,9 @@ import java.util.regex.Pattern;
 @Log4j2
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
-    private final NodelistEntityRepository nodelistEntityRepository;
+    private final NodeEntryRepository nodeEntryRepository;
+    private final NodelistEntryRepository nodelistEntryRepository;
+    private final ClearRedisCache clearRedisCache;
 
     @Value("${minio.path}")
     private String minioPath;
@@ -43,33 +49,50 @@ public class NodelistFillToDatabase {
             if (matcher.matches()) {
                 try (InputStream inputStream = minioUtils.getObject("nodehist", object)) {
                     Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                    nodelist.getNodelist().forEach(nodelistEntry -> {
-                        if (!nodelistEntityRepository.isExist(
-                                Integer.valueOf(matcher.group(1)),
-                                matcher.group(2),
-                                nodelistEntry.zone(),
-                                nodelistEntry.network(),
-                                nodelistEntry.node())) {
-                            nodelistEntityRepository.save(NodelistEntity.builder()
-                                    .nodelistYear(Integer.valueOf(matcher.group(1)))
-                                    .nodelistName(matcher.group(2))
-                                    .zone(nodelistEntry.zone())
-                                    .network(nodelistEntry.network())
-                                    .node(nodelistEntry.node())
-                                    .nodeName(nodelistEntry.nodeName())
-                                    .location(nodelistEntry.location())
-                                    .sysOpName(nodelistEntry.sysOpName())
-                                    .phone(nodelistEntry.phone())
-                                    .baudRate(nodelistEntry.baudRate())
-                                    .flags(Arrays.asList(nodelistEntry.flags()))
-                                    .build());
-                        }
-                    });
+                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to retrieve nodelist from Minio", e);
                 }
             }
         }
+        clearRedisCache.clearAllCache();
         log.info("Update nodelists is finished");
+    }
+
+    @NotNull
+    private static NodeEntry getNodeEntry(ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+        NodeEntry nodeEntryNew = new NodeEntry();
+
+        nodeEntryNew.setZone(nodeListEntry.zone());
+        nodeEntryNew.setNetwork(nodeListEntry.network());
+        nodeEntryNew.setNode(nodeListEntry.node());
+        nodeEntryNew.setBaudRate(nodeListEntry.baudRate());
+        nodeEntryNew.setKeywords(nodeListEntry.keywords());
+        nodeEntryNew.setLocation(nodeListEntry.location());
+        nodeEntryNew.setNodeName(nodeListEntry.nodeName());
+        nodeEntryNew.setPhone(nodeListEntry.phone());
+        nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
+        nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
+        nodeEntryNew.setNodelistEntry(nodelistEntryNew);
+        return nodeEntryNew;
+    }
+
+    @Transactional
+    private void updateNodelist(Nodelist nodelist, Integer year, String name) {
+        if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+            log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
+
+            NodelistEntry nodelistEntryNew = new NodelistEntry();
+            nodelistEntryNew.setNodelistYear(year);
+            nodelistEntryNew.setNodelistName(name);
+
+            for (ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
+                NodeEntry nodeEntryNew = getNodeEntry(nodeListEntry, nodelistEntryNew);
+
+                nodelistEntryRepository.save(nodelistEntryNew);
+                nodeEntryRepository.save(nodeEntryNew);
+            }
+            log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
+        }
     }
 }

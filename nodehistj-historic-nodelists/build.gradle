@@ -38,7 +38,7 @@ def nodelistjVersion = '0.9.1'
 dependencies {
 	implementation 'io.minio:minio:8.5.17'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	implementation 'org.postgresql:postgresql'
 	implementation "ru.gavrilovegor519:nodelistj:${nodelistjVersion}"
