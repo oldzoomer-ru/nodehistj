@@ -12,8 +12,6 @@ FROM gradle:jdk21-alpine as build-image
 # Set the working directory.
 #
 ARG BUILD_HOME
-ARG GITHUB_USERNAME
-ARG GITHUB_TOKEN
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
