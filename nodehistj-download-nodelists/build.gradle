@@ -28,8 +28,6 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'commons-net:commons-net:3.11.1'
 	implementation 'io.minio:minio:8.5.17'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
