@@ -55,7 +55,7 @@ services:
       - nodehistj
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=nodehistj
     volumes:
@@ -106,7 +106,7 @@ services:
       - MINIO_USER=${MINIO_ROOT_USER}
       - MINIO_PASSWORD=${MINIO_ROOT_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       minio:
