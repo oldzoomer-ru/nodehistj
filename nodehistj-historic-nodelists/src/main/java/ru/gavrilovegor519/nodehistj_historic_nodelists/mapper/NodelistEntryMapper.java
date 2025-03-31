@@ -8,7 +8,5 @@ import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NodelistEntryMapper {
-    NodelistEntry toEntity(NodelistEntryDto nodelistEntryDto);
-
     NodelistEntryDto toDto(NodelistEntry nodelistEntry);
 }

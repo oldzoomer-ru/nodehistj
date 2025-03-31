@@ -1,6 +1,7 @@
 package ru.gavrilovegor519.nodelistj_download_nodelists.util;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Component
 @EnableScheduling
+@Log4j2
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
@@ -47,6 +49,8 @@ public class UpdateNodelists {
                         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(file)) {
                             minioUtils.putObject(bucket, file, byteArrayOutputStream);
                             objects.add(file);
+                        } catch (Exception e) {
+                            log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
                         }
                     }
                 }

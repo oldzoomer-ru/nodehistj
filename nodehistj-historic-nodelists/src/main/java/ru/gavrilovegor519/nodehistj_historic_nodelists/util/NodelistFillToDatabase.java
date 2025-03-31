@@ -1,26 +1,26 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.PartitionOffset;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.gavrilovegor519.nodelistj.Nodelist;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Component
@@ -37,6 +37,24 @@ public class NodelistFillToDatabase {
     @Value("${minio.bucket}")
     private String minioBucket;
 
+    @NotNull
+    private static NodeEntry getNodeEntry(ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+        NodeEntry nodeEntryNew = new NodeEntry();
+
+        nodeEntryNew.setZone(nodeListEntry.zone());
+        nodeEntryNew.setNetwork(nodeListEntry.network());
+        nodeEntryNew.setNode(nodeListEntry.node());
+        nodeEntryNew.setBaudRate(nodeListEntry.baudRate());
+        nodeEntryNew.setKeywords(nodeListEntry.keywords());
+        nodeEntryNew.setLocation(nodeListEntry.location());
+        nodeEntryNew.setNodeName(nodeListEntry.nodeName());
+        nodeEntryNew.setPhone(nodeListEntry.phone());
+        nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
+        nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
+        nodeEntryNew.setNodelistEntry(nodelistEntryNew);
+        return nodeEntryNew;
+    }
+
     @KafkaListener(topics = "download_nodelists_is_finished_topic",
             topicPartitions = @TopicPartition(topic = "download_nodelists_is_finished_topic",
                     partitionOffsets = {
@@ -51,7 +69,7 @@ public class NodelistFillToDatabase {
                     Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                     updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed to retrieve nodelist from Minio", e);
+                    log.error("Failed to add nodelist to database", e);
                 }
             }
         }
@@ -70,19 +88,7 @@ public class NodelistFillToDatabase {
             nodelistEntryRepository.save(nodelistEntryNew);
 
             for (ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-                NodeEntry nodeEntryNew = new NodeEntry();
-
-                nodeEntryNew.setZone(nodeListEntry.zone());
-                nodeEntryNew.setNetwork(nodeListEntry.network());
-                nodeEntryNew.setNode(nodeListEntry.node());
-                nodeEntryNew.setBaudRate(nodeListEntry.baudRate());
-                nodeEntryNew.setKeywords(nodeListEntry.keywords());
-                nodeEntryNew.setLocation(nodeListEntry.location());
-                nodeEntryNew.setNodeName(nodeListEntry.nodeName());
-                nodeEntryNew.setPhone(nodeListEntry.phone());
-                nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
-                nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
-                nodeEntryNew.setNodelistEntry(nodelistEntryNew);
+                NodeEntry nodeEntryNew = getNodeEntry(nodeListEntry, nodelistEntryNew);
 
                 nodeEntryRepository.save(nodeEntryNew);
             }

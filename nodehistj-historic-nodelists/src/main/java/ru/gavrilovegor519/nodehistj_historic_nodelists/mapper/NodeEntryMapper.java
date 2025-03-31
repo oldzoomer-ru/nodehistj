@@ -13,7 +13,5 @@ import java.util.List;
 public interface NodeEntryMapper {
     List<NodeEntryDto> toDto(List<NodeEntry> nodeEntries);
 
-    NodeEntry toEntity(NodeEntryDto nodeEntryDto);
-
     NodeEntryDto toDto(NodeEntry nodeEntry);
 }

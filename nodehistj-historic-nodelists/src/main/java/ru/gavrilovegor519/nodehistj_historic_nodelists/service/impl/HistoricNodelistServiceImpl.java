@@ -31,7 +31,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Cacheable(value = "historicAllDataOfNodelist")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.getAll(String.format("%03d", year), year));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.getAll(String.format("nodelist.%03d", dayOfYear), year));
     }
 
     /**
@@ -47,7 +47,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             key = "#year + '-' + #dayOfYear + '-' + #zone")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("%03d", year), zone));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("nodelist.%03d", dayOfYear), zone));
     }
 
     /**
@@ -64,7 +64,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, network, String.format("%03d", year), zone));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, network, String.format("nodelist.%03d", dayOfYear), zone));
     }
 
     /**
@@ -83,6 +83,6 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         return nodelistEntryMapper.toDto(nodelistEntryRepository.get(
-                zone, network, node, String.format("%03d", year), zone));
+                zone, network, node, String.format("nodelist.%03d", dayOfYear), zone));
     }
 }
