@@ -33,7 +33,7 @@ repositories {
 
 def mapstructVersion = '1.6.3'
 def therapiVersion = '0.15.0'
-def nodelistjVersion = '0.9.1'
+def nodelistjVersion = '0.9.3'
 
 dependencies {
 	implementation 'io.minio:minio:8.5.17'
