@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: nodelistj-download-nodelists
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+ftp:
+  host: ${FTP_HOST:wfido.ru}
+  port: ${FTP_PORT:21}
+  user: ${FTP_USER:anonymous}
+  password: ${FTP_PASSWORD:anonymous@}
+  path: ${FTP_PATH:/nodehist/}
+  downloadFromYear: ${FTP_DOWNLOAD_FROM_YEAR:1984}
+minio:
+  url: ${MINIO_URL:http://localhost:9000/}
+  user: ${MINIO_USER}
+  password: ${MINIO_PASSWORD}
+  bucket: ${MINIO_BUCKET:nodehist}

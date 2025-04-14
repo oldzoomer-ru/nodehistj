@@ -1,26 +1,25 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.PartitionOffset;
-import org.springframework.kafka.annotation.TopicPartition;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
-import ru.gavrilovegor519.nodelistj.Nodelist;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+import ru.gavrilovegor519.nodelistj.Nodelist;
 
 @RequiredArgsConstructor
 @Component
@@ -55,11 +54,7 @@ public class NodelistFillToDatabase {
         return nodeEntryNew;
     }
 
-    @KafkaListener(topics = "download_nodelists_is_finished_topic",
-            topicPartitions = @TopicPartition(topic = "download_nodelists_is_finished_topic",
-                    partitionOffsets = {
-                            @PartitionOffset(partition = "0", initialOffset = "0")
-                    }))
+    @KafkaListener(topics = "download_nodelists_is_finished_topic")
     private void updateNodelist(List<String> modifiedObjectsDto) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjectsDto) {
