@@ -1,25 +1,24 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.util;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+import ru.gavrilovegor519.nodelistj.Nodelist;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
-import ru.gavrilovegor519.nodelistj.Nodelist;
 
 @RequiredArgsConstructor
 @Component
@@ -60,7 +59,7 @@ public class NodelistFillToDatabase {
         for (String object : modifiedObjectsDto) {
             Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
             if (matcher.matches()) {
-                try (InputStream inputStream = minioUtils.getObject("nodehist", object)) {
+                try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                     Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                     updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
                 } catch (Exception e) {
@@ -83,9 +82,7 @@ public class NodelistFillToDatabase {
             nodelistEntryRepository.save(nodelistEntryNew);
 
             for (ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-                NodeEntry nodeEntryNew = getNodeEntry(nodeListEntry, nodelistEntryNew);
-
-                nodeEntryRepository.save(nodeEntryNew);
+                nodeEntryRepository.save(getNodeEntry(nodeListEntry, nodelistEntryNew));
             }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
         }
