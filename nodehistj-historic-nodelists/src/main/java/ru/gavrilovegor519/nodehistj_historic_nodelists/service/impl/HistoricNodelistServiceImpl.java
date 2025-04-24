@@ -47,7 +47,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             key = "#year + '-' + #dayOfYear + '-' + #zone")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("nodelist.%03d", dayOfYear), zone));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("nodelist.%03d", dayOfYear), year));
     }
 
     /**
@@ -64,7 +64,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, network, String.format("nodelist.%03d", dayOfYear), zone));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, network, String.format("nodelist.%03d", dayOfYear), year));
     }
 
     /**
@@ -83,6 +83,6 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         return nodelistEntryMapper.toDto(nodelistEntryRepository.get(
-                zone, network, node, String.format("nodelist.%03d", dayOfYear), zone));
+                zone, network, node, String.format("nodelist.%03d", dayOfYear), year));
     }
 }

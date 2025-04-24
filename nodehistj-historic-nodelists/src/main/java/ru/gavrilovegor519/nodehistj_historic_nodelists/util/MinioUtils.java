@@ -4,11 +4,13 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 
 @Component
+@Profile("!test")
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
 
