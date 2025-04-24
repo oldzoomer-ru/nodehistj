@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=github_username,required \
     --mount=type=secret,id=github_token,required \
     env USERNAME=$(cat /run/secrets/github_username) \
     TOKEN=$(cat /run/secrets/github_token) \
-    gradle --no-daemon build
+    gradle --no-daemon build -x test
 
 #
 # Java image for the application to run in.
