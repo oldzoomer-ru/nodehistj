@@ -19,7 +19,7 @@ import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryReposit
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(printOnlyOnFailure = false)
 @Testcontainers
 @Transactional
 @ActiveProfiles("test")

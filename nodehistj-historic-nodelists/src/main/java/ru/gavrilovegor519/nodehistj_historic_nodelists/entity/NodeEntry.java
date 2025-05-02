@@ -11,7 +11,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "node_entry")
+@Table(name = "node_entry",
+        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
 public class NodeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

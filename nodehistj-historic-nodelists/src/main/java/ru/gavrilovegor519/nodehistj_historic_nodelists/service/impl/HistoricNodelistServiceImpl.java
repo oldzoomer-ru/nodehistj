@@ -47,7 +47,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             key = "#year + '-' + #dayOfYear + '-' + #zone")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(year, String.format("nodelist.%03d", dayOfYear), year));
+        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(zone, String.format("nodelist.%03d", dayOfYear), year));
     }
 
     /**

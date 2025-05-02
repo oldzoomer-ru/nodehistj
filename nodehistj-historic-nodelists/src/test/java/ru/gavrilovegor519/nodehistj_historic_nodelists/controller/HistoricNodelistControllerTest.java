@@ -35,7 +35,14 @@ public class HistoricNodelistControllerTest extends BaseIntegrationTest {
                         .param("year", "2023")
                         .param("dayOfYear", "1")
                         .param("zone", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nodeName").value("Test Node"))
+                .andExpect(jsonPath("$[0].location").value("Test Location"))
+                .andExpect(jsonPath("$[0].sysOpName").value("Test SysOp"))
+                .andExpect(jsonPath("$[0].phone").value("1234567890"))
+                .andExpect(jsonPath("$[0].baudRate").value(1200))
+                .andExpect(jsonPath("$[0].flags[0]").value("FLAG1"))
+                .andExpect(jsonPath("$[0].flags[1]").value("FLAG2"));
     }
 
     @Test
@@ -45,7 +52,14 @@ public class HistoricNodelistControllerTest extends BaseIntegrationTest {
                         .param("dayOfYear", "1")
                         .param("zone", "1")
                         .param("network", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nodeName").value("Test Node"))
+                .andExpect(jsonPath("$[0].location").value("Test Location"))
+                .andExpect(jsonPath("$[0].sysOpName").value("Test SysOp"))
+                .andExpect(jsonPath("$[0].phone").value("1234567890"))
+                .andExpect(jsonPath("$[0].baudRate").value(1200))
+                .andExpect(jsonPath("$[0].flags[0]").value("FLAG1"))
+                .andExpect(jsonPath("$[0].flags[1]").value("FLAG2"));
     }
 
     @Test
@@ -56,6 +70,13 @@ public class HistoricNodelistControllerTest extends BaseIntegrationTest {
                         .param("zone", "1")
                         .param("network", "1")
                         .param("node", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nodeName").value("Test Node"))
+                .andExpect(jsonPath("$[0].location").value("Test Location"))
+                .andExpect(jsonPath("$[0].sysOpName").value("Test SysOp"))
+                .andExpect(jsonPath("$[0].phone").value("1234567890"))
+                .andExpect(jsonPath("$[0].baudRate").value(1200))
+                .andExpect(jsonPath("$[0].flags[0]").value("FLAG1"))
+                .andExpect(jsonPath("$[0].flags[1]").value("FLAG2"));
     }
 }

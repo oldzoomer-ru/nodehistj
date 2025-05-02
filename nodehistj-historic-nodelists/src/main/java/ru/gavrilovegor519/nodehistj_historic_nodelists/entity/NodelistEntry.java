@@ -9,7 +9,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "nodelist_entry")
+@Table(name = "nodelist_entry",
+        indexes = @Index(columnList = "nodelistYear DESC, nodelistName DESC"))
 public class NodelistEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
