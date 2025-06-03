@@ -16,7 +16,9 @@ import ru.gavrilovegor519.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,18 +60,26 @@ public class NodelistFillToDatabase {
     @KafkaListener(topics = "download_nodelists_is_finished_topic")
     private void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
 
-            if (matcher.matches()) return;
+        modifiedObjects.sort(Comparator.reverseOrder());
+        if (modifiedObjects.isEmpty()) return;
+        String objectName = modifiedObjects.getFirst();
 
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
-                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-            } catch (Exception e) {
-                log.error("Failed to add nodelist to database", e);
-            }
+        Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})")
+                .matcher(objectName);
+        if (!matcher.matches()) return;
+
+        String year = matcher.group(1);
+        if (Integer.parseInt(year) < LocalDate.now().getYear()) return;
+        String name = matcher.group(2);
+
+        try (InputStream inputStream = minioUtils.getObject(minioBucket, objectName)) {
+            Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+            updateNodelist(nodelist, Integer.parseInt(year), name);
+        } catch (Exception e) {
+            log.error("Failed to add nodelist to database", e);
         }
+
         clearRedisCache.clearAllCache();
         log.info("Update nodelists is finished");
     }

@@ -32,6 +32,25 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        working-directory: ./nodehistj-newest-nodelists
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: |
+          docker build . \
+          --secret id=github_username,env=GITHUB_USERNAME \
+          --secret id=github_token,env=GITHUB_TOKEN \
+          --tag test-image-1:$(date +%s)
+        env:
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-3:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
         working-directory: ./nodehistj-download-nodelists
 
     steps:
