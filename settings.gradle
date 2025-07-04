@@ -1,0 +1,6 @@
+rootProject.name = 'nodehistj'
+
+include 'nodehistj-download-nodelists'
+include 'nodehistj-historic-nodelists'
+include 'nodehistj-newest-nodelists'
+include 'nodehistj-history-diff'

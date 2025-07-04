@@ -1,14 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: "gradle" # Use Maven profile
-    directory: "/nodehistj-historic-nodelist" # Location of package manifests
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "gradle" # Use Maven profile
-    directory: "/nodehistj-newest-nodelist" # Location of package manifests
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "gradle" # Use Maven profile
-    directory: "/nodelistj-download-nodelists" # Location of package manifests
+  - package-ecosystem: "gradle"
+    directory: "/"
     schedule:
       interval: "daily"

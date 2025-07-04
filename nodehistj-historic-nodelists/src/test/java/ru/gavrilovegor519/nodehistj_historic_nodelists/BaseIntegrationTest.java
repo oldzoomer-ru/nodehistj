@@ -1,5 +1,7 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,12 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -25,6 +26,7 @@ import java.util.List;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
+    @SuppressWarnings("resource")
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
             .withDatabaseName("testdb")

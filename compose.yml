@@ -70,7 +70,11 @@ services:
   nodehistj-download-nodelists:
     image: gavrilovegor519/nodehistj-download-nodelists
     build:
-      context: ./nodehistj-download-nodelists
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-download-nodelists
+        SKIP_TESTS: "true"
     networks:
       - nodehistj
     restart: unless-stopped
@@ -89,7 +93,11 @@ services:
   nodehistj-historic-nodelists:
     image: gavrilovegor519/nodehistj-historic-nodelists
     build:
-      context: ./nodehistj-historic-nodelists
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-historic-nodelists
+        SKIP_TESTS: "true"
       secrets:
         - github_username
         - github_token
@@ -111,6 +119,74 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nodehistj-newest-nodelists:
+    image: gavrilovegor519/nodehistj-newest-nodelists
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-newest-nodelists
+        SKIP_TESTS: "true"
+      secrets:
+        - github_username
+        - github_token
+    networks:
+      - nodehistj
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - MINIO_URL=http://minio:9000
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MINIO_USER=${MINIO_ROOT_USER}
+      - MINIO_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      minio:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nodehistj-history-diff:
+    image: gavrilovegor519/nodehistj-history-diff
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-history-diff
+        SKIP_TESTS: "true"
+      secrets:
+        - github_username
+        - github_token
+    networks:
+      - nodehistj
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - FTP_PATH=/nodehist/
+    depends_on:
       kafka:
         condition: service_healthy
       postgres:
