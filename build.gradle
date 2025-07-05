@@ -6,7 +6,7 @@ plugins {
 }
 
 allprojects {
-    group = 'ru.gavrilovegor519'
+    group = 'ru.oldzoomer'
     version = '0.0.1-SNAPSHOT'
     
     repositories {
