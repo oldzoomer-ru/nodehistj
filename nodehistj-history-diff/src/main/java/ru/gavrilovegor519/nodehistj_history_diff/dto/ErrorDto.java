@@ -7,7 +7,7 @@ public record ErrorDto(
     LocalDateTime timestamp,
     String path
 ) {
-    public ErrorDto(String error, String path) {
-        this(error, LocalDateTime.now(), path);
+    public ErrorDto(String error) {
+        this(error, LocalDateTime.now(), null);
     }
 }
