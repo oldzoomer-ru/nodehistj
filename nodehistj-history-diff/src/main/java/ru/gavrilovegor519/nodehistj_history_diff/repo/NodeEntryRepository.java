@@ -1,20 +1,22 @@
 package ru.gavrilovegor519.nodehistj_history_diff.repo;
 
-import java.util.List;
-
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+import ru.gavrilovegor519.nodehistj_history_diff.entity.NodeEntry;
 
-import ru.gavrilovegor519.nodehistj_history_diff.entity.NodelistEntry;
+import java.util.List;
 
-@Repository
-public interface NodeEntryRepository extends JpaRepository<NodelistEntry, Long> {
+public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
     
-    @Query("SELECT ne FROM NodelistEntry ne WHERE ne.nodelistYear = :nodelistYear AND ne.nodelistName = :nodelistName")
-    List<NodelistEntry> findByNodelistYearAndName(@Param("nodelistYear") Integer nodelistYear,
-                                                 @Param("nodelistName") String nodelistName);
+    @Query("from NodeEntry where nodelistEntry.nodelistName = :nodelistName " +
+            "and nodelistEntry.nodelistYear = :nodelistYear " +
+            "order by zone, network, node")
+    @EntityGraph(attributePaths = "nodelistEntry")
+    List<NodeEntry> findByNodelistYearAndName(Integer nodelistYear, String nodelistName);
 
-    @Query("SELECT DISTINCT ne.nodelistYear, ne.nodelistName FROM NodelistEntry ne ORDER BY ne.nodelistYear DESC, ne.nodelistName DESC")
+    @Query("SELECT DISTINCT ne.nodelistEntry.nodelistYear, ne.nodelistEntry.nodelistName " +
+            "FROM NodeEntry ne " +
+            "ORDER BY ne.nodelistEntry.nodelistYear DESC, ne.nodelistEntry.nodelistName DESC")
     List<Object[]> findAllNodelistVersions();
 }

@@ -1,12 +1,12 @@
 package ru.gavrilovegor519.nodehistj_history_diff.entity;
 
-import java.util.List;
-import java.util.Objects;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ru.gavrilovegor519.nodelistj.enums.Keywords;
+
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -15,11 +15,11 @@ import ru.gavrilovegor519.nodelistj.enums.Keywords;
         indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
 public class NodeEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "nodelist_entry_id")
     private NodelistEntry nodelistEntry;
 
     @Column(name = "zone")
