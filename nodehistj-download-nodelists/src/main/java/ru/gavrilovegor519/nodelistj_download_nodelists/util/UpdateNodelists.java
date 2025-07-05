@@ -1,4 +1,4 @@
-package ru.gavrilovegor519.nodelistj_download_nodelists.util;
+package ru.oldzoomer.nodelistj_download_nodelists.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

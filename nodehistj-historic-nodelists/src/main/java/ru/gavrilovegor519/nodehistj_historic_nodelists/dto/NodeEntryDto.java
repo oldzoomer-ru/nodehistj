@@ -1,11 +1,11 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.dto;
 
+import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.gavrilovegor519.nodelistj.enums.Keywords;
-
-import java.util.List;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
  * DTO for {@link ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry}

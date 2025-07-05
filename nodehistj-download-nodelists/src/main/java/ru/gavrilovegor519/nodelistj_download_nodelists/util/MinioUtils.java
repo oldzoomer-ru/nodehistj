@@ -1,13 +1,14 @@
-package ru.gavrilovegor519.nodelistj_download_nodelists.util;
+package ru.oldzoomer.nodelistj_download_nodelists.util;
 
-import io.minio.*;
-import io.minio.errors.ErrorResponseException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import io.minio.*;
+import io.minio.errors.ErrorResponseException;
 
 @Component
 public class MinioUtils implements DisposableBean {

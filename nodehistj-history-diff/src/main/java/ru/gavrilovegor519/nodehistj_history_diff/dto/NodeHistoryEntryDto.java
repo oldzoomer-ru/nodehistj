@@ -1,13 +1,13 @@
 package ru.gavrilovegor519.nodehistj_history_diff.dto;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.gavrilovegor519.nodehistj_history_diff.entity.NodeHistoryEntry;
-import ru.gavrilovegor519.nodelistj.enums.Keywords;
-
-import java.time.LocalDate;
-import java.util.List;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
  * DTO for {@link NodeHistoryEntry}

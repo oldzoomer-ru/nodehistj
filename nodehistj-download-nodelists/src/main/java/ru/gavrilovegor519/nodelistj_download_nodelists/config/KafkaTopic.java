@@ -1,4 +1,4 @@
-package ru.gavrilovegor519.nodelistj_download_nodelists.config;
+package ru.oldzoomer.nodelistj_download_nodelists.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

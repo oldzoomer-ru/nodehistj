@@ -1,12 +1,12 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.entity;
 
+import java.util.List;
+import java.util.Objects;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ru.gavrilovegor519.nodelistj.enums.Keywords;
-
-import java.util.List;
-import java.util.Objects;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @Getter
 @Setter

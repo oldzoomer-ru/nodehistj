@@ -1,25 +1,26 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
-import ru.gavrilovegor519.nodelistj.Nodelist;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodelistj.Nodelist;
 
 @RequiredArgsConstructor
 @Component
@@ -38,7 +39,7 @@ public class NodelistFillToDatabase {
     private String minioBucket;
 
     @NotNull
-    private static NodeEntry getNodeEntry(ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+    private static NodeEntry getNodeEntry(ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setZone(nodeListEntry.zone());
@@ -84,7 +85,7 @@ public class NodelistFillToDatabase {
             nodelistEntryNew.setNodelistName(name);
             nodelistEntryRepository.save(nodelistEntryNew);
 
-            for (ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
+            for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
                 nodeEntryRepository.save(getNodeEntry(nodeListEntry, nodelistEntryNew));
             }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);

@@ -3,7 +3,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.postgresql:postgresql'
-    implementation "ru.gavrilovegor519:nodelistj:${nodelistjVersion}"
+    implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

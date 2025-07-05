@@ -1,4 +1,4 @@
-package ru.gavrilovegor519.nodelistj_download_nodelists;
+package ru.oldzoomer.nodelistj_download_nodelists;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,13 +1,13 @@
 package ru.gavrilovegor519.nodehistj_history_diff.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import ru.gavrilovegor519.nodelistj.enums.Keywords;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @Getter
 @Setter

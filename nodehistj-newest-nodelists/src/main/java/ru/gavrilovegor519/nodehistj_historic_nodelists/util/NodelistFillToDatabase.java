@@ -12,7 +12,7 @@ import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
-import ru.gavrilovegor519.nodelistj.Nodelist;
+import ru.oldzoomer.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ public class NodelistFillToDatabase {
     private String minioBucket;
 
     @NotNull
-    private static NodeEntry getNodeEntry(ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+    private static NodeEntry getNodeEntry(ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setZone(nodeListEntry.zone());
@@ -94,7 +94,7 @@ public class NodelistFillToDatabase {
             nodelistEntryNew.setNodelistName(name);
             nodelistEntryRepository.save(nodelistEntryNew);
 
-            for (ru.gavrilovegor519.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
+            for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
                 nodeEntryRepository.save(getNodeEntry(nodeListEntry, nodelistEntryNew));
             }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
