@@ -1,24 +1,29 @@
 package ru.gavrilovegor519.nodelistj_download_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Year;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.gavrilovegor519.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @RequiredArgsConstructor
 @Component
 @EnableScheduling
-@Log4j2
+@Slf4j
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
@@ -33,37 +38,63 @@ public class UpdateNodelists {
     @Value("${minio.bucket}")
     private String bucket;
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
-    public void updateNodelists() throws IOException {
+    @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
+    public void updateNodelists() {
         try {
+            validateInputs();
             minioUtils.createBucket(bucket);
             ftpClient.open();
 
-            for (int i = Year.now().getValue(); i >= downloadFromYear; i--) {
-                List<String> objects = new ArrayList<>();
-                String[] listFiles = ftpClient.listFiles(ftpPath + i);
-
-                for (String file : listFiles) {
-                    if (file.matches(ftpPath + "\\d{4}/nodelist\\.\\d{3}") &&
-                            !minioUtils.isObjectExist(bucket, file)) {
-                        try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(file)) {
-                            minioUtils.putObject(bucket, file, byteArrayOutputStream);
-                            objects.add(file);
-                        } catch (Exception e) {
-                            log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
-                        }
-                    }
-                }
-
-                if (!objects.isEmpty()) {
-                    kafkaTemplate.send("download_nodelists_is_finished_topic", 0,
-                            "added_nodelists", objects);
-                }
+            int currentYear = Year.now().getValue();
+            if (downloadFromYear > currentYear) {
+                log.warn("DownloadFromYear {} is in future", downloadFromYear);
+                return;
+            }
+            for (int year = currentYear; year >= downloadFromYear; year--) {
+                processYearFiles(year);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Failed to update nodelists", e);
+            throw new NodelistUpdateException("Nodelist update failed", e);
         } finally {
-            ftpClient.close();
+            try {
+                ftpClient.close();
+            } catch (IOException e) {
+                log.warn("Failed to close FTP connection", e);
+            }
+        }
+    }
+
+    private void processYearFiles(int year) throws IOException {
+        String yearPath = ftpPath + year + "/";
+        List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
+                .filter(file -> file.matches("nodelist\\.\\d{3}"))
+                .filter(file -> !minioUtils.isObjectExist(bucket, file))
+                .peek(file -> log.info("Processing new file: {}", file))
+                .collect(Collectors.toList());
+
+        newFiles.forEach(file -> processFile(yearPath + file));
+
+        if (!newFiles.isEmpty()) {
+            kafkaTemplate.send("download_nodelists_is_finished_topic",
+                    String.valueOf(year), newFiles);
+        }
+    }
+
+    private void processFile(String filePath) {
+        try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
+            minioUtils.putObject(bucket, filePath, byteArrayOutputStream);
+        } catch (Exception e) {
+            log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
+        }
+    }
+
+    private void validateInputs() {
+        if (ftpPath == null || ftpPath.isEmpty()) {
+            throw new IllegalArgumentException("FTP path cannot be empty");
+        }
+        if (bucket == null || bucket.isEmpty()) {
+            throw new IllegalArgumentException("Minio bucket cannot be empty");
         }
     }
 }

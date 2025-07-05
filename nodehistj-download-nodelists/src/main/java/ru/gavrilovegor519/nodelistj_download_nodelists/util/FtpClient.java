@@ -1,16 +1,19 @@
 package ru.gavrilovegor519.nodelistj_download_nodelists.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class FtpClient {
 
     @Value("${ftp.host}")
@@ -29,18 +32,23 @@ public class FtpClient {
 
     public void open() throws IOException {
         ftp = new FTPClient();
+        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
-        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
+        try {
+            ftp.connect(server, port);
+            if (!ftp.login(user, password)) {
+                throw new IOException("FTP login failed");
+            }
 
-        ftp.connect(server, port);
-        ftp.enterLocalPassiveMode();
-        int reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(ftp.getReplyCode())) {
+                throw new IOException("FTP server refused connection");
+            }
 
-        ftp.login(user, password);
-
-        if (!FTPReply.isPositiveCompletion(reply)) {
-            ftp.disconnect();
-            throw new IOException("Exception in connecting to FTP Server");
+            ftp.enterLocalPassiveMode();
+            ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+        } catch (IOException e) {
+            close();
+            throw e;
         }
     }
 

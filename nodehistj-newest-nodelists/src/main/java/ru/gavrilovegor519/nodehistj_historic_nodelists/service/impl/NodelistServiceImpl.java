@@ -1,20 +1,23 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.gavrilovegor519.nodehistj_historic_nodelists.service.NodelistService;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NodelistServiceImpl implements NodelistService {
-    private final NodeEntryRepository nodeEntryRepository;
+    private final NodeEntryRepository nodelistEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
 
     /**
@@ -26,7 +29,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Cacheable(value = "allDataOfNodelist")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries() {
-        return nodeEntryMapper.toDto(nodeEntryRepository.getAll());
+        log.debug("Fetching all nodelist entries");
+        return nodeEntryMapper.toDto(nodelistEntryRepository.findAll());
     }
 
     /**
@@ -39,7 +43,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Cacheable(value = "zoneNodelistEntry", key = "#zone")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone) {
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone));
+        log.debug("Fetching nodelist entries for zone: {}", zone);
+        return nodeEntryMapper.toDto(nodelistEntryRepository.getLast(zone));
     }
 
     /**
@@ -53,7 +58,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Cacheable(value = "networkNodelistEntry", key = "#zone + '-' + #network")
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network));
+        log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
+        return nodeEntryMapper.toDto(nodelistEntryRepository.getLast(zone, network));
     }
 
     /**
@@ -68,6 +74,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Cacheable(value = "nodeNodelistEntry", key = "#zone + '-' + #network + '-' + #node")
     @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network, node));
+        log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
+        return nodeEntryMapper.toDto(nodelistEntryRepository.getLast(zone, network, node));
     }
 }

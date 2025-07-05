@@ -1,10 +1,10 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.entity;
 
+import java.util.Objects;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ import java.util.Objects;
         indexes = @Index(columnList = "nodelistYear DESC, nodelistName DESC"))
 public class NodelistEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed from AUTO to IDENTITY
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -25,6 +25,7 @@ public class NodelistEntry {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof NodelistEntry that)) return false;
         return Objects.equals(id, that.id);
     }
@@ -32,5 +33,14 @@ public class NodelistEntry {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "NodelistEntry{" +
+                "id=" + id +
+                ", nodelistYear=" + nodelistYear +
+                ", nodelistName='" + nodelistName + '\'' +
+                '}';
     }
 }

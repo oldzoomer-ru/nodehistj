@@ -1,11 +1,12 @@
 package ru.gavrilovegor519.nodehistj_historic_nodelists.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
 
-import java.util.List;
+import ru.gavrilovegor519.nodehistj_historic_nodelists.entity.NodeEntry;
 
 public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
     @Query("from NodeEntry where nodelistEntry.nodelistName = :nodelistName " +

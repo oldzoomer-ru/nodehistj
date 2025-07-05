@@ -1,19 +1,21 @@
 package ru.gavrilovegor519.nodehistj_history_diff.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Objects;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "nodelist_entry",
         indexes = @Index(columnList = "nodelistYear DESC, nodelistName DESC"))
 public class NodelistEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -25,6 +27,7 @@ public class NodelistEntry {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof NodelistEntry that)) return false;
         return Objects.equals(id, that.id);
     }

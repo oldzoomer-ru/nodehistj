@@ -1,4 +1,13 @@
 package ru.gavrilovegor519.nodehistj_history_diff.dto;
 
-public record ErrorDto(String error) {
+import java.time.LocalDateTime;
+
+public record ErrorDto(
+    String error,
+    LocalDateTime timestamp,
+    String path
+) {
+    public ErrorDto(String error, String path) {
+        this(error, LocalDateTime.now(), path);
+    }
 }
