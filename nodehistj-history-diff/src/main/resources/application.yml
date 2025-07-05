@@ -24,7 +24,11 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
 minio:
+  url: ${MINIO_URL:http://localhost:9000/}
+  user: ${MINIO_USER}
+  password: ${MINIO_PASSWORD}
   path: ${FTP_PATH:/nodehist/}
+  bucket: ${MINIO_BUCKET:nodehist}
 
 server:
   port: 8082

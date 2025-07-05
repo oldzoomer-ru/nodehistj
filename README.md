@@ -21,7 +21,7 @@ nodelists of Fidonet. The project leverages modern technologies such as Spring B
 The project is organized as a Gradle multi-module project with the following modules:
 
 - **nodehistj-download-nodelists**: A service that downloads nodelists from an FTP server and uploads them to MinIO.
-- **nodehistj-historic-nodelists**: A service that processes and serves historical nodelists.
+- **nodehistj-historic-nodelists**: A service that processes and serves historical nodelists (port 8080).
 - **nodehistj-newest-nodelists**: A service that processes and serves the newest nodelists.
 - **nodehistj-history-diff**: A service that tracks and provides history of changes between nodelists for each node.
 
