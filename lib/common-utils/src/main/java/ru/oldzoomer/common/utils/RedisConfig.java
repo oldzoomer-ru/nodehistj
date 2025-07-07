@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_history_diff.config;
+package ru.oldzoomer.common.utils;
 
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 

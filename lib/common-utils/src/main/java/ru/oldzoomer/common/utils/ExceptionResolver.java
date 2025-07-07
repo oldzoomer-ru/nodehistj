@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.controller;
+package ru.oldzoomer.common.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import lombok.extern.log4j.Log4j2;
-import ru.oldzoomer.nodehistj_historic_nodelists.dto.ErrorDto;
 
 @RestControllerAdvice
 @Log4j2

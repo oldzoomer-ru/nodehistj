@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import ru.oldzoomer.common.utils.ClearRedisCache;
 import ru.oldzoomer.common.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -72,7 +73,7 @@ public class NodelistFillToDatabase {
                 log.error("Failed to add nodelist to database", e);
             }
         }
-        clearRedisCache.clearAllCache();
+        clearRedisCache.clearCache();
         log.info("Update nodelists is finished");
     }
 
