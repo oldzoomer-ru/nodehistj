@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import ru.oldzoomer.common.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;

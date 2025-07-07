@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ru.oldzoomer.common.utils.MinioUtils;
 import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
