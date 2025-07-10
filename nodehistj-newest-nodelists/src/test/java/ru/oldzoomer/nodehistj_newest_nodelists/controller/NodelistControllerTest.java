@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.controller;
+package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-import ru.oldzoomer.nodehistj_historic_nodelists.BaseIntegrationTest;
+import ru.oldzoomer.nodehistj_newest_nodelists.BaseIntegrationTest;
 
 public class NodelistControllerTest extends BaseIntegrationTest {
 
