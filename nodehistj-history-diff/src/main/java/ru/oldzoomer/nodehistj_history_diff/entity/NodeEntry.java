@@ -3,7 +3,14 @@ package ru.oldzoomer.nodehistj_history_diff.entity;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
@@ -54,7 +61,9 @@ public class NodeEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NodeEntry nodeEntry)) return false;
+        if (!(o instanceof NodeEntry nodeEntry)) {
+            return false;
+        }
         return Objects.equals(id, nodeEntry.id);
     }
 

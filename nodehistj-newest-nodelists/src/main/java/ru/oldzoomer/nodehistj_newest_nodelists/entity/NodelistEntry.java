@@ -2,7 +2,13 @@ package ru.oldzoomer.nodehistj_newest_nodelists.entity;
 
 import java.util.Objects;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,8 +33,12 @@ public class NodelistEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true; // Added null check
-        if (!(o instanceof NodelistEntry that)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof NodelistEntry that)) {
+            return false;
+        }
         return Objects.equals(id, that.id);
     }
 

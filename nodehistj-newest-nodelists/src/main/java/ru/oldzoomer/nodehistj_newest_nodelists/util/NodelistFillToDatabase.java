@@ -42,7 +42,9 @@ public class NodelistFillToDatabase {
     private String minioBucket;
 
     @NotNull
-    private static NodeEntry getNodeEntry(ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+    private static NodeEntry getNodeEntry(
+            ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
+            NodelistEntry nodelistEntryNew) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setZone(nodeListEntry.zone());
@@ -64,15 +66,21 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is started");
 
         modifiedObjects.sort(Comparator.reverseOrder());
-        if (modifiedObjects.isEmpty()) return;
+        if (modifiedObjects.isEmpty()) {
+            return;
+        }
         String objectName = modifiedObjects.getFirst();
 
         Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})")
                 .matcher(objectName);
-        if (!matcher.matches()) return;
+        if (!matcher.matches()) {
+            return;
+        }
 
         String year = matcher.group(1);
-        if (Integer.parseInt(year) < LocalDate.now().getYear()) return;
+        if (Integer.parseInt(year) < LocalDate.now().getYear()) {
+            return;
+        }
         String name = matcher.group(2);
 
         try (InputStream inputStream = minioUtils.getObject(minioBucket, objectName)) {
