@@ -101,10 +101,13 @@ public class NodelistFillToDatabase {
     }
 
     /**
-     * Updates database with entries from a single nodelist file
-     * @param nodelist parsed nodelist object
-     * @param year year of the nodelist
-     * @param name name of the nodelist file
+     * Updates the database with entries from a single nodelist file.
+     * This method processes the parsed nodelist object and updates the database
+     * with the corresponding entries for the specified year and nodelist name.
+     *
+     * @param nodelist The parsed nodelist object containing node entries.
+     * @param year The year of the nodelist.
+     * @param name The name of the nodelist file.
      */
     @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {

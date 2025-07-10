@@ -21,6 +21,14 @@ import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
  * - Transactional data access
  * - Operation logging
  *
+ * This service includes methods for:
+ * - Retrieving all nodelist entries
+ * - Retrieving nodelist entries for a specific zone
+ * - Retrieving nodelist entries for a specific network within a zone
+ * - Retrieving a specific nodelist entry
+ *
+ * All methods use caching to improve performance for repeated queries.
+ *
  * @see NodelistService
  */
 @Service
@@ -33,9 +41,9 @@ public class NodelistServiceImpl implements NodelistService {
     /**
      * Retrieves all nodelist entries.
      * <p>
-     * Results are cached in "allDataOfNodelist" cache.
+     * Results are cached in the "allDataOfNodelist" cache.
      *
-     * @return list of DTO objects for all nodes
+     * @return A list of DTO objects for all nodes.
      * @see org.springframework.cache.annotation.Cacheable
      */
     @Override
@@ -47,12 +55,12 @@ public class NodelistServiceImpl implements NodelistService {
     }
 
     /**
-     * Retrieves nodelist entries for specified zone.
+     * Retrieves nodelist entries for a specified zone.
      * <p>
-     * Results are cached in "zoneNodelistEntry" cache with zone as key.
+     * Results are cached in the "zoneNodelistEntry" cache with the zone as the key.
      *
-     * @param zone zone identifier
-     * @return list of DTO objects for nodes in specified zone
+     * @param zone The zone identifier.
+     * @return A list of DTO objects for nodes in the specified zone.
      * @see org.springframework.cache.annotation.Cacheable
      */
     @Override
@@ -64,13 +72,13 @@ public class NodelistServiceImpl implements NodelistService {
     }
 
     /**
-     * Retrieves nodelist entries for specified network in zone.
+     * Retrieves nodelist entries for a specified network within a zone.
      * <p>
-     * Results are cached in "networkNodelistEntry" cache with composite key "zone-network".
+     * Results are cached in the "networkNodelistEntry" cache with a composite key "zone-network".
      *
-     * @param zone zone identifier
-     * @param network network identifier
-     * @return list of DTO objects for nodes in specified network
+     * @param zone The zone identifier.
+     * @param network The network identifier.
+     * @return A list of DTO objects for nodes in the specified network.
      * @see org.springframework.cache.annotation.Cacheable
      */
     @Override
@@ -82,14 +90,14 @@ public class NodelistServiceImpl implements NodelistService {
     }
 
     /**
-     * Retrieves specific nodelist entry.
+     * Retrieves a specific nodelist entry.
      * <p>
-     * Results are cached in "nodeNodelistEntry" cache with composite key "zone-network-node".
+     * Results are cached in the "nodeNodelistEntry" cache with a composite key "zone-network-node".
      *
-     * @param zone zone identifier
-     * @param network network identifier
-     * @param node node identifier
-     * @return DTO object of requested node
+     * @param zone The zone identifier.
+     * @param network The network identifier.
+     * @param node The node identifier.
+     * @return A DTO object of the requested node.
      * @see org.springframework.cache.annotation.Cacheable
      */
     @Override

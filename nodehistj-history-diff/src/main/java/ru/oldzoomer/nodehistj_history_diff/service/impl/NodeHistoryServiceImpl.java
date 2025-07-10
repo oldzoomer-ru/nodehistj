@@ -20,6 +20,14 @@ import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 /**
  * Service implementation for node history operations.
  * Provides methods for retrieving and analyzing node changes history with caching support.
+ *
+ * This service includes methods for:
+ * - Retrieving history for specific nodes, networks, or zones
+ * - Getting changes for specific dates or date ranges
+ * - Filtering changes by type
+ * - Generating summary statistics and identifying most active nodes
+ *
+ * All methods use caching to improve performance for repeated queries.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,12 +40,13 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     private final NodeHistoryEntryMapper nodeHistoryEntryMapper;
 
     /**
-     * Retrieves history for a specific node with pagination
-     * @param zone node zone number
-     * @param network node network number
-     * @param node node number
-     * @param pageable pagination information
-     * @return page of node history entries
+     * Retrieves history for a specific node with pagination.
+     *
+     * @param zone The zone number of the node.
+     * @param network The network number of the node.
+     * @param node The node number.
+     * @param pageable Pagination information.
+     * @return A page of node history entries.
      */
     @Override
     @Cacheable(value = "nodeHistory", key = "#zone + '-' + #network + '-' + #node + '-' + #pageable.pageNumber")
@@ -49,11 +58,12 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves history for a specific network with pagination
-     * @param zone network zone number
-     * @param network network number
-     * @param pageable pagination information
-     * @return page of network history entries
+     * Retrieves history for a specific network with pagination.
+     *
+     * @param zone The zone number of the network.
+     * @param network The network number.
+     * @param pageable Pagination information.
+     * @return A page of network history entries.
      */
     @Override
     @Cacheable(value = "networkHistory", key = "#zone + '-' + #network + '-' + #pageable.pageNumber")
@@ -65,10 +75,11 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves history for a specific zone with pagination
-     * @param zone zone number
-     * @param pageable pagination information
-     * @return page of zone history entries
+     * Retrieves history for a specific zone with pagination.
+     *
+     * @param zone The zone number.
+     * @param pageable Pagination information.
+     * @return A page of zone history entries.
      */
     @Override
     @Cacheable(value = "zoneHistory", key = "#zone + '-' + #pageable.pageNumber")
@@ -80,9 +91,10 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves all history entries with pagination
-     * @param pageable pagination information
-     * @return page of all history entries
+     * Retrieves all history entries with pagination.
+     *
+     * @param pageable Pagination information.
+     * @return A page of all history entries.
      */
     @Override
     @Cacheable(value = "allHistory", key = "#pageable.pageNumber")
@@ -94,9 +106,10 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves all changes for a specific date
-     * @param date date to filter changes
-     * @return list of changes for the specified date
+     * Retrieves all changes for a specific date.
+     *
+     * @param date The date to filter changes.
+     * @return A list of changes for the specified date.
      */
     @Override
     @Cacheable(value = "changesForDate", key = "#date")
@@ -107,11 +120,12 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves changes between two dates with pagination
-     * @param startDate start date of range
-     * @param endDate end date of range
-     * @param pageable pagination information
-     * @return page of changes in the date range
+     * Retrieves changes between two dates with pagination.
+     *
+     * @param startDate The start date of the range.
+     * @param endDate The end date of the range.
+     * @param pageable Pagination information.
+     * @return A page of changes in the date range.
      */
     @Override
     @Cacheable(value = "changesBetweenDates", key = "#startDate + '-' + #endDate + '-' + #pageable.pageNumber")
@@ -123,10 +137,11 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Retrieves changes filtered by change type with pagination
-     * @param changeType type of change to filter
-     * @param pageable pagination information
-     * @return page of changes of specified type
+     * Retrieves changes filtered by change type with pagination.
+     *
+     * @param changeType The type of change to filter.
+     * @param pageable Pagination information.
+     * @return A page of changes of the specified type.
      */
     @Override
     @Cacheable(value = "changesByType", key = "#changeType + '-' + #pageable.pageNumber")
@@ -138,10 +153,11 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Gets summary statistics of changes between dates
-     * @param startDate start date of range
-     * @param endDate end date of range
-     * @return list of change summary statistics
+     * Gets summary statistics of changes between dates.
+     *
+     * @param startDate The start date of the range.
+     * @param endDate The end date of the range.
+     * @return A list of change summary statistics.
      */
     @Override
     @Cacheable(value = "changeSummary", key = "#startDate + '-' + #endDate")
@@ -151,11 +167,12 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Gets list of most frequently changed nodes
-     * @param startDate start date of range
-     * @param endDate end date of range
-     * @param pageable pagination information
-     * @return list of active nodes with change counts
+     * Gets a list of most frequently changed nodes.
+     *
+     * @param startDate The start date of the range.
+     * @param endDate The end date of the range.
+     * @param pageable Pagination information.
+     * @return A list of active nodes with change counts.
      */
     @Override
     @Cacheable(value = "mostActiveNodes", key = "#startDate + '-' + #endDate + '-' + #pageable.pageNumber")
