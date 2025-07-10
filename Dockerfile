@@ -1,6 +1,27 @@
 #
 # Unified Dockerfile for all NodehistJ services
-# Use --build-arg SERVICE_NAME to specify which service to build
+#
+# Features:
+# - Multi-stage сборка (build + runtime)
+# - Поддержка всех сервисов NodehistJ
+# - Пропуск тестов при сборке (по умолчанию)
+# - Поддержка GitHub credentials через Docker secrets
+#
+# Требования:
+# - Docker 20.10+
+# - JDK 21 для сборки
+# - JRE 21 для запуска
+#
+# Использование:
+# docker build --build-arg SERVICE_NAME=nodehistj-download-nodelists -t nodehistj-download .
+#
+# Переменные сборки:
+# SERVICE_NAME - обязательный, имя сервиса для сборки (например nodehistj-download-nodelists)
+# SKIP_TESTS - пропускать тесты (по умолчанию true)
+#
+# Secrets:
+# github_username - логин GitHub для доступа к приватным репозиториям
+# github_token - токен GitHub с правами чтения
 #
 ARG BUILD_HOME=/build
 

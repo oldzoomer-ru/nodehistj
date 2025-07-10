@@ -30,6 +30,10 @@ public class FtpClient {
 
     private FTPClient ftp;
 
+    /**
+     * Opens connection to FTP server
+     * @throws IOException if connection fails
+     */
     public void open() throws IOException {
         ftp = new FTPClient();
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
@@ -52,16 +56,32 @@ public class FtpClient {
         }
     }
 
+    /**
+     * Gets list of files in specified FTP directory
+     * @param path path to directory on FTP server
+     * @return array of file names
+     * @throws IOException if operation fails
+     */
     public String[] listFiles(String path) throws IOException {
         return ftp.listNames(path);
     }
 
+    /**
+     * Downloads file from FTP server
+     * @param source path to file on FTP server
+     * @return stream with file content
+     * @throws IOException if download fails
+     */
     public ByteArrayOutputStream downloadFile(String source) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ftp.retrieveFile(source, out);
         return out;
     }
 
+    /**
+     * Closes connection to FTP server
+     * @throws IOException if closing fails
+     */
     public void close() throws IOException {
         if (ftp != null) {
             ftp.disconnect();

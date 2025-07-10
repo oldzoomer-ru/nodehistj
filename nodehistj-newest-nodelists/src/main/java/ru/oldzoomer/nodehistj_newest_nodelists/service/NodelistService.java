@@ -1,8 +1,8 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.service;
+package ru.oldzoomer.nodehistj_newest_nodelists.service;
 
 import java.util.List;
 
-import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
+import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 
 /**
  * Nodelist service layer interface

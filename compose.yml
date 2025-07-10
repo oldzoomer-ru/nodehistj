@@ -1,3 +1,25 @@
+# NodehistJ Docker Compose Configuration
+#
+# Сервисы:
+# - minio: Хранилище файлов nodelist
+# - redis: Кэширование данных
+# - kafka: Очереди сообщений
+# - postgres: Основная база данных
+# - nodehistj-*: Микросервисы системы
+#
+# Требуемые переменные окружения:
+# MINIO_ROOT_USER, MINIO_ROOT_PASSWORD - доступ к MinIO
+# REDIS_PASSWORD - пароль Redis
+# POSTGRES_USER, POSTGRES_PASSWORD - доступ к PostgreSQL
+# FTP_DOWNLOAD_FROM_YEAR - год начала загрузки файлов
+# GITHUB_USERNAME, GITHUB_TOKEN - для приватных зависимостей
+#
+# Использование:
+# 1. Создать .env файл с переменными
+# 2. Запустить: docker compose -f compose.yml up -d
+#
+# Версия: 1.0
+
 services:
   minio:
     image: bitnami/minio
@@ -67,6 +89,8 @@ services:
       timeout: 10s
       retries: 5
 
+  # Сервис загрузки файлов nodelist с FTP
+  # Основные зависимости: MinIO, Kafka
   nodehistj-download-nodelists:
     image: gavrilovegor519/nodehistj-download-nodelists
     build:
@@ -90,6 +114,8 @@ services:
       kafka:
         condition: service_healthy
 
+  # Сервис работы с историческими данными nodelist
+  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-historic-nodelists:
     image: gavrilovegor519/nodehistj-historic-nodelists
     build:
@@ -126,6 +152,8 @@ services:
       redis:
         condition: service_healthy
 
+  # Сервис работы с актуальными данными nodelist
+  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-newest-nodelists:
     image: gavrilovegor519/nodehistj-newest-nodelists
     build:
@@ -162,6 +190,8 @@ services:
       redis:
         condition: service_healthy
 
+  # Сервис сравнения исторических и актуальных данных
+  # Основные зависимости: Kafka, PostgreSQL, Redis
   nodehistj-history-diff:
     image: gavrilovegor519/nodehistj-history-diff
     build:

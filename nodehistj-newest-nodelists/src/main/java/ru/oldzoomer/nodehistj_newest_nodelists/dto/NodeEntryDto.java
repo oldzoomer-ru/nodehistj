@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.dto;
+package ru.oldzoomer.nodehistj_newest_nodelists.dto;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
- * DTO for {@link ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry}
+ * DTO for {@link ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry}
  */
 @Getter
 @Setter

@@ -24,6 +24,11 @@ import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
+/**
+ * Component for processing and storing historical nodelists in the database.
+ * Listens to Kafka topic for new nodelist files, downloads them from MinIO storage,
+ * parses and saves to database, then clears Redis cache.
+ */
 @RequiredArgsConstructor
 @Component
 @Log4j2
@@ -34,12 +39,20 @@ public class NodelistFillToDatabase {
     private final NodelistEntryRepository nodelistEntryRepository;
     private final ClearRedisCache clearRedisCache;
 
+    /** MinIO storage path pattern for nodelist files */
     @Value("${minio.path}")
     private String minioPath;
 
+    /** MinIO bucket name where nodelists are stored */
     @Value("${minio.bucket}")
     private String minioBucket;
 
+    /**
+     * Converts nodelist entry from common format to database entity
+     * @param nodeListEntry source nodelist entry from common library
+     * @param nodelistEntryNew parent nodelist entry entity
+     * @return populated NodeEntry entity ready for saving
+     */
     @NotNull
     private static NodeEntry getNodeEntry(ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
         NodeEntry nodeEntryNew = new NodeEntry();
@@ -58,6 +71,11 @@ public class NodelistFillToDatabase {
         return nodeEntryNew;
     }
 
+    /**
+     * Kafka listener method triggered when new nodelists are downloaded.
+     * Processes each modified nodelist file from MinIO storage.
+     * @param modifiedObjects list of MinIO object paths that were modified
+     */
     @KafkaListener(topics = "download_nodelists_is_finished_topic")
     private void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
@@ -77,6 +95,12 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is finished");
     }
 
+    /**
+     * Updates database with entries from a single nodelist file
+     * @param nodelist parsed nodelist object
+     * @param year year of the nodelist
+     * @param name name of the nodelist file
+     */
     @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
         if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {

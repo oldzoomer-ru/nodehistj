@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.util;
+package ru.oldzoomer.nodehistj_newest_nodelists.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -19,10 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.common.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
 @RequiredArgsConstructor

@@ -14,10 +14,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)

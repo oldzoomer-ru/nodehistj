@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.util;
+package ru.oldzoomer.nodehistj_newest_nodelists.util;
 
 import java.util.Objects;
 

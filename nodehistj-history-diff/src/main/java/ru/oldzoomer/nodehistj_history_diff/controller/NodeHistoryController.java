@@ -23,10 +23,20 @@ import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 @RequestMapping("/history")
 public class NodeHistoryController {
     
+    /** Service for node history operations */
     private final NodeHistoryService nodeHistoryService;
 
     /**
-     * Get history for a specific node
+     * Get paginated history for a specific node
+     * @param zone Zone ID (1-255)
+     * @param network Network ID (1-65535)
+     * @param node Node ID (1-65535)
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto with node history
+     * @response 200 OK - History retrieved successfully
+     * @response 404 Not Found - Node not found
+     * @example Example request: GET /history/node/1/2/3?page=0&size=10
      */
     @GetMapping("/node/{zone}/{network}/{node}")
     public Page<NodeHistoryEntryDto> getNodeHistory(
@@ -40,7 +50,14 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get history for a specific network
+     * Get paginated history for a network
+     * @param zone Zone ID (1-255)
+     * @param network Network ID (1-65535)
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto with network history
+     * @response 200 OK - History retrieved successfully
+     * @response 404 Not Found - Network not found
      */
     @GetMapping("/network/{zone}/{network}")
     public Page<NodeHistoryEntryDto> getNetworkHistory(
@@ -53,7 +70,13 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get history for a specific zone
+     * Get paginated history for a zone
+     * @param zone Zone ID (1-255)
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto with zone history
+     * @response 200 OK - History retrieved successfully
+     * @response 404 Not Found - Zone not found
      */
     @GetMapping("/zone/{zone}")
     public Page<NodeHistoryEntryDto> getZoneHistory(
@@ -65,7 +88,11 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get all history entries
+     * Get paginated history of all nodes
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto with all history
+     * @response 200 OK - History retrieved successfully
      */
     @GetMapping("/all")
     public Page<NodeHistoryEntryDto> getAllHistory(
@@ -76,7 +103,11 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get changes for a specific date
+     * Get all changes for a specific date
+     * @param date Date in ISO format (YYYY-MM-DD)
+     * @return List of NodeHistoryEntryDto for the date
+     * @response 200 OK - Changes retrieved successfully
+     * @response 204 No Content - No changes for this date
      */
     @GetMapping("/date/{date}")
     public List<NodeHistoryEntryDto> getChangesForDate(
@@ -85,7 +116,14 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get changes between dates
+     * Get paginated changes between dates
+     * @param startDate Start date in ISO format (YYYY-MM-DD)
+     * @param endDate End date in ISO format (YYYY-MM-DD)
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto for date range
+     * @response 200 OK - Changes retrieved successfully
+     * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/range")
     public Page<NodeHistoryEntryDto> getChangesBetweenDates(
@@ -98,7 +136,13 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get changes by type
+     * Get paginated changes by change type
+     * @param changeType Type of change (ADDED, REMOVED, MODIFIED)
+     * @param page Page number (0-based)
+     * @param size Page size (default 20)
+     * @return Page of NodeHistoryEntryDto filtered by change type
+     * @response 200 OK - Changes retrieved successfully
+     * @response 400 Bad Request - Invalid change type
      */
     @GetMapping("/type/{changeType}")
     public Page<NodeHistoryEntryDto> getChangesByType(
@@ -110,7 +154,12 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get summary of changes for a date range
+     * Get summary statistics of changes for a date range
+     * @param startDate Start date in ISO format (YYYY-MM-DD)
+     * @param endDate End date in ISO format (YYYY-MM-DD)
+     * @return List of NodeChangeSummaryDto with change statistics
+     * @response 200 OK - Summary retrieved successfully
+     * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/summary")
     public List<NodeChangeSummaryDto> getChangeSummary(
@@ -120,7 +169,14 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get most active nodes (nodes with most changes)
+     * Get most active nodes (nodes with most changes) in period
+     * @param startDate Start date in ISO format (YYYY-MM-DD)
+     * @param endDate End date in ISO format (YYYY-MM-DD)
+     * @param page Page number (0-based)
+     * @param size Page size (default 10)
+     * @return List of Object arrays with node IDs and change counts
+     * @response 200 OK - Active nodes retrieved successfully
+     * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/active-nodes")
     public List<Object[]> getMostActiveNodes(

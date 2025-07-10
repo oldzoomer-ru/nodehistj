@@ -25,6 +25,10 @@ import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateExcepti
 @Component
 @EnableScheduling
 @Slf4j
+/**
+ * Main service for downloading and updating nodelist files from FTP server.
+ * Saves files to MinIO and sends notifications about new files via Kafka.
+ */
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
@@ -40,6 +44,12 @@ public class UpdateNodelists {
     private String bucket;
 
     @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
+    /**
+     * Main method for updating nodelist files.
+     * Runs on schedule (default every 24 hours).
+     * Downloads files for current and previous years (starting from downloadFromYear).
+     * @throws NodelistUpdateException if update error occurs
+     */
     public void updateNodelists() {
         try {
             validateInputs();
@@ -66,6 +76,11 @@ public class UpdateNodelists {
         }
     }
 
+    /**
+     * Processes nodelist files for specified year
+     * @param year year to process
+     * @throws IOException if FTP operation fails
+     */
     private void processYearFiles(int year) throws IOException {
         String yearPath = ftpPath + year + "/";
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
@@ -82,6 +97,10 @@ public class UpdateNodelists {
         }
     }
 
+    /**
+     * Processes single nodelist file: downloads from FTP and saves to MinIO
+     * @param filePath full path to file on FTP server
+     */
     private void processFile(String filePath) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
             minioUtils.putObject(bucket, filePath, byteArrayOutputStream);
@@ -90,6 +109,10 @@ public class UpdateNodelists {
         }
     }
 
+    /**
+     * Validates required configuration parameters
+     * @throws IllegalArgumentException if parameters are not set
+     */
     private void validateInputs() {
         if (ftpPath == null || ftpPath.isEmpty()) {
             throw new IllegalArgumentException("FTP path cannot be empty");
