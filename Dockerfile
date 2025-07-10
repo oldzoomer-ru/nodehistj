@@ -28,7 +28,8 @@ COPY --chown=gradle:gradle nodehistj-download-nodelists/ $APP_HOME/nodehistj-dow
 COPY --chown=gradle:gradle nodehistj-historic-nodelists/ $APP_HOME/nodehistj-historic-nodelists/
 COPY --chown=gradle:gradle nodehistj-newest-nodelists/ $APP_HOME/nodehistj-newest-nodelists/
 COPY --chown=gradle:gradle nodehistj-history-diff/ $APP_HOME/nodehistj-history-diff/
-COPY --chown=gradle:gradle lib/common-utils/ $APP_HOME/lib/common-utils/
+COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
+COPY --chown=gradle:gradle config/ $APP_HOME/config/
 
 #
 # Build argument to specify which service to build

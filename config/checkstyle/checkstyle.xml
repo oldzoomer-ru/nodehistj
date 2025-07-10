@@ -9,6 +9,10 @@
   <module name="FileLength">
     <property name="max" value="1000"/>
   </module>
+
+  <module name="LineLength">
+    <property name="max" value="120"/>
+  </module>
   
   <module name="TreeWalker">
     <!-- Импорты -->
@@ -18,9 +22,6 @@
     <!-- Форматирование -->
     <module name="Indentation">
       <property name="basicOffset" value="4"/>
-    </module>
-    <module name="LineLength">
-      <property name="max" value="120"/>
     </module>
     
     <!-- Лучшие практики -->
