@@ -54,7 +54,10 @@ public class NodelistFillToDatabase {
      * @return populated NodeEntry entity ready for saving
      */
     @NotNull
-    private static NodeEntry getNodeEntry(ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry, NodelistEntry nodelistEntryNew) {
+    private static NodeEntry getNodeEntry(
+        ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
+        NodelistEntry nodelistEntryNew
+    ) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setZone(nodeListEntry.zone());
@@ -82,7 +85,9 @@ public class NodelistFillToDatabase {
         for (String object : modifiedObjects) {
             Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
 
-            if (matcher.matches()) return;
+            if (matcher.matches()) {
+                return;
+            }
 
             try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
