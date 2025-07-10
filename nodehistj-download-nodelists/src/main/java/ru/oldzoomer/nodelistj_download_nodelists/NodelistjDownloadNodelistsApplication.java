@@ -14,8 +14,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class NodelistjDownloadNodelistsApplication {
 
-	   public static void main(String[] args) {
-	       SpringApplication.run(NodelistjDownloadNodelistsApplication.class, args);
-	   }
+    public static void main(String[] args) {
+        SpringApplication.run(NodelistjDownloadNodelistsApplication.class, args);
+    }
 
 }
