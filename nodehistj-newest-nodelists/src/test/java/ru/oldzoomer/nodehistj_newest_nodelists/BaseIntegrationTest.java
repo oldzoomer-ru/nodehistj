@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -52,6 +54,8 @@ public abstract class BaseIntegrationTest {
         nodelistEntryRepository.deleteAll();
 
         NodelistEntry nodelistEntry = new NodelistEntry();
+        nodelistEntry.setFileName("nodelist.001");
+        nodelistEntry.setCreatedDate(LocalDateTime.now());
         nodelistEntry.setNodelistYear(2023);
         nodelistEntry.setNodelistName("nodelist.001");
         nodelistEntryRepository.save(nodelistEntry);
@@ -64,8 +68,9 @@ public abstract class BaseIntegrationTest {
         nodeEntry.setNodeName("Test Node");
         nodeEntry.setLocation("Test Location");
         nodeEntry.setSysOpName("Test SysOp");
-        nodeEntry.setPhone("1234567890");
+        nodeEntry.setPhone("1234567890"); // Phone number without format restrictions
         nodeEntry.setBaudRate(1200);
+        nodeEntry.setKeywords(Keywords.HUB);
         nodeEntry.setFlags(List.of("FLAG1", "FLAG2"));
         nodeEntryRepository.save(nodeEntry);
     }

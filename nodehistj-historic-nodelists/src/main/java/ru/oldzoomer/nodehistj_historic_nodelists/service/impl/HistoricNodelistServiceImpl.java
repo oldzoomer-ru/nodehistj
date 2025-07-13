@@ -7,92 +7,54 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
+import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
 
 /**
- * Historic nodelist service layer
+ * Implementation of service for working with historic Fidonet nodelists.
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class HistoricNodelistServiceImpl implements HistoricNodelistService {
-    private final NodeEntryRepository nodelistEntryRepository;
-    private final NodeEntryMapper nodelistEntryMapper;
+    private final NodeEntryRepository nodeEntryRepository;
+    private final NodeEntryMapper nodeEntryMapper;
 
-    /**
-     * Get all nodelist entries
-     *
-     * @param year      year
-     * @param dayOfYear day of year
-     * @return List of nodelist entries
-     */
     @Override
-    @Cacheable(value = "historicAllDataOfNodelist")
-    @Transactional(readOnly = true)
+    @Cacheable(value = "historicAllData", key = "{#year, #dayOfYear}")
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
-        String nodelistPattern = String.format("nodelist.%03d", dayOfYear);
-        return nodelistEntryMapper.toDto(
-            nodelistEntryRepository.getAll(nodelistPattern, year)
-        );
+        log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByYearAndDayOfYear(year, dayOfYear));
     }
 
-    /**
-     * Get zone nodelist entry
-     *
-     * @param year      year
-     * @param dayOfYear day of year
-     * @param zone      zone
-     * @return Zone nodelist entry
-     */
     @Override
-    @Cacheable(value = "historicGetZoneNodelistEntry",
-            key = "#year + '-' + #dayOfYear + '-' + #zone")
-    @Transactional(readOnly = true)
+    @Cacheable(value = "historicZoneData", key = "{#year, #dayOfYear, #zone}")
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
-        String nodelistPattern = String.format("nodelist.%03d", dayOfYear);
-        return nodelistEntryMapper.toDto(
-            nodelistEntryRepository.get(zone, nodelistPattern, year)
-        );
+        log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByYearAndDayOfYearAndZone(year, dayOfYear, zone));
     }
 
-    /**
-     * Get network nodelist entry
-     *
-     * @param year      year
-     * @param dayOfYear day of year
-     * @param zone      zone
-     * @param network   network
-     * @return Network nodelist entry
-     */
     @Override
-    @Cacheable(value = "historicGetNetworkNodelistEntry",
-            key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network")
-    @Transactional(readOnly = true)
+    @Cacheable(value = "historicNetworkData", key = "{#year, #dayOfYear, #zone, #network}")
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
-        String nodelistPattern = String.format("nodelist.%03d", dayOfYear);
-        return nodelistEntryMapper.toDto(
-            nodelistEntryRepository.get(zone, network, nodelistPattern, year)
-        );
+        log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
+            year, dayOfYear, zone, network);
+        List<NodeEntry> entries = nodeEntryRepository
+            .findByYearAndDayOfYearAndZoneAndNetwork(year, dayOfYear, zone, network);
+        return nodeEntryMapper.toDto(entries);
     }
 
-    /**
-     * Get node nodelist entry
-     *
-     * @param year      year
-     * @param dayOfYear day of year
-     * @param zone      zone
-     * @param network   network
-     * @param node      node address
-     * @return Node nodelist entry
-     */
     @Override
-    @Cacheable(value = "historicGetNodeNodelistEntry",
-            key = "#year + '-' + #dayOfYear + '-' + #zone + '-' + #network + '-' + #node")
-    @Transactional(readOnly = true)
+    @Cacheable(value = "historicNodeData", key = "{#year, #dayOfYear, #zone, #network, #node}")
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
-        return nodelistEntryMapper.toDto(nodelistEntryRepository.get(
-                zone, network, node, String.format("nodelist.%03d", dayOfYear), year));
+        log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}", 
+            year, dayOfYear, zone, network, node);
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByYearAndDayOfYearAndZoneAndNetworkAndNode(
+            year, dayOfYear, zone, network, node));
     }
 }

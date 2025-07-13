@@ -1,40 +1,50 @@
 package ru.oldzoomer.common.utils;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import lombok.extern.log4j.Log4j2;
+import jakarta.validation.ConstraintViolationException;
 
+/**
+ * Global exception handler for REST controllers.
+ */
 @RestControllerAdvice
-@Log4j2
 public class ExceptionResolver {
-    /**
-     * Handle illegal argument exception
-     * @param ex exception
-     * @return response entity with error message
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error("Illegal argument exception", ex);
-        return ResponseEntity.badRequest().body(new ErrorDto("You have entered an illegal argument"));
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorDto> handleNotFound(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorDto("Not Found", ex.getMessage()));
     }
 
-    /**
-     * Handle not found exception
-     * @return response entity with error message
-     */
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorDto> handleNotFoundException(NoResourceFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto("Not found"));
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDto> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorDto("Bad Request", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDto> handleValidationError(ConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorDto("Validation Error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message = String.format("Invalid value '%s' for parameter '%s'", 
+            ex.getValue(), ex.getName());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorDto("Type Mismatch", message));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDto> handleException(Exception ex) {
-        log.error("Exception", ex);
+    public ResponseEntity<ErrorDto> handleInternalError(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorDto("Problem with server. Please try again later."));
+                .body(new ErrorDto("Internal Error", "Please try again later"));
     }
 }

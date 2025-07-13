@@ -5,37 +5,51 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
+@Entity
+@Table(name = "node_entry")
 @Getter
 @Setter
-@Entity
-@Table(name = "node_entry",
-        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
 public class NodeEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nodelist_entry_id")
     private NodelistEntry nodelistEntry;
 
-    @Column(name = "zone")
+    @Column(nullable = false)
+    private Integer year;
+
+    @Column(nullable = false)
+    private Integer dayOfYear;
+
+    @Column(nullable = false)
+    @Min(1)
+    @Max(6)
     private Integer zone;
 
-    @Column(name = "network")
+    @Column(nullable = false)
+    @Min(1)
+    @Max(32768)
     private Integer network;
 
-    @Column(name = "node")
+    @Column(nullable = false)
+    @Min(1)
+    @Max(32768)
     private Integer node;
 
     @Column(name = "keywords")

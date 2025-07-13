@@ -9,6 +9,12 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  cache:
+    redis:
+      time-to-live: 1h # TTL по умолчанию
+      cache-null-values: false
+      key-prefix: 'nodelist:' # Префикс для ключей
+      use-key-prefix: true
   data:
     redis:
       host: ${REDIS_HOST:localhost}
