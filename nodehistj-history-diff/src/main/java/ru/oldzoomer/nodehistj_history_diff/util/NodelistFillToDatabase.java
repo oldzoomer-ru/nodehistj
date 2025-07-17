@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_newest_nodelists.util;
+package ru.oldzoomer.nodehistj_history_diff.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -18,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.common.utils.ClearRedisCache;
 import ru.oldzoomer.common.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
-import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
 /**
@@ -56,7 +56,7 @@ public class NodelistFillToDatabase {
     @NotNull
     private static NodeEntry getNodeEntry(
         ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
-        ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry nodelistEntryNew
+        ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry nodelistEntryNew
     ) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
