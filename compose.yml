@@ -182,7 +182,7 @@ services:
     networks:
       - nodehistj
     ports:
-      - "8082:8082"
+      - "8082:8080"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092

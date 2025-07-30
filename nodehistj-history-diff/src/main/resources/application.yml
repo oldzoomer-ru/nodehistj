@@ -29,6 +29,3 @@ minio:
   password: ${MINIO_PASSWORD}
   path: ${FTP_PATH:/nodehist/}
   bucket: ${MINIO_BUCKET:nodehist}
-
-server:
-  port: 8082
