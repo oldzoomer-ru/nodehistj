@@ -40,18 +40,6 @@ Response example:
 
 Cache TTL: 1 hour
 
-## Configuration
-
-```properties
-spring.datasource.url=jdbc:postgresql://postgres:5432/nodelists
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-
-spring.cache.type=redis
-spring.redis.host=redis
-spring.redis.port=6379
-```
-
 ## Dependencies
 
 - Spring Boot 3.5.3
