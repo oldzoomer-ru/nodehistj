@@ -28,7 +28,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        return nodeEntryMapper.toDto(nodeEntryRepository.findAll());
+        return nodeEntryMapper.toDto(nodeEntryRepository.getAll());
     }
 
     @Override
