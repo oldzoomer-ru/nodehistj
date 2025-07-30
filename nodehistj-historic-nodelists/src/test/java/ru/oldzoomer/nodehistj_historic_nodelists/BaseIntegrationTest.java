@@ -58,8 +58,6 @@ public abstract class BaseIntegrationTest {
 
         NodeEntry nodeEntry = new NodeEntry();
         nodeEntry.setNodelistEntry(nodelistEntry);
-        nodeEntry.setYear(2023);
-        nodeEntry.setDayOfYear(1);
         nodeEntry.setZone(1);
         nodeEntry.setNetwork(1);
         nodeEntry.setNode(1);

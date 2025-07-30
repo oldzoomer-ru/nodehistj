@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
@@ -32,9 +34,9 @@ public class NodeHistoryController {
 
     /**
      * Get paginated history for a specific node
-     * @param zone Zone ID (1-255)
-     * @param network Network ID (1-65535)
-     * @param node Node ID (1-65535)
+     * @param zone Zone ID (1-32767)
+     * @param network Network ID (1-32767)
+     * @param node Node ID (1-32767)
      * @param page Page number (0-based)
      * @param size Page size (default 20)
      * @return Page of NodeHistoryEntryDto with node history
@@ -44,9 +46,9 @@ public class NodeHistoryController {
      */
     @GetMapping("/node/{zone}/{network}/{node}")
     public Page<NodeHistoryEntryDto> getNodeHistory(
-            @PathVariable Integer zone,
-            @PathVariable Integer network,
-            @PathVariable Integer node,
+            @PathVariable @Min(1) @Max(32767) Integer zone,
+            @PathVariable @Min(1) @Max(32767) Integer network,
+            @PathVariable @Min(1) @Max(32767) Integer node,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -55,8 +57,8 @@ public class NodeHistoryController {
 
     /**
      * Get paginated history for a network
-     * @param zone Zone ID (1-255)
-     * @param network Network ID (1-65535)
+     * @param zone Zone ID (1-32767)
+     * @param network Network ID (1-32767)
      * @param page Page number (0-based)
      * @param size Page size (default 20)
      * @return Page of NodeHistoryEntryDto with network history
@@ -65,8 +67,8 @@ public class NodeHistoryController {
      */
     @GetMapping("/network/{zone}/{network}")
     public Page<NodeHistoryEntryDto> getNetworkHistory(
-            @PathVariable Integer zone,
-            @PathVariable Integer network,
+            @PathVariable @Min(1) @Max(32767) Integer zone,
+            @PathVariable @Min(1) @Max(32767) Integer network,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -75,7 +77,7 @@ public class NodeHistoryController {
 
     /**
      * Get paginated history for a zone
-     * @param zone Zone ID (1-255)
+     * @param zone Zone ID (1-32767)
      * @param page Page number (0-based)
      * @param size Page size (default 20)
      * @return Page of NodeHistoryEntryDto with zone history
@@ -84,7 +86,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/zone/{zone}")
     public Page<NodeHistoryEntryDto> getZoneHistory(
-            @PathVariable Integer zone,
+            @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);

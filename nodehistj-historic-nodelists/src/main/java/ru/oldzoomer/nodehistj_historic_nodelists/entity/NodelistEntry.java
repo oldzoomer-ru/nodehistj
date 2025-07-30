@@ -9,17 +9,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "nodelist_entry",
         indexes = @Index(columnList = "nodelistYear DESC, nodelistName DESC"))
 public class NodelistEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed from AUTO to IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -43,14 +49,5 @@ public class NodelistEntry {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "NodelistEntry{" +
-                "id=" + id +
-                ", nodelistYear=" + nodelistYear +
-                ", nodelistName='" + nodelistName + '\'' +
-                '}';
     }
 }

@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -54,8 +53,6 @@ public abstract class BaseIntegrationTest {
         nodelistEntryRepository.deleteAll();
 
         NodelistEntry nodelistEntry = new NodelistEntry();
-        nodelistEntry.setFileName("nodelist.001");
-        nodelistEntry.setCreatedDate(LocalDateTime.now());
         nodelistEntry.setNodelistYear(2023);
         nodelistEntry.setNodelistName("nodelist.001");
         nodelistEntryRepository.save(nodelistEntry);

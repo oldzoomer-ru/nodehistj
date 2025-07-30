@@ -5,51 +5,37 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
-@Entity
-@Table(name = "node_entry")
 @Getter
 @Setter
+@Entity
+@Table(name = "node_entry",
+        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
 public class NodeEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodelist_entry_id")
+    @ManyToOne
     private NodelistEntry nodelistEntry;
 
-    @Column(nullable = false)
-    private Integer year;
-
-    @Column(nullable = false)
-    private Integer dayOfYear;
-
-    @Column(nullable = false)
-    @Min(1)
-    @Max(6)
+    @Column(name = "zone")
     private Integer zone;
 
-    @Column(nullable = false)
-    @Min(1)
-    @Max(32768)
+    @Column(name = "network")
     private Integer network;
 
-    @Column(nullable = false)
-    @Min(1)
-    @Max(32768)
+    @Column(name = "node")
     private Integer node;
 
     @Column(name = "keywords")
