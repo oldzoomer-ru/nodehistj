@@ -122,7 +122,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     labels:
-      - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && Path(`/historicNodelist`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
     depends_on:
       kafka:
@@ -161,7 +161,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     labels:
-      - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && Path(`/nodelist`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
     depends_on:
       kafka:
@@ -200,7 +200,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     labels:
-      - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && Path(`/history`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
     depends_on:
       kafka:
