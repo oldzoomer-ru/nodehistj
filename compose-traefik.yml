@@ -211,10 +211,12 @@ services:
   traefik:
     container_name: traefik
     image: traefik:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - nodehistj
     volumes:
       - ./traefik:/etc/traefik/
 
