@@ -2,6 +2,7 @@ package ru.oldzoomer.nodehistj_newest_nodelists;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,15 +11,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
-import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -34,6 +37,17 @@ public abstract class BaseIntegrationTest {
             .withUsername("testuser")
             .withPassword("testpass");
 
+    @Container
+    public static KafkaContainer kafkaContainer = new KafkaContainer(
+            DockerImageName.parse("apache/kafka"));
+
+    @SuppressWarnings("resource")
+    @Container
+    public static MinIOContainer minioContainer = new MinIOContainer(
+            DockerImageName.parse("minio/minio"))
+            .withUserName("minioadmin")
+            .withPassword("minioadmin");
+
     @Autowired
     private NodeEntryRepository nodeEntryRepository;
 
@@ -45,6 +59,10 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:17-alpine:///testdb");
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("minio.url", minioContainer::getS3URL);
+        registry.add("minio.user", minioContainer::getUserName);
+        registry.add("minio.password", minioContainer::getPassword);
+        registry.add("kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
     }
 
     @BeforeEach
@@ -65,10 +83,16 @@ public abstract class BaseIntegrationTest {
         nodeEntry.setNodeName("Test Node");
         nodeEntry.setLocation("Test Location");
         nodeEntry.setSysOpName("Test SysOp");
-        nodeEntry.setPhone("1234567890"); // Phone number without format restrictions
+        nodeEntry.setPhone("1234567890");
         nodeEntry.setBaudRate(1200);
-        nodeEntry.setKeywords(Keywords.HUB);
         nodeEntry.setFlags(List.of("FLAG1", "FLAG2"));
         nodeEntryRepository.save(nodeEntry);
+    }
+
+    @AfterAll
+    static void close() {
+        postgreSQLContainer.close();
+        minioContainer.close();
+        kafkaContainer.close();
     }
 }
