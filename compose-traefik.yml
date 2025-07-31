@@ -1,0 +1,234 @@
+# NodehistJ Docker Compose Configuration
+#
+# Сервисы:
+# - redis: Кэширование данных
+# - kafka: Очереди сообщений
+# - postgres: Основная база данных
+# - nodehistj-*: Микросервисы системы
+#
+# Требуемые переменные окружения:
+# DOMAIN - домен приложения
+# MINIO_URL, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD - доступ к MinIO
+# REDIS_PASSWORD - пароль Redis
+# POSTGRES_USER, POSTGRES_PASSWORD - доступ к PostgreSQL
+# FTP_DOWNLOAD_FROM_YEAR - год начала загрузки файлов
+# GITHUB_USERNAME, GITHUB_TOKEN - для приватных зависимостей
+#
+# Использование:
+# 1. Создать .env файл с переменными
+# 2. Запустить: docker compose -f compose-traefik.yml up -d
+#
+# Версия: 1.0
+
+services:
+  redis:
+    image: redis:alpine
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
+    networks:
+      - nodehistj
+    healthcheck:
+      test: redis-cli ping || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+  kafka:
+    image: bitnami/kafka
+    restart: unless-stopped
+    hostname: kafka
+    networks:
+      - nodehistj
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  postgres:
+    image: postgres:alpine
+    networks:
+      - nodehistj
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=nodehistj
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  # Сервис загрузки файлов nodelist с FTP
+  # Основные зависимости: MinIO, Kafka
+  nodehistj-download-nodelists:
+    image: gavrilovegor519/nodehistj-download-nodelists
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-download-nodelists
+        SKIP_TESTS: "true"
+    networks:
+      - nodehistj
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  # Сервис работы с историческими данными nodelist
+  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
+  nodehistj-historic-nodelists:
+    image: gavrilovegor519/nodehistj-historic-nodelists
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-historic-nodelists
+        SKIP_TESTS: "true"
+      secrets:
+        - github_username
+        - github_token
+    networks:
+      - nodehistj
+    ports:
+      - "8080"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    labels:
+      - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.historic.entrypoints=websecure"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Сервис работы с актуальными данными nodelist
+  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
+  nodehistj-newest-nodelists:
+    image: gavrilovegor519/nodehistj-newest-nodelists
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-newest-nodelists
+        SKIP_TESTS: "true"
+      secrets:
+        - github_username
+        - github_token
+    networks:
+      - nodehistj
+    ports:
+      - "8080"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    labels:
+      - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.newest.entrypoints=websecure"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Сервис сравнения исторических и актуальных данных
+  # Основные зависимости: Kafka, PostgreSQL, Redis
+  nodehistj-history-diff:
+    image: gavrilovegor519/nodehistj-history-diff
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-history-diff
+        SKIP_TESTS: "true"
+      secrets:
+        - github_username
+        - github_token
+    networks:
+      - nodehistj
+    ports:
+      - "8080"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_USER=${MINIO_USER}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    labels:
+      - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.history-diff.entrypoints=websecure"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik:/etc/traefik/
+
+secrets:
+  github_username:
+    environment: GITHUB_USERNAME
+  github_token:
+    environment: GITHUB_TOKEN
+
+networks:
+  nodehistj:
+    driver: bridge
+
+volumes:
+  postgres_storage:
