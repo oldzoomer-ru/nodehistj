@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,6 +27,7 @@ import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateExcepti
 @Component
 @EnableScheduling
 @Slf4j
+@Profile("!test")
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
@@ -81,12 +83,12 @@ public class UpdateNodelists {
     private void processYearFiles(int year) throws IOException {
         String yearPath = ftpPath + year + "/";
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
-                .filter(file -> file.matches("nodelist\\.\\d{3}"))
+                .filter(file -> file.matches(yearPath + "nodelist\\.\\d{3}"))
                 .filter(file -> !minioUtils.isObjectExist(bucket, file))
                 .peek(file -> log.info("Processing new file: {}", file))
                 .collect(Collectors.toList());
 
-        newFiles.forEach(file -> processFile(yearPath + file));
+        newFiles.forEach(file -> processFile(file));
 
         if (!newFiles.isEmpty()) {
             kafkaTemplate.send("download_nodelists_is_finished_topic",
