@@ -12,23 +12,20 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.oldzoomer.common.utils.MinioUtils;
+import ru.oldzoomer.minio.MinioUtils;
 import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
-@RequiredArgsConstructor
-@Component
-@EnableScheduling
-@Slf4j
 /**
  * Main service for downloading and updating nodelist files from FTP server.
  * Saves files to MinIO and sends notifications about new files via Kafka.
  */
+@RequiredArgsConstructor
+@Component
+@EnableScheduling
+@Slf4j
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
@@ -43,13 +40,13 @@ public class UpdateNodelists {
     @Value("${minio.bucket}")
     private String bucket;
 
-    @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
     /**
      * Main method for updating nodelist files.
      * Runs on schedule (default every 24 hours).
      * Downloads files for current and previous years (starting from downloadFromYear).
      * @throws NodelistUpdateException if update error occurs
      */
+    @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
     public void updateNodelists() {
         try {
             validateInputs();

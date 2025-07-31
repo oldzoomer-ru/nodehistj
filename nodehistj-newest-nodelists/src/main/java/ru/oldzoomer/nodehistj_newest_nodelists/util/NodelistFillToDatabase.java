@@ -7,22 +7,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.oldzoomer.common.utils.ClearRedisCache;
-import ru.oldzoomer.common.utils.MinioUtils;
+import ru.oldzoomer.minio.MinioUtils;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+import ru.oldzoomer.redis.ClearRedisCache;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -32,7 +30,6 @@ import ru.oldzoomer.nodelistj.Nodelist;
 @RequiredArgsConstructor
 @Component
 @Log4j2
-@Profile("!test")
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;
@@ -53,7 +50,6 @@ public class NodelistFillToDatabase {
      * @param nodelistEntryNew parent nodelist entry entity
      * @return populated NodeEntry entity ready for saving
      */
-    @NotNull
     private static NodeEntry getNodeEntry(
         ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
         ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry nodelistEntryNew

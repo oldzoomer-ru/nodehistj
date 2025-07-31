@@ -23,8 +23,6 @@
 services:
   redis:
     image: redis:alpine
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
     networks:
       - nodehistj
     healthcheck:

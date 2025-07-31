@@ -1,4 +1,1 @@
-ru.oldzoomer.common.utils.RedisConfig
-ru.oldzoomer.common.utils.MinioUtils
-ru.oldzoomer.common.utils.ClearRedisCache
 ru.oldzoomer.common.utils.ExceptionResolver

@@ -1,21 +1,20 @@
-package ru.oldzoomer.common.utils;
+package ru.oldzoomer.minio;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 @Component
-@Profile("!test")
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
 

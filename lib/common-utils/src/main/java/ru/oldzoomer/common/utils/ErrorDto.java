@@ -4,9 +4,7 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 /**
  * Unified error response DTO.
@@ -16,15 +14,12 @@ import lombok.NoArgsConstructor;
  * - Timestamp
  * - Optional details
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
 public class ErrorDto {
     private String message;
     private String code;
     private Instant timestamp = Instant.now();
-    private Object details;
 
     public ErrorDto(String message, String code) {
         this.message = message;

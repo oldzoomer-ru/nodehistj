@@ -1,7 +1,7 @@
-package ru.oldzoomer.common.utils;
+package ru.oldzoomer.redis;
 
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Profile("!test")
 public class ClearRedisCache {
     private final CacheManager cacheManager;
 
@@ -20,7 +19,10 @@ public class ClearRedisCache {
         cacheManager.getCacheNames()
                 .forEach(cacheName -> {
                     log.info("Clearing cache: {}", cacheName);
-                    cacheManager.getCache(cacheName).clear();
+                    Cache cache = cacheManager.getCache(cacheName);
+                    if (cache != null) {
+                        cache.clear();
+                    }
                 });
     }
 }

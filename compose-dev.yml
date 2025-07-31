@@ -20,8 +20,6 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
   redis:
     image: redis:alpine
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
     ports:
       - "6379:6379"
     networks:

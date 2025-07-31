@@ -13,10 +13,13 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import com.redis.testcontainers.RedisContainer;
 
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
@@ -35,18 +38,28 @@ public abstract class BaseIntegrationTest {
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("testpass");
+            .withPassword("testpass")
+            .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static KafkaContainer kafkaContainer = new KafkaContainer(
-            DockerImageName.parse("apache/kafka"));
+            DockerImageName.parse("apache/kafka"))
+            .waitingFor(Wait.forListeningPort());
 
     @SuppressWarnings("resource")
     @Container
     public static MinIOContainer minioContainer = new MinIOContainer(
             DockerImageName.parse("minio/minio"))
             .withUserName("minioadmin")
-            .withPassword("minioadmin");
+            .withPassword("minioadmin")
+            .waitingFor(Wait.forListeningPort());
+
+    @SuppressWarnings("resource")
+    @Container
+    public static RedisContainer redisContainer = new RedisContainer(
+            DockerImageName.parse("redis:8.0-alpine"))
+            .waitingFor(Wait.forListeningPort());
 
     @Autowired
     private NodeEntryRepository nodeEntryRepository;
@@ -62,7 +75,9 @@ public abstract class BaseIntegrationTest {
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
-        registry.add("kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+        registry.add("spring.data.redis.host", redisContainer::getRedisHost);
+        registry.add("spring.data.redis.port", redisContainer::getRedisPort);
     }
 
     @BeforeEach
@@ -94,5 +109,6 @@ public abstract class BaseIntegrationTest {
         postgreSQLContainer.close();
         minioContainer.close();
         kafkaContainer.close();
+        redisContainer.close();
     }
 }
