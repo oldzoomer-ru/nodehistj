@@ -219,6 +219,7 @@ services:
       - nodehistj
     volumes:
       - ./traefik:/etc/traefik/
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 secrets:
   github_username:
