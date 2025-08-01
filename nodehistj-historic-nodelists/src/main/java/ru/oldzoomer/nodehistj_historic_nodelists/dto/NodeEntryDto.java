@@ -2,24 +2,20 @@ package ru.oldzoomer.nodehistj_historic_nodelists.dto;
 
 import java.util.List;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
  * DTO for {@link ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry}
  */
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 public class NodeEntryDto {
-    NodelistEntryDto nodelistEntry;
-    Keywords keywords;
-    String nodeName;
-    String location;
-    String sysOpName;
-    String phone;
-    Integer baudRate;
-    List<String> flags;
+    private NodelistEntryDto nodelistEntry;
+    private Keywords keywords;
+    private String nodeName;
+    private String location;
+    private String sysOpName;
+    private String phone;
+    private Integer baudRate;
+    private List<String> flags;
 }

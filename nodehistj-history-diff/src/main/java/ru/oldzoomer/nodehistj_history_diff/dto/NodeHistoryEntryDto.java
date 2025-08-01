@@ -16,27 +16,27 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Setter
 @EqualsAndHashCode
 public class NodeHistoryEntryDto {
-    Integer zone;
-    Integer network;
-    Integer node;
-    LocalDate changeDate;
-    Integer nodelistYear;
-    String nodelistName;
-    NodeHistoryEntry.ChangeType changeType;
-    Keywords keywords;
-    String nodeName;
-    String location;
-    String sysOpName;
-    String phone;
-    Integer baudRate;
-    List<String> flags;
+    private Integer zone;
+    private Integer network;
+    private Integer node;
+    private LocalDate changeDate;
+    private Integer nodelistYear;
+    private String nodelistName;
+    private NodeHistoryEntry.ChangeType changeType;
+    private Keywords keywords;
+    private String nodeName;
+    private String location;
+    private String sysOpName;
+    private String phone;
+    private Integer baudRate;
+    private List<String> flags;
     
     // Previous values for MODIFIED entries
-    Keywords prevKeywords;
-    String prevNodeName;
-    String prevLocation;
-    String prevSysOpName;
-    String prevPhone;
-    Integer prevBaudRate;
-    List<String> prevFlags;
+    private Keywords prevKeywords;
+    private String prevNodeName;
+    private String prevLocation;
+    private String prevSysOpName;
+    private String prevPhone;
+    private Integer prevBaudRate;
+    private List<String> prevFlags;
 }

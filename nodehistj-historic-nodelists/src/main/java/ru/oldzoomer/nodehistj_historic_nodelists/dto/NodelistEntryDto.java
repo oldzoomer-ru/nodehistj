@@ -1,16 +1,12 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * DTO for {@link ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry}
  */
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 public class NodelistEntryDto {
-    Integer nodelistYear;
-    String nodelistName;
+    private Integer nodelistYear;
+    private String nodelistName;
 }

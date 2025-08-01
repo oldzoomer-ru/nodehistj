@@ -17,11 +17,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NodeChangeSummaryDto {
-    LocalDate changeDate;
-    Integer nodelistYear;
-    String nodelistName;
-    Long addedCount;
-    Long removedCount;
-    Long modifiedCount;
-    Long totalChanges;
+    private LocalDate changeDate;
+    private Integer nodelistYear;
+    private String nodelistName;
+    private Long addedCount;
+    private Long removedCount;
+    private Long modifiedCount;
+    private Long totalChanges;
 }
