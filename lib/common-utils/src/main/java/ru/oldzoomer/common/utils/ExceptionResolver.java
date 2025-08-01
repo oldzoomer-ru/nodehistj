@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Global exception handler for REST controllers.
  */
 @RestControllerAdvice
+@Slf4j
 public class ExceptionResolver {
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -44,6 +46,7 @@ public class ExceptionResolver {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleInternalError(Exception ex) {
+        log.error("Internal server error: {}", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorDto("Internal Error", "Please try again later"));
     }
