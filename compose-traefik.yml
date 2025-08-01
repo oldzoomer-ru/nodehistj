@@ -81,6 +81,8 @@ services:
         SKIP_TESTS: "true"
     networks:
       - nodehistj
+    labels:
+      - "traefik.enable=false"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
