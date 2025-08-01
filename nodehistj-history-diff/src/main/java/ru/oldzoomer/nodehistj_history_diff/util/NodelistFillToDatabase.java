@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -51,7 +50,6 @@ public class NodelistFillToDatabase {
      * @param nodelistEntryNew parent nodelist entry entity
      * @return populated NodeEntry entity ready for saving
      */
-    @NotNull
     private static NodeEntry getNodeEntry(
         ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
         ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry nodelistEntryNew
