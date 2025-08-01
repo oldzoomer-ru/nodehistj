@@ -102,6 +102,9 @@ public class UpdateNodelists {
      */
     private void processFile(String filePath) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
+            if (filePath.charAt(0) == '/') {
+                filePath = filePath.substring(1);
+            }
             minioUtils.putObject(bucket, filePath, byteArrayOutputStream);
         } catch (Exception e) {
             log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
