@@ -32,23 +32,21 @@ docker compose -f compose.yml up -d
 
 Services will be available at:
 
-- nodehistj-historic-nodelists: <http://localhost:8080>
-- nodehistj-newest-nodelists: <http://localhost:8081>
-- nodehistj-history-diff: <http://localhost:8082>
+- nodehistj-historic-nodelists: <http://localhost:8081>
+- nodehistj-newest-nodelists: <http://localhost:8082>
+- nodehistj-history-diff: <http://localhost:8083>
 
 ## Configuration
 
 Before starting, create a `.env` file in the project root with the following variables:
 
 ```ini
-MINIO_ROOT_USER=admin
-MINIO_ROOT_PASSWORD=password
-REDIS_PASSWORD=redispass
+MINIO_USER=admin
+MINIO_PASSWORD=password
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 GITHUB_USERNAME=your_username
 GITHUB_TOKEN=your_token
-FTP_DOWNLOAD_FROM_YEAR=2020
 ```
 
 ## Building from Sources
@@ -81,4 +79,4 @@ The project uses:
 - `nodehistj-historic-nodelists` - API for historical data
 - `nodehistj-newest-nodelists` - API for current data
 - `nodehistj-history-diff` - data version comparison service
-- `lib/common-utils` - common utilities for all services
+- `lib/*` - common utilities for all services
