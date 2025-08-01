@@ -1,4 +1,4 @@
-package ru.oldzoomer.redis;
+package ru.oldzoomer.redis.config;
 
 import static org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer;
 

@@ -68,7 +68,7 @@ public abstract class BaseIntegrationTest {
     private NodelistEntryRepository nodelistEntryRepository;
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
+    static void registerProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:17-alpine:///testdb");
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);

@@ -5,25 +5,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
+import ru.oldzoomer.minio.config.MinioConnectionProperties;
 
-@Component
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
 
-    public MinioUtils(@Value("${minio.url}") String minioUrl,
-                     @Value("${minio.user}") String minioUser,
-                     @Value("${minio.password}") String minioPassword) {
+    public MinioUtils(MinioConnectionProperties minioConnectionProperties) {
         minioClient = MinioClient.builder()
-                .endpoint(minioUrl)
-                .credentials(minioUser, minioPassword)
+                .endpoint(minioConnectionProperties.getUrl())
+                .credentials(minioConnectionProperties.getUser(),
+                        minioConnectionProperties.getPassword())
                 .build();
     }
 
@@ -47,9 +44,9 @@ public class MinioUtils implements DisposableBean {
     public boolean isObjectExist(String bucketName, String object) {
         try {
             minioClient.statObject(StatObjectArgs.builder()
-                .bucket(bucketName)
-                .object(object)
-                .build());
+                    .bucket(bucketName)
+                    .object(object)
+                    .build());
             return true;
         } catch (Exception e) {
             return false;
@@ -59,10 +56,10 @@ public class MinioUtils implements DisposableBean {
     public void putObject(String bucketName, String objectName, ByteArrayOutputStream stream) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
-                .bucket(bucketName)
-                .object(objectName)
-                .stream(new ByteArrayInputStream(stream.toByteArray()), stream.size(), -1)
-                .build());
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .stream(new ByteArrayInputStream(stream.toByteArray()), stream.size(), -1)
+                    .build());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
