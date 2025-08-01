@@ -1,2 +1,2 @@
-ru.oldzoomer.minio.config.MinioConnectionConfiguration
-ru.oldzoomer.minio.config.MinioUtilsConfiguration
+ru.oldzoomer.minio.config.MinioConfig
+ru.oldzoomer.minio.MinioUtils

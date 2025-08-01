@@ -2,7 +2,7 @@ package ru.oldzoomer.nodehistj_newest_nodelists;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.AdviceMode;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * @SpringBootApplication - combines three annotations:
  *   @Configuration, @EnableAutoConfiguration, @ComponentScan
- * @EnableTransactionManagement(mode = AdviceMode.ASPECTJ) - enables transaction management
- *   using AspectJ for transaction support outside proxy beans
+ * @EnableTransactionManagement- enables transaction management
  */
 @SpringBootApplication
-@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
+@EnableTransactionManagement
+@EnableCaching
 public class NodehistjApplication {
 
     /**

@@ -2,7 +2,7 @@ package ru.oldzoomer.nodehistj_historic_nodelists;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.AdviceMode;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Launches Spring Boot application with enabled transaction management.
  */
 @SpringBootApplication
-@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
+@EnableTransactionManagement
+@EnableCaching
 public class NodehistjApplication {
 
     /**

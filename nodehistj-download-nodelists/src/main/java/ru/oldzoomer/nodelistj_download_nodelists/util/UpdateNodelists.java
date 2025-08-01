@@ -39,7 +39,7 @@ public class UpdateNodelists {
     @Value("${ftp.downloadFromYear}")
     private int downloadFromYear;
 
-    @Value("${minio.bucket}")
+    @Value("${app.minio.bucket}")
     private String bucket;
 
     /**

@@ -37,11 +37,11 @@ public class NodelistFillToDatabase {
     private final ClearRedisCache clearRedisCache;
 
     /** MinIO storage path pattern for nodelist files */
-    @Value("${minio.path}")
+    @Value("${app.minio.path}")
     private String minioPath;
 
     /** MinIO bucket name where nodelists are stored */
-    @Value("${minio.bucket}")
+    @Value("${app.minio.bucket}")
     private String minioBucket;
 
     /**
