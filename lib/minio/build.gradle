@@ -6,5 +6,5 @@ dependencyManagement {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
-    api 'io.minio:minio:8.5.17'
+    implementation 'io.minio:minio:8.5.17'
 }
