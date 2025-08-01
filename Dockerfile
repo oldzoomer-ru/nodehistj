@@ -9,8 +9,6 @@
 #
 # Требования:
 # - Docker 20.10+
-# - JDK 21 для сборки
-# - JRE 21 для запуска
 #
 # Использование:
 # docker build --build-arg SERVICE_NAME=nodehistj-download-nodelists -t nodehistj-download .
@@ -77,11 +75,6 @@ RUN --mount=type=secret,id=github_username \
 # Java image for the application to run in.
 #
 FROM eclipse-temurin:21-jre-alpine
-
-#
-# Install curl for health checks
-#
-RUN apk add --no-cache curl
 
 #
 # Build arguments
