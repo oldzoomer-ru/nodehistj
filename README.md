@@ -19,16 +19,16 @@ NodehistJ is a system for working with network node historical data, consisting 
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/oldzoomer-ru/nodehistj.git
-cd nodehistj
-```
+    ```bash
+    git clone https://github.com/oldzoomer-ru/nodehistj.git
+    cd nodehistj
+    ```
 
 2. Start services using Docker Compose:
 
-```bash
-docker compose -f compose.yml up -d
-```
+    ```bash
+    docker compose -f compose.yml up -d
+    ```
 
 Services will be available at:
 
@@ -41,12 +41,12 @@ Services will be available at:
 Before starting, create a `.env` file in the project root with the following variables:
 
 ```ini
-MINIO_USER=admin
-MINIO_PASSWORD=password
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-GITHUB_USERNAME=your_username
-GITHUB_TOKEN=your_token
+MINIO_USER=user1
+MINIO_PASSWORD=password1
+POSTGRES_USER=user1
+POSTGRES_PASSWORD=password1
+GITHUB_USERNAME=user1
+GITHUB_TOKEN=token1
 ```
 
 ## Building from Sources
@@ -67,7 +67,7 @@ To build a specific service:
 
 The project uses:
 
-- Spring Boot 3.5.3
+- Spring Boot 3.5.4
 - PostgreSQL for data storage
 - MinIO for file storage
 - Kafka for inter-service communication

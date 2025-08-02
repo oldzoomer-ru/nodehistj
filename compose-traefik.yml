@@ -33,7 +33,7 @@ services:
       retries: 5
     restart: unless-stopped
   kafka:
-    image: bitnami/kafka
+    image: apache/kafka
     restart: unless-stopped
     hostname: kafka
     networks:
@@ -57,8 +57,8 @@ services:
       - nodehistj
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:user1}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:password1}
       - POSTGRES_DB=nodehistj
     volumes:
       - postgres_storage:/var/lib/postgresql/data
@@ -114,13 +114,12 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - REDIS_HOST=redis
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-redisqwerty}
       - MINIO_URL=${MINIO_URL}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:user1}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:password1}
     labels:
       - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && Path(`/historicNodelist`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
@@ -157,8 +156,8 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:user1}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:password1}
     labels:
       - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && Path(`/nodelist`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
@@ -195,8 +194,8 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:user1}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:password1}
     labels:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && Path(`/history`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
