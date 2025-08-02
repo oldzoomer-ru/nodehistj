@@ -56,7 +56,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
-    void updateNodelists_happyPath_processesFilesAndSendsKafka() throws Exception {
+    void updateNodelistsHappyPathProcessesFilesAndSendsKafka() throws Exception {
         int currentYear = Year.now().getValue();
 
         setField(service, "ftpPath", "/nodehist/");
@@ -93,7 +93,11 @@ class UpdateNodelistsTest {
         // Kafka отправляет список новых файлов за текущий год
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> listCaptor = ArgumentCaptor.forClass(List.class);
-        verify(kafkaTemplate).send(eq("download_nodelists_is_finished_topic"), eq(String.valueOf(currentYear)), listCaptor.capture());
+        verify(kafkaTemplate).send(
+                eq("download_nodelists_is_finished_topic"),
+                eq(String.valueOf(currentYear)),
+                listCaptor.capture()
+        );
         List<String> sent = listCaptor.getValue();
         assertEquals(2, sent.size());
         assertTrue(sent.contains(valid1));
@@ -104,7 +108,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
-    void updateNodelists_whenDownloadFromYearInFuture_returnsEarly() throws Exception {
+    void updateNodelistsWhenDownloadFromYearInFutureReturnsEarly() throws Exception {
         int currentYear = Year.now().getValue();
 
         setField(service, "ftpPath", "/nodehist/");
@@ -121,7 +125,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
-    void updateNodelists_invalidInputs_wrappedIntoNodelistUpdateException() throws Exception {
+    void updateNodelistsInvalidInputsWrappedIntoNodelistUpdateException() throws Exception {
         // Пустой bucket вызовет IllegalArgumentException в validateInputs(), который должен быть
         // обернут в NodelistUpdateException
         setField(service, "ftpPath", "/nodehist/");
@@ -135,7 +139,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
-    void updateNodelists_anyException_wrappedAndCloseCalled() throws Exception {
+    void updateNodelistsAnyExceptionWrappedAndCloseCalled() throws Exception {
         int currentYear = Year.now().getValue();
 
         setField(service, "ftpPath", "/nodehist/");
@@ -156,7 +160,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
-    void processFile_trimsLeadingSlashAndUploads() throws Exception {
+    void processFileTrimsLeadingSlashAndUploads() throws Exception {
         // Настройка базовых полей
         setField(service, "ftpPath", "/nodehist/");
         setField(service, "downloadFromYear", 1984);

@@ -53,7 +53,7 @@ class FtpClientTest {
     }
 
     @Test
-    void open_loginFailed_throwsAndCloses_withoutRealConnect() throws Exception {
+    void openLoginFailedThrowsAndClosesWithoutRealConnect() throws Exception {
         // Имитация "состояния после connect": ftp уже установлен
         setField(ftpClient, "ftp", mockApacheFtp);
         when(mockApacheFtp.login(anyString(), anyString())).thenReturn(false);
@@ -74,7 +74,7 @@ class FtpClientTest {
     }
 
     @Test
-    void open_negativeReplyCode_throws_withoutRealConnect() throws Exception {
+    void openNegativeReplyCodeThrowsWithoutRealConnect() throws Exception {
         // Имитация "состояния после connect": ftp уже установлен
         setField(ftpClient, "ftp", mockApacheFtp);
         when(mockApacheFtp.login(anyString(), anyString())).thenReturn(true);
@@ -94,7 +94,7 @@ class FtpClientTest {
     }
 
     @Test
-    void listFiles_delegatesToApache() throws Exception {
+    void listFilesDelegatesToApache() throws Exception {
         String path = "/dir/";
         when(mockApacheFtp.listNames(path)).thenReturn(new String[]{"a", "b"});
 
@@ -104,7 +104,7 @@ class FtpClientTest {
     }
 
     @Test
-    void downloadFile_delegatesRetrieve() throws Exception {
+    void downloadFileDelegatesRetrieve() throws Exception {
         String source = "/dir/file.bin";
         ByteArrayOutputStream out = ftpClient.downloadFile(source);
 
@@ -113,7 +113,7 @@ class FtpClientTest {
     }
 
     @Test
-    void close_disconnectsIfNotNull() throws Exception {
+    void closeDisconnectsIfNotNull() throws Exception {
         ftpClient.close();
         verify(mockApacheFtp).disconnect();
     }
