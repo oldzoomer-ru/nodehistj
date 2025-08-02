@@ -1,16 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/java
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
 	"name": "Java",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
-
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
 	"features": {
-		"ghcr.io/devcontainers/features/java:1": {
-			"version": "none",
-			"installMaven": "false",
-			"installGradle": "true"
-		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"moby": false,
 			"azureDnsAutoDetection": true,
@@ -18,14 +12,19 @@
 			"installDockerComposeSwitch": true,
 			"version": "latest",
 			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/devcontainers/features/java:1": {
+			"installGradle": true,
+			"version": "21",
+			"gradleVersion": "latest"
 		}
 	}
 
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "java -version",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
