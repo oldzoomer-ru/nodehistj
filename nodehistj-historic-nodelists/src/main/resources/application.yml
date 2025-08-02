@@ -28,4 +28,4 @@ minio:
 app:
   minio:
     path: ${FTP_PATH:/nodehist/}
-    bucket: ${MINIO_BUCKET:nodehist}
+    bucket: ${MINIO_BUCKET:nodehistj}

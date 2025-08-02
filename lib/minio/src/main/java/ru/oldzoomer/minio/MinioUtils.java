@@ -8,6 +8,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
+import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -39,7 +40,11 @@ public class MinioUtils implements DisposableBean {
 
     public void createBucket(String bucketName) {
         try {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            if (!minioClient.bucketExists(
+                    BucketExistsArgs.builder().bucket(bucketName).build())) {
+                minioClient.makeBucket(
+                        MakeBucketArgs.builder().bucket(bucketName).build());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
