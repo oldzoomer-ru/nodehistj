@@ -107,6 +107,7 @@ services:
       - MINIO_URL=${MINIO_URL}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
     depends_on:
       kafka:
         condition: service_healthy
@@ -135,6 +136,7 @@ services:
       - MINIO_URL=${MINIO_URL}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
@@ -175,6 +177,7 @@ services:
       - MINIO_URL=${MINIO_URL}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
@@ -215,6 +218,7 @@ services:
       - MINIO_URL=${MINIO_URL}
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}

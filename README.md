@@ -43,6 +43,7 @@ Before starting, create a `.env` file in the project root with the following var
 ```ini
 MINIO_USER=user
 MINIO_PASSWORD=password
+MINIO_BUCKET=nodehistj
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
 GITHUB_USERNAME=user
