@@ -68,6 +68,24 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - nodehistj
+    volumes:
+      - ./traefik:/etc/traefik/
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
@@ -108,6 +126,8 @@ services:
         - github_token
     networks:
       - nodehistj
+    expose:
+      - "8080"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -122,6 +142,8 @@ services:
       - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && Path(`/historicNodelist`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
     depends_on:
+      traefik:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
@@ -144,6 +166,8 @@ services:
         - github_token
     networks:
       - nodehistj
+    expose:
+      - 8080
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -158,6 +182,8 @@ services:
       - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && Path(`/nodelist`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
     depends_on:
+      traefik:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
@@ -180,6 +206,8 @@ services:
         - github_token
     networks:
       - nodehistj
+    expose:
+      - 8080
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -194,25 +222,14 @@ services:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/history`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
     depends_on:
+      traefik:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-
-  traefik:
-    container_name: traefik
-    image: traefik:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - nodehistj
-    volumes:
-      - ./traefik:/etc/traefik/
-      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 secrets:
   github_username:
