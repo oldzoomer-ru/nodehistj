@@ -1,6 +1,7 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
-import com.redis.testcontainers.RedisContainer;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import com.redis.testcontainers.RedisContainer;
+
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -39,11 +41,13 @@ public abstract class BaseIntegrationTest {
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static final KafkaContainer kafkaContainer = new KafkaContainer(
             DockerImageName.parse("apache/kafka"))
             .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer(
             DockerImageName.parse("minio/minio"))
@@ -51,6 +55,7 @@ public abstract class BaseIntegrationTest {
             .withPassword("minioadmin")
             .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static final RedisContainer redisContainer = new RedisContainer(
             DockerImageName.parse("redis:8.0-alpine"))

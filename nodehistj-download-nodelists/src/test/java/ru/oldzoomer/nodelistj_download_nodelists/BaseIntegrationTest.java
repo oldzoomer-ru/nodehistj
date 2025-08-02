@@ -17,11 +17,13 @@ import org.testcontainers.utility.DockerImageName;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
+    @SuppressWarnings("resource")
     @Container
     public static final KafkaContainer kafkaContainer = new KafkaContainer(
             DockerImageName.parse("apache/kafka"))
             .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer(
             DockerImageName.parse("minio/minio"))
