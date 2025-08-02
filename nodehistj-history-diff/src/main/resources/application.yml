@@ -3,8 +3,8 @@ spring:
     name: nodehistj-history-diff
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj}
-    username: ${POSTGRES_USER:user1}
-    password: ${POSTGRES_PASSWORD:password1}
+    username: ${POSTGRES_USER:user}
+    password: ${POSTGRES_PASSWORD:password}
   jpa:
     hibernate:
       ddl-auto: update

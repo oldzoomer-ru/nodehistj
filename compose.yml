@@ -39,14 +39,14 @@ services:
     networks:
       - nodehistj
     environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_NODE_ID=0
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
     healthcheck:
-      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      test: nc -z localhost 9092 || exit 1
       start_period: 30s
       interval: 5s
       timeout: 10s
@@ -57,8 +57,8 @@ services:
       - nodehistj
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
       - POSTGRES_DB=nodehistj
     volumes:
       - postgres_storage:/var/lib/postgresql/data
@@ -116,8 +116,8 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       kafka:
         condition: service_healthy
@@ -151,8 +151,8 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       kafka:
         condition: service_healthy
@@ -186,8 +186,8 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       kafka:
         condition: service_healthy

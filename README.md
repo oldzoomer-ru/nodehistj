@@ -41,12 +41,12 @@ Services will be available at:
 Before starting, create a `.env` file in the project root with the following variables:
 
 ```ini
-MINIO_USER=user1
-MINIO_PASSWORD=password1
-POSTGRES_USER=user1
-POSTGRES_PASSWORD=password1
-GITHUB_USERNAME=user1
-GITHUB_TOKEN=token1
+MINIO_USER=user
+MINIO_PASSWORD=password
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+GITHUB_USERNAME=user
+GITHUB_TOKEN=token
 ```
 
 ## Building from Sources
