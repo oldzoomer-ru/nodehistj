@@ -1,20 +1,19 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
-import java.util.List;
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
+
+import java.util.List;
 
 /**
  * Controller for working with current Fidonet nodelists (FTS-0005 standard).
@@ -22,7 +21,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
  * Provides REST API endpoints for retrieving node information with various filtering capabilities:
  * <ul>
  *   <li>Get all nodes</li>
- *   <li>Filter by zone (1-6)</li>
+ *   <li>Filter by zone</li>
  *   <li>Filter by zone and network</li>
  *   <li>Filter by specific node (zone+network+node)</li>
  * </ul>
