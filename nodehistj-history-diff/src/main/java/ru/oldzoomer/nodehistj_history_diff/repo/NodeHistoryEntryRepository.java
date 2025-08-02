@@ -57,9 +57,9 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
     @Query("""
         SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
             h.changeDate, h.nodelistYear, h.nodelistName,
-                (CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
-                (CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
-                (CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
+                SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
             COUNT(h)
         )
         FROM NodeHistoryEntry h
