@@ -2,14 +2,12 @@ package ru.oldzoomer.redis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnClass(ClearRedisCache.class)
 @Slf4j
 @RequiredArgsConstructor
 public class ClearRedisCache {
