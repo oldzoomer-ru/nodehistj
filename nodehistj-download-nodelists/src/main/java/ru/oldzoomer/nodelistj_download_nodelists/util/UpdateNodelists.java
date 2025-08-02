@@ -1,22 +1,23 @@
 package ru.oldzoomer.nodelistj_download_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import ru.oldzoomer.minio.MinioUtils;
-import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.oldzoomer.minio.MinioUtils;
+import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
  * Main service for downloading and updating nodelist files from FTP server.
@@ -41,10 +42,14 @@ public class UpdateNodelists {
     @Value("${app.minio.bucket}")
     private String bucket;
 
+    private final int currentYear = Year.now().getValue();
+
     /**
      * Main method for updating nodelist files.
      * Runs on schedule (default every 24 hours).
-     * Downloads files for current and previous years (starting from downloadFromYear).
+     * Downloads files for current and previous years (starting from
+     * downloadFromYear).
+     * 
      * @throws NodelistUpdateException if update error occurs
      */
     @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
@@ -54,11 +59,6 @@ public class UpdateNodelists {
             minioUtils.createBucket(bucket);
             ftpClient.open();
 
-            int currentYear = Year.now().getValue();
-            if (downloadFromYear > currentYear) {
-                log.warn("DownloadFromYear {} is in future", downloadFromYear);
-                return;
-            }
             for (int year = currentYear; year >= downloadFromYear; year--) {
                 processYearFiles(year);
             }
@@ -76,6 +76,7 @@ public class UpdateNodelists {
 
     /**
      * Processes nodelist files for specified year
+     * 
      * @param year year to process
      * @throws IOException if FTP operation fails
      */
@@ -97,6 +98,7 @@ public class UpdateNodelists {
 
     /**
      * Processes single nodelist file: downloads from FTP and saves to MinIO
+     * 
      * @param filePath full path to file on FTP server
      */
     private void processFile(String filePath) {
@@ -112,6 +114,7 @@ public class UpdateNodelists {
 
     /**
      * Validates required configuration parameters
+     * 
      * @throws IllegalArgumentException if parameters are not set
      */
     private void validateInputs() {
@@ -120,6 +123,10 @@ public class UpdateNodelists {
         }
         if (bucket == null || bucket.isEmpty()) {
             throw new IllegalArgumentException("Minio bucket cannot be empty");
+        }
+
+        if (downloadFromYear > currentYear) {
+            throw new IllegalArgumentException("Download from year cannot be greater than current year");
         }
     }
 }
