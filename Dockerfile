@@ -31,6 +31,7 @@ FROM gradle:jdk21-alpine as build-image
 #
 # Set the working directory.
 #
+ARG SERVICE_NAME
 ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
@@ -43,17 +44,13 @@ COPY --chown=gradle:gradle gradle $APP_HOME/gradle/
 COPY --chown=gradle:gradle gradlew $APP_HOME/
 
 # Copy all service directories and common libs
-COPY --chown=gradle:gradle nodehistj-download-nodelists/ $APP_HOME/nodehistj-download-nodelists/
-COPY --chown=gradle:gradle nodehistj-historic-nodelists/ $APP_HOME/nodehistj-historic-nodelists/
-COPY --chown=gradle:gradle nodehistj-newest-nodelists/ $APP_HOME/nodehistj-newest-nodelists/
-COPY --chown=gradle:gradle nodehistj-history-diff/ $APP_HOME/nodehistj-history-diff/
 COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
 COPY --chown=gradle:gradle config/ $APP_HOME/config/
+COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
 
 #
 # Build argument to specify which service to build
 #
-ARG SERVICE_NAME
 ARG SKIP_TESTS=true
 
 #
