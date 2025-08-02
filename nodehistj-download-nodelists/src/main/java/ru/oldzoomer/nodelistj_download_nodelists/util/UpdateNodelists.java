@@ -84,7 +84,7 @@ public class UpdateNodelists {
         String yearPath = ftpPath + year + "/";
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
                 .filter(file -> file.matches(yearPath + "nodelist\\.\\d{3}"))
-                .filter(file -> !minioUtils.isObjectExist(bucket, file))
+                .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
                 .peek(file -> log.info("Processing new file: {}", file))
                 .collect(Collectors.toList());
 
@@ -103,13 +103,23 @@ public class UpdateNodelists {
      */
     private void processFile(String filePath) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
-            if (filePath.charAt(0) == '/') {
-                filePath = filePath.substring(1);
-            }
-            minioUtils.putObject(bucket, filePath, byteArrayOutputStream);
+            minioUtils.putObject(bucket, normalizeObjectName(filePath), byteArrayOutputStream);
         } catch (Exception e) {
             log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
         }
+    }
+
+    /**
+     * Normalizes object name by removing leading slash if present
+     * 
+     * @param objectName object name to normalize
+     * @return normalized object name
+     */
+    private String normalizeObjectName(String objectName) {
+        if (objectName.charAt(0) == '/') {
+            objectName = objectName.substring(1);
+        }
+        return objectName;
     }
 
     /**
