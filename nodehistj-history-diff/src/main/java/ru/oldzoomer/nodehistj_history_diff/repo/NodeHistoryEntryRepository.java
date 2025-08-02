@@ -1,14 +1,13 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEntry, Long> {
     
@@ -58,9 +57,9 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
     @Query("""
         SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
             h.changeDate, h.nodelistYear, h.nodelistName,
-            SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
+                (CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
+                (CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
+                (CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
             COUNT(h)
         )
         FROM NodeHistoryEntry h

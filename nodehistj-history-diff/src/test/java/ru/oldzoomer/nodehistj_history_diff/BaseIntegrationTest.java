@@ -1,8 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import com.redis.testcontainers.RedisContainer;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
-
-import com.redis.testcontainers.RedisContainer;
-
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -34,29 +33,26 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
+    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static KafkaContainer kafkaContainer = new KafkaContainer(
+    public static final KafkaContainer kafkaContainer = new KafkaContainer(
             DockerImageName.parse("apache/kafka"))
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static MinIOContainer minioContainer = new MinIOContainer(
+    public static final MinIOContainer minioContainer = new MinIOContainer(
             DockerImageName.parse("minio/minio"))
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static RedisContainer redisContainer = new RedisContainer(
+    public static final RedisContainer redisContainer = new RedisContainer(
             DockerImageName.parse("redis:8.0-alpine"))
             .waitingFor(Wait.forListeningPort());
 
@@ -76,11 +72,7 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.data.redis.port", redisContainer::getRedisPort);
     }
 
-    @BeforeEach
-    void setUpDatabase() {
-        nodeHistoryEntryRepository.deleteAll();
-
-        // Create test history entries
+    private static @NotNull NodeHistoryEntry getNodeHistoryEntry() {
         NodeHistoryEntry addedEntry = new NodeHistoryEntry();
         addedEntry.setZone(1);
         addedEntry.setNetwork(1);
@@ -95,6 +87,20 @@ public abstract class BaseIntegrationTest {
         addedEntry.setPhone("1234567890");
         addedEntry.setBaudRate(1200);
         addedEntry.setFlags(List.of("FLAG1", "FLAG2"));
+        return addedEntry;
+    }
+
+    @BeforeEach
+    void setUpDatabase() {
+        nodeHistoryEntryRepository.deleteAll();
+
+        // Create test history entries
+        NodeHistoryEntry modifiedEntry = getHistoryEntry();
+        nodeHistoryEntryRepository.save(modifiedEntry);
+    }
+
+    private @NotNull NodeHistoryEntry getHistoryEntry() {
+        NodeHistoryEntry addedEntry = getNodeHistoryEntry();
         nodeHistoryEntryRepository.save(addedEntry);
 
         NodeHistoryEntry modifiedEntry = new NodeHistoryEntry();
@@ -109,7 +115,7 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setLocation("New Location");
         modifiedEntry.setPrevNodeName("Old Node");
         modifiedEntry.setPrevLocation("Old Location");
-        nodeHistoryEntryRepository.save(modifiedEntry);
+        return modifiedEntry;
     }
 
     @AfterAll

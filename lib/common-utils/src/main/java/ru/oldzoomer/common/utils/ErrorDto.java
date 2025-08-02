@@ -1,10 +1,9 @@
 package ru.oldzoomer.common.utils;
 
-import java.time.Instant;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.Getter;
+
+import java.time.Instant;
 
 /**
  * Unified error response DTO.
@@ -17,9 +16,9 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class ErrorDto {
-    private String message;
-    private String code;
-    private Instant timestamp = Instant.now();
+    private final String message;
+    private final String code;
+    private final Instant timestamp = Instant.now();
 
     public ErrorDto(String message, String code) {
         this.message = message;

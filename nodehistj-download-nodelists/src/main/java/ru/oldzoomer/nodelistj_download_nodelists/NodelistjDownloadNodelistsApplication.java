@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * <p>
  * Responsible for:
  * - Starting Spring Boot application context
- * - Configuring auto-configuration and component scanning
+ * - Configuring autoconfiguration and component scanning
  * - Initializing nodelist download services
  */
 @SpringBootApplication

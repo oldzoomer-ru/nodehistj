@@ -1,15 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
@@ -17,16 +13,19 @@ import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  * Service implementation for node history operations.
  * Provides methods for retrieving and analyzing node changes history with caching support.
- *
+ * <p>
  * This service includes methods for:
  * - Retrieving history for specific nodes, networks, or zones
  * - Getting changes for specific dates or date ranges
  * - Filtering changes by type
  * - Generating summary statistics and identifying most active nodes
- *
+ * <p>
  * All methods use caching to improve performance for repeated queries.
  */
 @Service

@@ -1,23 +1,22 @@
 package ru.oldzoomer.nodelistj_download_nodelists.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.Year;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.MinioUtils;
 import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Year;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Main service for downloading and updating nodelist files from FTP server.
@@ -88,7 +87,7 @@ public class UpdateNodelists {
                 .peek(file -> log.info("Processing new file: {}", file))
                 .collect(Collectors.toList());
 
-        newFiles.forEach(file -> processFile(file));
+        newFiles.forEach(this::processFile);
 
         if (!newFiles.isEmpty()) {
             kafkaTemplate.send("download_nodelists_is_finished_topic",

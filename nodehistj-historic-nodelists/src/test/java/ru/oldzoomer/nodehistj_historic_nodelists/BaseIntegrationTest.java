@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_historic_nodelists;
 
-import java.util.List;
-
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +17,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
-
-import com.redis.testcontainers.RedisContainer;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
+
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -35,29 +33,26 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
+    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-alpine")
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static KafkaContainer kafkaContainer = new KafkaContainer(
+    public static final KafkaContainer kafkaContainer = new KafkaContainer(
             DockerImageName.parse("apache/kafka"))
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static MinIOContainer minioContainer = new MinIOContainer(
+    public static final MinIOContainer minioContainer = new MinIOContainer(
             DockerImageName.parse("minio/minio"))
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
-    public static RedisContainer redisContainer = new RedisContainer(
+    public static final RedisContainer redisContainer = new RedisContainer(
             DockerImageName.parse("redis:8.0-alpine"))
             .waitingFor(Wait.forListeningPort());
 
