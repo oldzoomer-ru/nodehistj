@@ -72,7 +72,7 @@ services:
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
   nodehistj-download-nodelists:
-    image: oldzoomer/nodehistj-download-nodelists
+    image: gavrilovegor519/nodehistj-download-nodelists
     build:
       context: .
       dockerfile: Dockerfile
@@ -96,7 +96,7 @@ services:
   # Сервис работы с историческими данными nodelist
   # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-historic-nodelists:
-    image: oldzoomer/nodehistj-historic-nodelists
+    image: gavrilovegor519/nodehistj-historic-nodelists
     build:
       context: .
       dockerfile: Dockerfile
@@ -108,8 +108,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    expose:
-      - 8080
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -134,7 +132,7 @@ services:
   # Сервис работы с актуальными данными nodelist
   # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-newest-nodelists:
-    image: oldzoomer/nodehistj-newest-nodelists
+    image: gavrilovegor519/nodehistj-newest-nodelists
     build:
       context: .
       dockerfile: Dockerfile
@@ -146,8 +144,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    expose:
-      - 8080
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -172,7 +168,7 @@ services:
   # Сервис сравнения исторических и актуальных данных
   # Основные зависимости: Kafka, PostgreSQL, Redis
   nodehistj-history-diff:
-    image: oldzoomer/nodehistj-history-diff
+    image: gavrilovegor519/nodehistj-history-diff
     build:
       context: .
       dockerfile: Dockerfile
@@ -184,8 +180,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    expose:
-      - 8080
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
