@@ -108,8 +108,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    ports:
-      - "8080"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -146,8 +144,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    ports:
-      - "8080"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
@@ -184,8 +180,6 @@ services:
         - github_token
     networks:
       - nodehistj
-    ports:
-      - "8080"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
