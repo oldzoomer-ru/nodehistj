@@ -16,7 +16,6 @@
   
   <module name="TreeWalker">
     <!-- Импорты -->
-    <module name="AvoidStarImport"/>
     <module name="UnusedImports"/>
     
     <!-- Форматирование -->
