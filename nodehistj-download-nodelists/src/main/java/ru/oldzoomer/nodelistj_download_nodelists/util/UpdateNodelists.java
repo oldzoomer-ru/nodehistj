@@ -91,8 +91,7 @@ public class UpdateNodelists {
         newFiles.forEach(this::processFile);
 
         if (!newFiles.isEmpty()) {
-            kafkaTemplate.send("download_nodelists_is_finished_topic",
-                    String.valueOf(year), newFiles);
+            kafkaTemplate.send("download_nodelists_is_finished_topic", newFiles);
         }
     }
 
