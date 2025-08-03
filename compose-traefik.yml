@@ -143,6 +143,9 @@ services:
     labels:
       - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && Path(`/historicNodelist`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
+      - "traefik.http.routers.historic.tls.certresolver=myresolver"
+      - "traefik.http.routers.historic.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.historic.tls.domains[0].sans=www.${DOMAIN}"
     depends_on:
       traefik:
         condition: service_healthy
@@ -184,6 +187,9 @@ services:
     labels:
       - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && Path(`/nodelist`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
+      - "traefik.http.routers.newest.tls.certresolver=myresolver"
+      - "traefik.http.routers.newest.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.newest.tls.domains[0].sans=www.${DOMAIN}"
     depends_on:
       traefik:
         condition: service_healthy
@@ -225,6 +231,9 @@ services:
     labels:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/history`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
+      - "traefik.http.routers.history-diff.tls.certresolver=myresolver"
+      - "traefik.http.routers.history-diff.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.history-diff.tls.domains[0].sans=www.${DOMAIN}"
     depends_on:
       traefik:
         condition: service_healthy
