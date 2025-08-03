@@ -27,5 +27,4 @@ minio:
   user: ${MINIO_USER}
 app:
   minio:
-    path: ${FTP_PATH:/nodehist/}
     bucket: ${MINIO_BUCKET:nodehistj}

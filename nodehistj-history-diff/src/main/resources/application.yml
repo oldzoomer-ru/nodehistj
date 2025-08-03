@@ -28,5 +28,4 @@ minio:
   password: ${MINIO_PASSWORD}
 app:
   minio:
-    path: ${FTP_PATH:/nodehist/}
     bucket: ${MINIO_BUCKET:nodehistj}
