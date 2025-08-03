@@ -94,12 +94,39 @@ public class UpdateNodelists {
 
         if (!newFiles.isEmpty()) {
             log.info("Normalizing {} new files information for year {}", newFiles.size(), year);
-            newFiles = newFiles.stream().map(this::normalizeObjectName).collect(Collectors.toList());
-            log.info("Sending {} new files information for year {} to Kafka", newFiles.size(), year);
-            kafkaTemplate.send("download_nodelists_is_finished_topic", newFiles)
-                    .thenAccept(result -> log.info("Message sent to Kafka successfully"))
-                    .completeExceptionally(new NodelistUpdateException("Failed to send message to Kafka"));
-            kafkaTemplate.flush();
+            final List<String> normalizedFiles = newFiles.stream()
+                    .map(this::normalizeObjectName)
+                    .collect(Collectors.toList());
+            log.info("Sending {} new files information for year {} to Kafka", normalizedFiles.size(), year);
+
+            // Корректная отправка с явным логированием результата и ошибок.
+            kafkaTemplate.send("download_nodelists_is_finished_topic", normalizedFiles)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.error(
+                                    "Failed to send message to Kafka for year {}. Size: {}. Topic: {}",
+                                    year,
+                                    normalizedFiles.size(),
+                                    "download_nodelists_is_finished_topic",
+                                    ex
+                            );
+                        } else if (result != null && result.getRecordMetadata() != null) {
+                            var md = result.getRecordMetadata();
+                            log.info(
+                                    "Kafka send OK for year {}: topic={}, partition={}, offset={}",
+                                    year,
+                                    md.topic(),
+                                    md.partition(),
+                                    md.offset()
+                            );
+                        } else {
+                            log.warn(
+                                    "Kafka send finished without exception but without metadata for year {} (topic={})",
+                                    year,
+                                    "download_nodelists_is_finished_topic"
+                            );
+                        }
+                    });
         }
     }
 
