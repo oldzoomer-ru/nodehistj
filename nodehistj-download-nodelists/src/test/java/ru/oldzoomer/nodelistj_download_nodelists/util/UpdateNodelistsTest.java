@@ -1,11 +1,15 @@
 package ru.oldzoomer.nodelistj_download_nodelists.util;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.kafka.core.KafkaTemplate;
-import ru.oldzoomer.minio.MinioUtils;
-import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,10 +17,13 @@ import java.lang.reflect.Field;
 import java.time.Year;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.kafka.core.KafkaTemplate;
+
+import ru.oldzoomer.minio.MinioUtils;
+import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
  * Юнит-тесты для {@link UpdateNodelists}
@@ -88,7 +95,6 @@ class UpdateNodelistsTest {
         ArgumentCaptor<List<String>> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(kafkaTemplate).send(
                 eq("download_nodelists_is_finished_topic"),
-                eq(String.valueOf(currentYear)),
                 listCaptor.capture()
         );
         List<String> sent = listCaptor.getValue();
