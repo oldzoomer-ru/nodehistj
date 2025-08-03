@@ -1,6 +1,7 @@
 package ru.oldzoomer.nodelistj_download_nodelists.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -12,9 +13,12 @@ public class KafkaTopic {
      * with partitions for parallel processing
      */
     @Bean
-    NewTopic downloadNodelistsIsFinishedTopic() {
+    NewTopic downloadNodelistsIsFinishedTopic(
+            @Value("${spring.kafka.topic.download-nodelists-is-finished-topic.partitions}") int partitions,
+            @Value("${spring.kafka.topic.download-nodelists-is-finished-topic.replicas}") int replicas) {
         return TopicBuilder.name("download_nodelists_is_finished_topic")
-                .partitions(1)
+                .partitions(partitions)
+                .replicas(replicas)
                 .build();
     }
 }

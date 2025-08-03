@@ -88,11 +88,18 @@ public class UpdateNodelists {
                 .peek(file -> log.info("Processing new file: {}", file))
                 .collect(Collectors.toList());
 
+        log.info("Found {} new files for year {}", newFiles.size(), year);
+
         newFiles.forEach(this::processFile);
 
         if (!newFiles.isEmpty()) {
+            log.info("Normalizing {} new files information for year {}", newFiles.size(), year);
             newFiles = newFiles.stream().map(this::normalizeObjectName).collect(Collectors.toList());
-            kafkaTemplate.send("download_nodelists_is_finished_topic", newFiles);
+            log.info("Sending {} new files information for year {} to Kafka", newFiles.size(), year);
+            kafkaTemplate.send("download_nodelists_is_finished_topic", newFiles)
+                    .thenAccept(result -> log.info("Message sent to Kafka successfully"))
+                    .completeExceptionally(new NodelistUpdateException("Failed to send message to Kafka"));
+            kafkaTemplate.flush();
         }
     }
 

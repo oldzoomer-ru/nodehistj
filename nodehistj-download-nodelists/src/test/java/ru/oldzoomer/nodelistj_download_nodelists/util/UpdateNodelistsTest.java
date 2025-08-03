@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.Year;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,6 +79,8 @@ class UpdateNodelistsTest {
         // Скачивание
         when(ftpClient.downloadFile(valid1)).thenReturn(new ByteArrayOutputStream());
         when(ftpClient.downloadFile(valid2)).thenReturn(new ByteArrayOutputStream());
+
+        when(kafkaTemplate.send(anyString(), anyList())).thenReturn(new CompletableFuture<>());
 
         // Выполнение
         service.updateNodelists();

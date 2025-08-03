@@ -6,6 +6,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    topic:
+      download-nodelists-is-finished-topic:
+        partitions: ${KAFKA_TOPIC_DOWNLOAD_NODELISTS_IS_FINISHED_TOPIC_PARTITIONS:3}
 ftp:
   host: ${FTP_HOST:wfido.ru}
   port: ${FTP_PORT:21}
