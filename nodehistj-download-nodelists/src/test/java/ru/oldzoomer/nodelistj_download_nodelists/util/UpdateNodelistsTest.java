@@ -1,15 +1,11 @@
 package ru.oldzoomer.nodelistj_download_nodelists.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.kafka.core.KafkaTemplate;
+import ru.oldzoomer.minio.MinioUtils;
+import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,13 +13,9 @@ import java.lang.reflect.Field;
 import java.time.Year;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.kafka.core.KafkaTemplate;
-
-import ru.oldzoomer.minio.MinioUtils;
-import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Юнит-тесты для {@link UpdateNodelists}
@@ -169,14 +161,6 @@ class UpdateNodelistsTest {
         String filePath = "/nodehist/2020/nodelist.001";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         when(ftpClient.downloadFile(filePath)).thenReturn(baos);
-
-        // Вызываем публичный метод updateNodelists() не хотим — он приватный процесс содержит;
-        // поэтому через рефлексию дергаем приватный processFile
-        try {
-            @SuppressWarnings("unused")
-            Field m = UpdateNodelists.class.getDeclaredField("ftpPath");
-            // no-op, просто чтобы убедиться, что рефлексия работает
-        } catch (NoSuchFieldException ignored) {}
 
         var method = UpdateNodelists.class.getDeclaredMethod("processFile", String.class);
         method.setAccessible(true);
