@@ -91,6 +91,7 @@ public class UpdateNodelists {
         newFiles.forEach(this::processFile);
 
         if (!newFiles.isEmpty()) {
+            newFiles = newFiles.stream().map(this::normalizeObjectName).collect(Collectors.toList());
             kafkaTemplate.send("download_nodelists_is_finished_topic", newFiles);
         }
     }
