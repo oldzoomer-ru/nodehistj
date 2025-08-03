@@ -36,10 +36,6 @@ public class NodelistFillToDatabase {
     private final NodelistEntryRepository nodelistEntryRepository;
     private final ClearRedisCache clearRedisCache;
 
-    /** MinIO storage path pattern for nodelist files */
-    @Value("${app.minio.path}")
-    private String minioPath;
-
     /** MinIO bucket name where nodelists are stored */
     @Value("${app.minio.bucket}")
     private String minioBucket;
@@ -78,14 +74,11 @@ public class NodelistFillToDatabase {
     @KafkaListener(topics = "download_nodelists_is_finished_topic")
     private void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        if (minioPath.charAt(0) == '/') {
-            minioPath = minioPath.substring(1);
-        }
         for (String object : modifiedObjects) {
             Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-
-            if (matcher.matches()) {
-                return;
+            if (!matcher.matches()) {
+                log.info("Object {} is not a nodelist", object);
+                continue;
             }
 
             try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
