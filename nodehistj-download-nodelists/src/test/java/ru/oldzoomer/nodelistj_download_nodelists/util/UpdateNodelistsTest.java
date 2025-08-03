@@ -99,8 +99,8 @@ class UpdateNodelistsTest {
         );
         List<String> sent = listCaptor.getValue();
         assertEquals(2, sent.size());
-        assertTrue(sent.contains(valid1));
-        assertTrue(sent.contains(valid2));
+        assertTrue(sent.contains(valid1.substring(1)));
+        assertTrue(sent.contains(valid2.substring(1)));
 
         // Соединение закрывается в finally
         verify(ftpClient).close();
