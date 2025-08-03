@@ -49,11 +49,6 @@ COPY --chown=gradle:gradle config/ $APP_HOME/config/
 COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
 
 #
-# Build argument to specify which service to build
-#
-ARG SKIP_TESTS=true
-
-#
 # Build the specified service
 #
 RUN --mount=type=secret,id=github_username \
@@ -62,11 +57,7 @@ RUN --mount=type=secret,id=github_username \
         export USERNAME=$(cat /run/secrets/github_username); \
         export TOKEN=$(cat /run/secrets/github_token); \
     fi; \
-    if [ "$SKIP_TESTS" = "true" ]; then \
-        ./gradlew :${SERVICE_NAME}:build --no-daemon -x test; \
-    else \
-        ./gradlew :${SERVICE_NAME}:build --no-daemon; \
-    fi
+    ./gradlew :${SERVICE_NAME}:build --no-daemon -x test;
 
 #
 # Java image for the application to run in.
