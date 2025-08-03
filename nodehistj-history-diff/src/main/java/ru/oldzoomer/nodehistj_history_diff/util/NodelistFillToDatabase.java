@@ -1,11 +1,19 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.minio.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -13,13 +21,6 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 import ru.oldzoomer.redis.ClearRedisCache;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -81,7 +82,7 @@ public class NodelistFillToDatabase {
             minioPath = minioPath.substring(1);
         }
         for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(minioPath + "(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
 
             if (matcher.matches()) {
                 return;

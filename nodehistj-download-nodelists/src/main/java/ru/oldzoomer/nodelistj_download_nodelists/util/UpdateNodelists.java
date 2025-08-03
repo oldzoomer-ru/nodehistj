@@ -83,7 +83,7 @@ public class UpdateNodelists {
     private void processYearFiles(int year) throws IOException {
         String yearPath = ftpPath + year + "/";
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
-                .filter(file -> file.matches(yearPath + "nodelist\\.\\d{3}"))
+                .filter(file -> file.matches(yearPath + ".*/nodelist\\.\\d{3}"))
                 .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
                 .peek(file -> log.info("Processing new file: {}", file))
                 .collect(Collectors.toList());
