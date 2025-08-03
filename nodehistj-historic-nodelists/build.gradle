@@ -12,4 +12,9 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:kafka'
+    testImplementation 'org.testcontainers:minio'
+    testImplementation 'com.redis:testcontainers-redis'
+    testImplementation 'org.testcontainers:junit-jupiter'
 }

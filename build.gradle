@@ -65,11 +65,6 @@ subprojects {
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'org.testcontainers:postgresql'
-        testImplementation 'org.testcontainers:kafka'
-        testImplementation 'org.testcontainers:minio'
-        testImplementation 'com.redis:testcontainers-redis'
-        testImplementation 'org.testcontainers:junit-jupiter'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
