@@ -14,8 +14,7 @@ public class KafkaTopic {
     @Bean
     NewTopic downloadNodelistsIsFinishedTopic() {
         return TopicBuilder.name("download_nodelists_is_finished_topic")
-                .partitions(2)
-                .replicas(1) // Add replication for production
+                .partitions(1)
                 .build();
     }
 }
