@@ -5,8 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.stereotype.Component;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -16,8 +14,6 @@ import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
 import ru.oldzoomer.minio.config.MinioConnectionProperties;
 
-@Component
-@ConditionalOnClass(MinioUtils.class)
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
 
