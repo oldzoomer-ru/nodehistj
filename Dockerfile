@@ -44,8 +44,8 @@ COPY --chown=gradle:gradle gradle $APP_HOME/gradle/
 COPY --chown=gradle:gradle gradlew $APP_HOME/
 
 # Copy all service directories and common libs
-COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
 COPY --chown=gradle:gradle config/ $APP_HOME/config/
+COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
 COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
 
 #
