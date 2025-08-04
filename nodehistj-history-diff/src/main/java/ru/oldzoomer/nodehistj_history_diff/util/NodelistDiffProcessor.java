@@ -72,9 +72,9 @@ public class NodelistDiffProcessor {
 
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = previousNodes.stream()
-                .collect(Collectors.toMap(this::getNodeKey, node -> node));
+                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
         Map<String, NodeEntry> currentNodeMap = currentNodes.stream()
-                .collect(Collectors.toMap(this::getNodeKey, node -> node));
+                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
 
         LocalDate changeDate = parseNodelistDate(currYear, currName);
 
@@ -105,7 +105,7 @@ public class NodelistDiffProcessor {
     }
 
     private String getNodeKey(NodeEntry node) {
-        return String.format("%d:%d:%d", node.getZone(), node.getNetwork(), node.getNode());
+        return String.format("%d:%d/%d", node.getZone(), node.getNetwork(), node.getNode());
     }
 
     private boolean nodesEqual(NodeEntry node1, NodeEntry node2) {

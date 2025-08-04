@@ -1,19 +1,18 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import java.util.List;
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
+
+import java.util.List;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -49,7 +48,7 @@ public class HistoricNodelistController {
      * <b>Filtering options:</b>
      * <ul>
      *   <li>No parameters - returns all nodes</li>
-     *   <li>Zone only - returns nodes in specified zone (1-6)</li>
+     *   <li>Zone only - returns nodes in specified zone</li>
      *   <li>Zone + network - returns nodes in specified network</li>
      *   <li>Zone + network + node - returns specific node</li>
      * </ul>
@@ -78,7 +77,7 @@ public class HistoricNodelistController {
             @RequestParam @Min(1) @Max(366) Integer dayOfYear,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
-            @RequestParam(required = false) @Min(1) @Max(32767) Integer node) {
+            @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
 
         log.debug("Processing historic nodelist request - year: {}, day: {}, zone: {}, network: {}, node: {}", 
             year, dayOfYear, zone, network, node);
