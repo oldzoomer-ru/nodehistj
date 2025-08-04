@@ -1,19 +1,19 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
+import java.util.List;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
-
-import java.util.List;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -38,7 +38,6 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/historicNodelist")
 @Validated
 @Slf4j
 public class HistoricNodelistController {
@@ -72,7 +71,7 @@ public class HistoricNodelistController {
      * @throws jakarta.validation.ConstraintViolationException if validation fails (400)
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
-    @GetMapping("")
+    @GetMapping("/historicNodelist")
     @Cacheable(value = "historicNodelistRequests", key = "{#year, #dayOfYear, #zone, #network, #node}")
     public List<NodeEntryDto> getNodelistEntry(
             @RequestParam @Min(1984) @Max(2100) Integer year,

@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodelistj_download_nodelists;
+package ru.oldzoomer.nodehistj_download_nodelists;
 
 import org.junit.jupiter.api.Test;
 

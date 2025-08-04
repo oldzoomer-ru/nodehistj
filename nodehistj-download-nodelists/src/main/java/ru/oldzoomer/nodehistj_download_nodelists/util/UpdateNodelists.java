@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodelistj_download_nodelists.util;
+package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.oldzoomer.minio.MinioUtils;
-import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
  * Main service for downloading and updating nodelist files from FTP server.
@@ -85,7 +85,7 @@ public class UpdateNodelists {
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
                 .filter(file -> file.matches(".*/nodelist\\.\\d{3}"))
                 .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
-                .peek(file -> log.info("Processing new file: {}", file))
+                .peek(file -> log.debug("Processing new file: {}", file))
                 .collect(Collectors.toList());
 
         log.info("Found {} new files for year {}", newFiles.size(), year);
@@ -93,7 +93,7 @@ public class UpdateNodelists {
         newFiles.forEach(this::processFile);
 
         if (!newFiles.isEmpty()) {
-            log.info("Normalizing {} new files information for year {}", newFiles.size(), year);
+            log.debug("Normalizing {} new files information for year {}", newFiles.size(), year);
             final List<String> normalizedFiles = newFiles.stream()
                     .map(this::normalizeObjectName)
                     .collect(Collectors.toList());

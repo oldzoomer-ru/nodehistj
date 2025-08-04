@@ -1,10 +1,11 @@
-package ru.oldzoomer.minio;
+package ru.oldzoomer.minio.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.stereotype.Component;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -12,18 +13,14 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
-import ru.oldzoomer.minio.config.MinioConnectionProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Component
+@RequiredArgsConstructor
+@Slf4j
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
-
-    public MinioUtils(MinioConnectionProperties minioConnectionProperties) {
-        minioClient = MinioClient.builder()
-                .endpoint(minioConnectionProperties.getUrl())
-                .credentials(minioConnectionProperties.getUser(),
-                        minioConnectionProperties.getPassword())
-                .build();
-    }
 
     public InputStream getObject(String bucketName, String object) {
         try {

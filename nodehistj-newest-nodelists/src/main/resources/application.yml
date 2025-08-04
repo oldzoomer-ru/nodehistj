@@ -30,7 +30,8 @@ spring:
         spring.json.trusted.packages: "*"
 minio:
   url: ${MINIO_URL:http://localhost:9000/}
-  user: ${MINIO_USER}
+  accessKey: ${MINIO_USER}
+  secretKey: ${MINIO_PASSWORD}
 app:
   minio:
     bucket: ${MINIO_BUCKET:nodehistj}

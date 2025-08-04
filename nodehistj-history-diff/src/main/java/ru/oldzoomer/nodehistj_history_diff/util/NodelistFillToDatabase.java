@@ -8,19 +8,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.oldzoomer.minio.MinioUtils;
+import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
-import ru.oldzoomer.redis.ClearRedisCache;
+import ru.oldzoomer.redis.utils.ClearRedisCache;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -71,13 +70,12 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @KafkaListener(topics = "download_nodelists_is_finished_topic")
-    private void updateNodelist(List<String> modifiedObjects) {
+    public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
             Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
             if (!matcher.matches()) {
-                log.info("Object {} is not a nodelist", object);
+                log.debug("Object {} is not a nodelist", object);
                 continue;
             }
 

@@ -3,19 +3,13 @@ package ru.oldzoomer.minio.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @ConfigurationProperties(prefix = "minio")
+@RequiredArgsConstructor
 @Getter
 public class MinioConnectionProperties {
     private final String url;
-    private final String user;
-    private final String password;
-
-    public MinioConnectionProperties(
-        String url, String user, String password
-    ) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
-    }
+    private final String accessKey;
+    private final String secretKey;
 }

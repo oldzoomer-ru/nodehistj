@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodelistj_download_nodelists.exception;
+package ru.oldzoomer.nodehistj_download_nodelists.exception;
 
 public class NodelistUpdateException extends RuntimeException {
     public NodelistUpdateException(String message) {

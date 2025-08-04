@@ -1,1 +1,2 @@
 ru.oldzoomer.redis.config.RedisConfig
+ru.oldzoomer.redis.utils.ClearRedisCache

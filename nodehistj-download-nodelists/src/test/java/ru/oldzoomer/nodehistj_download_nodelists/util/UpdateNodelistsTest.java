@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodelistj_download_nodelists.util;
+package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import ru.oldzoomer.minio.MinioUtils;
-import ru.oldzoomer.nodelistj_download_nodelists.exception.NodelistUpdateException;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
  * Юнит-тесты для {@link UpdateNodelists}

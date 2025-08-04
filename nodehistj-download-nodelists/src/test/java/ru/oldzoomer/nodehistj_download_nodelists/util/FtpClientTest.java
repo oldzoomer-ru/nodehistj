@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodelistj_download_nodelists.util;
+package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
