@@ -1,11 +1,12 @@
 #
-# Unified Dockerfile for all NodehistJ services
+# Unified Dockerfile for all NodehistJ services (optimized)
 #
 # Features:
 # - Multi-stage сборка (build + runtime)
 # - Поддержка всех сервисов NodehistJ
 # - Пропуск тестов при сборке (по умолчанию)
 # - Поддержка GitHub credentials через Docker secrets
+# - Кэширование зависимостей Gradle
 #
 # Требования:
 # - Docker 20.10+
@@ -36,14 +37,29 @@ ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
+# Enable Gradle build cache
+ENV GRADLE_USER_HOME=/gradle-cache
+
+# Create gradle-cache directory and set permissions
+RUN mkdir -p /gradle-cache && chown -R gradle:gradle /gradle-cache
+
 #
-# Copy the root Gradle files and all source code.
+# Copy only build files first to cache dependencies
 #
-COPY --chown=gradle:gradle settings.gradle build.gradle $APP_HOME/
 COPY --chown=gradle:gradle gradle $APP_HOME/gradle/
 COPY --chown=gradle:gradle gradlew $APP_HOME/
+COPY --chown=gradle:gradle settings.gradle build.gradle $APP_HOME/
 
-# Copy all service directories and common libs
+# Download dependencies first (cached unless build.gradle changes)
+RUN --mount=type=secret,id=github_username \
+    --mount=type=secret,id=github_token \
+    if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
+        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
+        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+    fi; \
+    ./gradlew dependencies --no-daemon
+
+# Copy source code after dependencies are cached
 COPY --chown=gradle:gradle config/ $APP_HOME/config/
 COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
 COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
@@ -54,8 +70,8 @@ COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
 RUN --mount=type=secret,id=github_username \
     --mount=type=secret,id=github_token \
     if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
-        export USERNAME=$(cat /run/secrets/github_username); \
-        export TOKEN=$(cat /run/secrets/github_token); \
+        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
+        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
     fi; \
     ./gradlew :${SERVICE_NAME}:build --no-daemon -x test;
 
