@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_historic_nodelists.service.impl;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +24,18 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     private final NodeEntryMapper nodeEntryMapper;
 
     @Override
-    @Cacheable(value = "historicAllData", key = "{#year, #dayOfYear}")
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         return nodeEntryMapper.toDto(nodeEntryRepository.getAll(String.format("nodelist.%03d", dayOfYear), year));
     }
 
     @Override
-    @Cacheable(value = "historicZoneData", key = "{#year, #dayOfYear, #zone}")
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, String.format("nodelist.%03d", dayOfYear), year));
     }
 
     @Override
-    @Cacheable(value = "historicNetworkData", key = "{#year, #dayOfYear, #zone, #network}")
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
@@ -48,7 +44,6 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     }
 
     @Override
-    @Cacheable(value = "historicNodeData", key = "{#year, #dayOfYear, #zone, #network, #node}")
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);

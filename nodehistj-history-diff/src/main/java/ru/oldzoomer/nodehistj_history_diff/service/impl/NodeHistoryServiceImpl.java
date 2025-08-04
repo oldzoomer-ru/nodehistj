@@ -1,20 +1,20 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Service implementation for node history operations.
@@ -48,7 +48,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of node history entries.
      */
     @Override
-    @Cacheable(value = "nodeHistory", key = "#zone + '-' + #network + '-' + #node + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -65,7 +64,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of network history entries.
      */
     @Override
-    @Cacheable(value = "networkHistory", key = "#zone + '-' + #network + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -81,7 +79,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of zone history entries.
      */
     @Override
-    @Cacheable(value = "zoneHistory", key = "#zone + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -96,7 +93,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of all history entries.
      */
     @Override
-    @Cacheable(value = "allHistory", key = "#pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -111,7 +107,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A list of changes for the specified date.
      */
     @Override
-    @Cacheable(value = "changesForDate", key = "#date")
     @Transactional(readOnly = true)
     public List<NodeHistoryEntryDto> getChangesForDate(LocalDate date) {
         return nodeHistoryEntryMapper.toDto(
@@ -127,7 +122,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of changes in the date range.
      */
     @Override
-    @Cacheable(value = "changesBetweenDates", key = "#startDate + '-' + #endDate + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getChangesBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -143,7 +137,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of changes of the specified type.
      */
     @Override
-    @Cacheable(value = "changesByType", key = "#changeType + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public Page<NodeHistoryEntryDto> getChangesByType(NodeHistoryEntry.ChangeType changeType, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -159,7 +152,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A list of change summary statistics.
      */
     @Override
-    @Cacheable(value = "changeSummary", key = "#startDate + '-' + #endDate")
     @Transactional(readOnly = true)
     public List<NodeChangeSummaryDto> getChangeSummary(LocalDate startDate, LocalDate endDate) {
         return nodeHistoryEntryRepository.getChangeSummary(startDate, endDate);
@@ -174,7 +166,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A list of active nodes with change counts.
      */
     @Override
-    @Cacheable(value = "mostActiveNodes", key = "#startDate + '-' + #endDate + '-' + #pageable.pageNumber")
     @Transactional(readOnly = true)
     public List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return nodeHistoryEntryRepository.getMostActiveNodes(startDate, endDate, pageable);

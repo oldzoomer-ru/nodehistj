@@ -1,18 +1,19 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
-
-import java.util.List;
 
 /**
  * Controller for working with current Fidonet nodelists (FTS-0005 standard).
@@ -69,7 +70,7 @@ public class NodelistController {
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping("/nodelist")
-    @Cacheable(value = "nodelistRequests", key = "{#zone, #network, #node}")
+    @Cacheable(value = "nodelistRequests")
     public List<NodeEntryDto> getNodelistEntry(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,

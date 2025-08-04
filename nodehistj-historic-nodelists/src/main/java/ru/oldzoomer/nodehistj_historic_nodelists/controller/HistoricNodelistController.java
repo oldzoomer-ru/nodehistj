@@ -1,18 +1,19 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
-
-import java.util.List;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -71,7 +72,7 @@ public class HistoricNodelistController {
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping("/historicNodelist")
-    @Cacheable(value = "historicNodelistRequests", key = "{#year, #dayOfYear, #zone, #network, #node}")
+    @Cacheable(value = "historicNodelistRequests")
     public List<NodeEntryDto> getNodelistEntry(
             @RequestParam @Min(1984) @Max(2100) Integer year,
             @RequestParam @Min(1) @Max(366) Integer dayOfYear,
