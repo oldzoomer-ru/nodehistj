@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -28,7 +28,7 @@ import ru.oldzoomer.redis.utils.ClearRedisCache;
  */
 @RequiredArgsConstructor
 @Component
-@Log4j2
+@Slf4j
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
@@ -20,7 +20,7 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 
 @RequiredArgsConstructor
 @Component
-@Log4j2
+@Slf4j
 public class NodelistDiffProcessor {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;

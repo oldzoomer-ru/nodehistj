@@ -1,10 +1,18 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -13,13 +21,6 @@ import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 import ru.oldzoomer.redis.utils.ClearRedisCache;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Component for processing and storing historical nodelists in the database.
  * Listens to Kafka topic for new nodelist files, downloads them from MinIO storage,
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
  */
 @RequiredArgsConstructor
 @Component
-@Log4j2
+@Slf4j
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;
