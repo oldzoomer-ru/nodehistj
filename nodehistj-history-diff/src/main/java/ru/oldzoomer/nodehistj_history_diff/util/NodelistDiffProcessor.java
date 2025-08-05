@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 @RequiredArgsConstructor
 @Component
 @Log4j2
-@Profile("!test")
 public class NodelistDiffProcessor {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
