@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ExceptionResolver {
 
     @ExceptionHandler({NoSuchElementException.class, NoResourceFoundException.class})
-    public ResponseEntity<ErrorDto> handleNotFound(NoSuchElementException ex) {
+    public ResponseEntity<ErrorDto> handleNotFound(Exception ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorDto("Not Found", ex.getMessage()));
     }
