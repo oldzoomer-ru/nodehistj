@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,14 +46,14 @@ public class NodeHistoryController {
      */
     @GetMapping("/node/{zone}/{network}/{node}")
     @Cacheable(value = "nodeHistory")
-    public Page<NodeHistoryEntryDto> getNodeHistory(
+    public List<NodeHistoryEntryDto> getNodeHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @PathVariable @Min(0) @Max(32767) Integer node,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getNodeHistory(zone, network, node, pageable);
+        return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
     }
 
     /**
@@ -69,13 +68,13 @@ public class NodeHistoryController {
      */
     @GetMapping("/network/{zone}/{network}")
     @Cacheable(value = "networkHistory")
-    public Page<NodeHistoryEntryDto> getNetworkHistory(
+    public List<NodeHistoryEntryDto> getNetworkHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getNetworkHistory(zone, network, pageable);
+        return nodeHistoryService.getNetworkHistory(zone, network, pageable).toList();
     }
 
     /**
@@ -89,12 +88,12 @@ public class NodeHistoryController {
      */
     @GetMapping("/zone/{zone}")
     @Cacheable(value = "zoneHistory")
-    public Page<NodeHistoryEntryDto> getZoneHistory(
+    public List<NodeHistoryEntryDto> getZoneHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getZoneHistory(zone, pageable);
+        return nodeHistoryService.getZoneHistory(zone, pageable).toList();
     }
 
     /**
@@ -106,11 +105,11 @@ public class NodeHistoryController {
      */
     @GetMapping("/all")
     @Cacheable(value = "globalHistory")
-    public Page<NodeHistoryEntryDto> getAllHistory(
+    public List<NodeHistoryEntryDto> getAllHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getAllHistory(pageable);
+        return nodeHistoryService.getAllHistory(pageable).toList();
     }
 
     /**
@@ -139,13 +138,13 @@ public class NodeHistoryController {
      */
     @GetMapping("/range")
     @Cacheable(value = "dateRangeHistory")
-    public Page<NodeHistoryEntryDto> getChangesBetweenDates(
+    public List<NodeHistoryEntryDto> getChangesBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getChangesBetweenDates(startDate, endDate, pageable);
+        return nodeHistoryService.getChangesBetweenDates(startDate, endDate, pageable).toList();
     }
 
     /**
@@ -159,12 +158,12 @@ public class NodeHistoryController {
      */
     @GetMapping("/type/{changeType}")
     @Cacheable(value = "typeHistory")
-    public Page<NodeHistoryEntryDto> getChangesByType(
+    public List<NodeHistoryEntryDto> getChangesByType(
             @PathVariable NodeHistoryEntry.ChangeType changeType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getChangesByType(changeType, pageable);
+        return nodeHistoryService.getChangesByType(changeType, pageable).toList();
     }
 
     /**
