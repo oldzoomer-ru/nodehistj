@@ -1,10 +1,18 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -12,13 +20,6 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 import ru.oldzoomer.redis.utils.ClearRedisCache;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -33,6 +34,7 @@ public class NodelistFillToDatabase {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodelistEntryRepository nodelistEntryRepository;
     private final ClearRedisCache clearRedisCache;
+    private final NodelistDiffProcessor nodelistDiffProcessor;
 
     /** MinIO bucket name where nodelists are stored */
     @Value("${app.minio.bucket}")
@@ -85,6 +87,7 @@ public class NodelistFillToDatabase {
                 log.error("Failed to add nodelist to database", e);
             }
         }
+        nodelistDiffProcessor.processNodelistDiffs();
         clearRedisCache.clearCache();
         log.info("Update nodelists is finished");
     }

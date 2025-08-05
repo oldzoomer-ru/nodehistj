@@ -1,16 +1,5 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
-import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
-import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
-import ru.oldzoomer.redis.utils.ClearRedisCache;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +8,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
+
 @RequiredArgsConstructor
 @Component
 @Log4j2
@@ -26,13 +26,10 @@ import java.util.stream.Collectors;
 public class NodelistDiffProcessor {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
-    private final ClearRedisCache clearRedisCache;
 
-    public void processNodelistDiffs(List<String> modifiedObjects) {
-        log.info("Processing nodelist diffs for {} objects", modifiedObjects.size());
-
+    public void processNodelistDiffs() {
         try {
-            // Get all nodelist versions sorted by date
+            // Get all nodelist versions sorted by date (newest first)
             List<Object[]> nodelistVersions = nodeEntryRepository.findAllNodelistVersions();
 
             if (nodelistVersions.size() < 2) {
@@ -40,20 +37,20 @@ public class NodelistDiffProcessor {
                 return;
             }
 
-            // Process differences between consecutive nodelists
-            for (int i = 0; i < nodelistVersions.size() - 1; i++) {
-                Object[] current = nodelistVersions.get(i);
-                Object[] previous = nodelistVersions.get(i + 1);
+            // Process differences between consecutive nodelists in reverse order
+            // (from newest to oldest to ensure correct comparison)
+            for (int i = nodelistVersions.size() - 1; i > 0; i--) {
+                Object[] older = nodelistVersions.get(i);
+                Object[] newer = nodelistVersions.get(i - 1);
 
-                Integer currentYear = (Integer) current[0];
-                String currentName = (String) current[1];
-                Integer previousYear = (Integer) previous[0];
-                String previousName = (String) previous[1];
+                Integer olderYear = (Integer) older[0];
+                String olderName = (String) older[1];
+                Integer newerYear = (Integer) newer[0];
+                String newerName = (String) newer[1];
 
-                processDiffBetweenNodelists(previousYear, previousName, currentYear, currentName);
+                processDiffBetweenNodelists(olderYear, olderName, newerYear, newerName);
             }
 
-            clearRedisCache.clearCache();
             log.info("Nodelist diff processing completed");
 
         } catch (Exception e) {
@@ -63,7 +60,7 @@ public class NodelistDiffProcessor {
 
     @Transactional
     private void processDiffBetweenNodelists(Integer prevYear, String prevName,
-                                             Integer currYear, String currName) {
+            Integer currYear, String currName) {
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
 
         // Get nodes from both nodelists
@@ -119,7 +116,19 @@ public class NodelistDiffProcessor {
     }
 
     private void createHistoryEntry(NodeEntry node, LocalDate changeDate,
-                                    NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
+            NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
+        // Check if similar entry already exists
+        boolean entryExists = nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
+                node.getZone(),
+                node.getNetwork(),
+                node.getNode(),
+                node.getNodelistEntry().getNodelistYear(),
+                node.getNodelistEntry().getNodelistName());
+
+        if (entryExists) {
+            return;
+        }
+
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
         historyEntry.setZone(node.getZone());
