@@ -1,16 +1,17 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 
-import java.time.LocalDate;
-import java.util.List;
-
 public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEntry, Long> {
-    
+
     /**
      * Get history for a specific node
      */
@@ -55,18 +56,18 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
      * Get summary statistics for a date range
      */
     @Query("""
-        SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
-            h.changeDate, h.nodelistYear, h.nodelistName,
-                SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
-                SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
-                SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
-            COUNT(h)
-        )
-        FROM NodeHistoryEntry h
-        WHERE h.changeDate BETWEEN :startDate AND :endDate
-        GROUP BY h.changeDate, h.nodelistYear, h.nodelistName
-        ORDER BY h.changeDate DESC
-        """)
+            SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
+                h.changeDate, h.nodelistYear, h.nodelistName,
+                    SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
+                    SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
+                COUNT(h)
+            )
+            FROM NodeHistoryEntry h
+            WHERE h.changeDate BETWEEN :startDate AND :endDate
+            GROUP BY h.changeDate, h.nodelistYear, h.nodelistName
+            ORDER BY h.changeDate DESC
+            """)
     List<ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto> getChangeSummary(
             LocalDate startDate, LocalDate endDate);
 
@@ -74,11 +75,14 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
      * Get most active nodes (nodes with most changes)
      */
     @Query("""
-        SELECT h.zone, h.network, h.node, COUNT(h) as changeCount
-        FROM NodeHistoryEntry h
-        WHERE h.changeDate BETWEEN :startDate AND :endDate
-        GROUP BY h.zone, h.network, h.node
-        ORDER BY changeCount DESC
-        """)
+            SELECT h.zone, h.network, h.node, COUNT(h) as changeCount
+            FROM NodeHistoryEntry h
+            WHERE h.changeDate BETWEEN :startDate AND :endDate
+            GROUP BY h.zone, h.network, h.node
+            ORDER BY changeCount DESC
+            """)
     List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable);
+
+    boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
+            Integer zone, Integer network, Integer node, Integer nodelistYear, String nodelistName);
 }
