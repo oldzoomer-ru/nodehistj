@@ -27,6 +27,8 @@ public class NodelistDiffProcessor {
 
     public void processNodelistDiffs() {
         try {
+            nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
+
             // Get all nodelist versions sorted by date (newest first)
             List<Object[]> nodelistVersions = nodeEntryRepository.findAllNodelistVersions();
 
