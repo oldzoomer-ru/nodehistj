@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_history_diff.kafka;
 
 import java.util.List;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@Profile("!test")
 public class KafkaListeners {
     private final NodelistFillToDatabase nodelistFillToDatabase;
 
