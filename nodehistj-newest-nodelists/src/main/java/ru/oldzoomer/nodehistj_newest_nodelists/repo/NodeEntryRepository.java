@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_newest_nodelists.repo;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,27 +9,27 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 
 public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
 
-    @Query("from NodeEntry where nodelistEntry.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nodelistEntry.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
+    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
+            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
+            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
             "and zone = :zone and network = :network and node = :node")
-    @EntityGraph(attributePaths = "nodelistEntry")
     NodeEntry getLast(Integer zone, Integer network, Integer node);
 
-    @Query("from NodeEntry where nodelistEntry.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nodelistEntry.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
+    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
+            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
+            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
             "and zone = :zone and network = :network order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
     List<NodeEntry> getLast(Integer zone, Integer network);
 
-    @Query("from NodeEntry where nodelistEntry.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nodelistEntry.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
+    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
+            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
+            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
             "and zone = :zone order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
     List<NodeEntry> getLast(Integer zone);
 
-    @Query("from NodeEntry where nodelistEntry.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nodelistEntry.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
+    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
+            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
+            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
             "order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
     List<NodeEntry> getAll();
 }

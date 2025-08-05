@@ -27,9 +27,9 @@ public class NodeHistoryControllerTest extends BaseIntegrationTest {
     void testGetChangesByType() throws Exception {
         mockMvc.perform(get("/history/type/MODIFIED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].nodeName").value("Modified Node"))
-                .andExpect(jsonPath("$.content[0].changeType").value("MODIFIED"))
-                .andExpect(jsonPath("$.content[0].prevNodeName").value("Old Node"));
+                .andExpect(jsonPath("$[0].nodeName").value("Modified Node"))
+                .andExpect(jsonPath("$[0].changeType").value("MODIFIED"))
+                .andExpect(jsonPath("$[0].prevNodeName").value("Old Node"));
     }
 
     @Test
