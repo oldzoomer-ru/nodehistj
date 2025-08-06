@@ -58,7 +58,7 @@ public abstract class BaseIntegrationTest {
     @SuppressWarnings("resource")
     @Container
     public static final RedisContainer redisContainer = new RedisContainer(
-            DockerImageName.parse("redis:8.0-alpine"))
+            DockerImageName.parse("redis:alpine"))
             .waitingFor(Wait.forListeningPort());
 
     @Autowired
