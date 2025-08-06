@@ -18,6 +18,11 @@ public class KafkaListeners {
     @KafkaListener(topics = "download_nodelists_is_finished_topic")
     public void downloadNodelistsIsFinishedListener(List<String> message) {
         log.debug("Received message from download_nodelists_is_finished_topic");
-        nodelistFillToDatabase.updateNodelist(message);
+        try {
+            nodelistFillToDatabase.updateNodelist(message);
+            log.info("Nodelist update completed successfully");
+        } catch (Exception e) {
+            log.error("Error updating nodelist", e);
+        }
     }
 }

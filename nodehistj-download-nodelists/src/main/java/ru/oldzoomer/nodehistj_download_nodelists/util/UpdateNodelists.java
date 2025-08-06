@@ -3,6 +3,7 @@ package ru.oldzoomer.nodehistj_download_nodelists.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,8 @@ public class UpdateNodelists {
 
     private final int currentYear = Year.now().getValue();
 
+    private List<String> downloadedFiles = new ArrayList<>();
+
     /**
      * Main method for updating nodelist files.
      * Runs on schedule (default every 24 hours).
@@ -62,6 +65,8 @@ public class UpdateNodelists {
             for (int year = currentYear; year >= downloadFromYear; year--) {
                 processYearFiles(year);
             }
+
+            sendMessageToKafka();
         } catch (Exception e) {
             log.error("Failed to update nodelists", e);
             throw new NodelistUpdateException("Nodelist update failed", e);
@@ -91,43 +96,6 @@ public class UpdateNodelists {
         log.info("Found {} new files for year {}", newFiles.size(), year);
 
         newFiles.forEach(this::processFile);
-
-        if (!newFiles.isEmpty()) {
-            log.debug("Normalizing {} new files information for year {}", newFiles.size(), year);
-            final List<String> normalizedFiles = newFiles.stream()
-                    .map(this::normalizeObjectName)
-                    .collect(Collectors.toList());
-            log.info("Sending {} new files information for year {} to Kafka", normalizedFiles.size(), year);
-
-            // Корректная отправка с явным логированием результата и ошибок.
-            kafkaTemplate.send("download_nodelists_is_finished_topic", normalizedFiles)
-                    .whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            log.error(
-                                    "Failed to send message to Kafka for year {}. Size: {}. Topic: {}",
-                                    year,
-                                    normalizedFiles.size(),
-                                    "download_nodelists_is_finished_topic",
-                                    ex
-                            );
-                        } else if (result != null && result.getRecordMetadata() != null) {
-                            var md = result.getRecordMetadata();
-                            log.info(
-                                    "Kafka send OK for year {}: topic={}, partition={}, offset={}",
-                                    year,
-                                    md.topic(),
-                                    md.partition(),
-                                    md.offset()
-                            );
-                        } else {
-                            log.warn(
-                                    "Kafka send finished without exception but without metadata for year {} (topic={})",
-                                    year,
-                                    "download_nodelists_is_finished_topic"
-                            );
-                        }
-                    });
-        }
     }
 
     /**
@@ -137,10 +105,39 @@ public class UpdateNodelists {
      */
     private void processFile(String filePath) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
-            minioUtils.putObject(bucket, normalizeObjectName(filePath), byteArrayOutputStream);
+            String objectName = normalizeObjectName(filePath);
+            minioUtils.putObject(bucket, objectName, byteArrayOutputStream);
+            downloadedFiles.add(objectName);
         } catch (Exception e) {
             log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
         }
+    }
+
+    private void sendMessageToKafka() {
+        log.info("Sending {} new files information to Kafka", downloadedFiles.size());
+
+        // Корректная отправка с явным логированием результата и ошибок.
+        kafkaTemplate.send("download_nodelists_is_finished_topic", downloadedFiles)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error(
+                                "Failed to send message to Kafka. Size: {}. Topic: {}",
+                                downloadedFiles.size(),
+                                "download_nodelists_is_finished_topic",
+                                ex);
+                    } else if (result != null && result.getRecordMetadata() != null) {
+                        var md = result.getRecordMetadata();
+                        log.info(
+                                "Kafka send OK: topic={}, partition={}, offset={}",
+                                md.topic(),
+                                md.partition(),
+                                md.offset());
+                    } else {
+                        log.warn(
+                                "Kafka send finished without exception but without metadata (topic={})",
+                                "download_nodelists_is_finished_topic");
+                    }
+                });
     }
 
     /**

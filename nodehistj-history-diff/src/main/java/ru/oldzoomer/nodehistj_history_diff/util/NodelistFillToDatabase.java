@@ -87,9 +87,9 @@ public class NodelistFillToDatabase {
                 log.error("Failed to add nodelist to database", e);
             }
         }
+        log.info("Update nodelists is finished");
         nodelistDiffProcessor.processNodelistDiffs();
         clearRedisCache.clearCache();
-        log.info("Update nodelists is finished");
     }
 
     /**
