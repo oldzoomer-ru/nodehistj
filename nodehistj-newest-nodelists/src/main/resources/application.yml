@@ -28,6 +28,9 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+server:
+  servlet:
+    context-path: /newest
 minio:
   url: ${MINIO_URL:http://localhost:9000/}
   accessKey: ${MINIO_USER}

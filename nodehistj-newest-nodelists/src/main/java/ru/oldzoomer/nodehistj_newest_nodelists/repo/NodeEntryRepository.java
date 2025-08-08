@@ -10,26 +10,19 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
 
     @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
-            "and zone = :zone and network = :network and node = :node")
+            "where zone = :zone and network = :network and node = :node")
     NodeEntry getLast(Integer zone, Integer network, Integer node);
 
     @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
-            "and zone = :zone and network = :network order by zone, network, node")
+            "where zone = :zone and network = :network " +
+            "order by zone, network, node")
     List<NodeEntry> getLast(Integer zone, Integer network);
 
     @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
-            "and zone = :zone order by zone, network, node")
+            "where zone = :zone order by zone, network, node")
     List<NodeEntry> getLast(Integer zone);
 
     @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = (select max(nodelistName) from NodelistEntry) " +
-            "and nle.nodelistYear = (select max(nodelistYear) from NodelistEntry) " +
             "order by zone, network, node")
     List<NodeEntry> getAll();
 }

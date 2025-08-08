@@ -93,6 +93,8 @@ services:
       - MINIO_BUCKET=nodehistj
       - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR:-1984}
     depends_on:
+      minio:
+        condition: service_healthy
       kafka:
         condition: service_healthy
 
@@ -125,6 +127,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
+      minio:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
@@ -161,6 +165,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
+      minio:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
@@ -197,6 +203,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
+      minio:
+        condition: service_healthy
       kafka:
         condition: service_healthy
       postgres:
