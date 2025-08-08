@@ -88,8 +88,8 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - MINIO_URL=http://minio:9000
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_USER=${MINIO_USER:-user}
+      - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR:-1984}
     depends_on:
@@ -120,12 +120,10 @@ services:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - REDIS_HOST=redis
       - MINIO_URL=http://minio:9000
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_USER=${MINIO_USER:-user}
+      - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       minio:
         condition: service_healthy
@@ -158,12 +156,10 @@ services:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - REDIS_HOST=redis
       - MINIO_URL=http://minio:9000
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_USER=${MINIO_USER:-user}
+      - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       minio:
         condition: service_healthy
@@ -196,12 +192,10 @@ services:
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
       - REDIS_HOST=redis
       - MINIO_URL=http://minio:9000
-      - MINIO_USER=${MINIO_USER}
-      - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - MINIO_USER=${MINIO_USER:-user}
+      - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       minio:
         condition: service_healthy
