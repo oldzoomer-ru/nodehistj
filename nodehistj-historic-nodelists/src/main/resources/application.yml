@@ -2,7 +2,7 @@ spring:
   application:
     name: nodehistj
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj-historic}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_historic}
     username: ${POSTGRES_USER:user}
     password: ${POSTGRES_PASSWORD:password}
   jpa:

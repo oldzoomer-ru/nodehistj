@@ -67,9 +67,9 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - POSTGRES_DB=nodehistj
     volumes:
       - postgres_storage:/var/lib/postgresql/data
+      - ./pgsql:/docker-entrypoint-initdb.d/
     healthcheck:
       test: pg_isready -U postgres || exit 1
       start_period: 30s

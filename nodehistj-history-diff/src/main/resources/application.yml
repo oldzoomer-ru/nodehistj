@@ -2,7 +2,7 @@ spring:
   application:
     name: nodehistj-history-diff
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj-history-diff}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_history_diff}
     username: ${POSTGRES_USER:user}
     password: ${POSTGRES_PASSWORD:password}
   jpa:
