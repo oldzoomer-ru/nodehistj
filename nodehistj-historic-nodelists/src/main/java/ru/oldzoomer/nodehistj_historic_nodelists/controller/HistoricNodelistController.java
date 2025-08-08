@@ -66,7 +66,7 @@ public class HistoricNodelistController {
      * @param dayOfYear Day of year of nodelist (required)
      * @param zone Zone identifier (optional, 1-32767)
      * @param network Network identifier (optional, 1-32767)
-     * @param node Node identifier (optional, 1-32767)
+     * @param node Node identifier (optional, 0-32767)
      * @return List of {@link NodeEntryDto} objects matching filter criteria
      * @throws jakarta.validation.ConstraintViolationException if validation fails (400)
      * @throws IllegalArgumentException if invalid parameter combination (400)
