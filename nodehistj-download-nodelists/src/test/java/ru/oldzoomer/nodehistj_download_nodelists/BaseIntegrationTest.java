@@ -9,7 +9,7 @@ import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
@@ -19,9 +19,8 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
-    public static final KafkaContainer kafkaContainer = new KafkaContainer(
-            DockerImageName.parse("apache/kafka"))
-            .waitingFor(Wait.forListeningPort());
+    public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
+            DockerImageName.parse("redpandadata/redpanda"));
 
     @SuppressWarnings("resource")
     @Container
@@ -32,16 +31,16 @@ public abstract class BaseIntegrationTest {
             .waitingFor(Wait.forListeningPort());
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
+    static void registerProperties(DynamicPropertyRegistry registry) {
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+        registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
     }
 
     @AfterAll
     static void close() {
         minioContainer.close();
-        kafkaContainer.close();
+        redpandaContainer.close();
     }
 }

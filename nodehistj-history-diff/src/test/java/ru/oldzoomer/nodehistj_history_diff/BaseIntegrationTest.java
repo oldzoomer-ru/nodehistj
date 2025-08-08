@@ -18,7 +18,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import com.redis.testcontainers.RedisContainer;
@@ -43,9 +43,8 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
-    public static final KafkaContainer kafkaContainer = new KafkaContainer(
-            DockerImageName.parse("apache/kafka"))
-            .waitingFor(Wait.forListeningPort());
+    public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
+            DockerImageName.parse("redpandadata/redpanda"));
 
     @SuppressWarnings("resource")
     @Container
@@ -66,13 +65,13 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:17-alpine:///testdb");
+        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
+        registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
         registry.add("spring.data.redis.host", redisContainer::getRedisHost);
         registry.add("spring.data.redis.port", redisContainer::getRedisPort);
     }
@@ -127,7 +126,7 @@ public abstract class BaseIntegrationTest {
     static void close() {
         postgreSQLContainer.close();
         minioContainer.close();
-        kafkaContainer.close();
+        redpandaContainer.close();
         redisContainer.close();
     }
 }
