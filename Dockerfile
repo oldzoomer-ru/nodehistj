@@ -27,7 +27,7 @@ ARG BUILD_HOME=/build
 #
 # Gradle image for the build stage.
 #
-FROM gradle:jdk21-alpine as build-image
+FROM eclipse-temurin:21-jdk-alpine as build-image
 
 #
 # Set the working directory.
