@@ -37,18 +37,12 @@ ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
-# Enable Gradle build cache
-ENV GRADLE_USER_HOME=/gradle-cache
-
-# Create gradle-cache directory and set permissions
-RUN mkdir -p /gradle-cache && chown -R gradle:gradle /gradle-cache
-
 #
 # Copy only build files first to cache dependencies
 #
-COPY --chown=gradle:gradle gradle $APP_HOME/gradle/
-COPY --chown=gradle:gradle gradlew $APP_HOME/
-COPY --chown=gradle:gradle settings.gradle build.gradle $APP_HOME/
+COPY gradle $APP_HOME/gradle/
+COPY gradlew $APP_HOME/
+COPY settings.gradle build.gradle $APP_HOME/
 
 # Download dependencies first (cached unless build.gradle changes)
 RUN --mount=type=secret,id=github_username \
@@ -60,9 +54,9 @@ RUN --mount=type=secret,id=github_username \
     ./gradlew dependencies --no-daemon
 
 # Copy source code after dependencies are cached
-COPY --chown=gradle:gradle config/ $APP_HOME/config/
-COPY --chown=gradle:gradle lib/ $APP_HOME/lib/
-COPY --chown=gradle:gradle ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
+COPY config/ $APP_HOME/config/
+COPY lib/ $APP_HOME/lib/
+COPY ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
 
 #
 # Build the specified service
