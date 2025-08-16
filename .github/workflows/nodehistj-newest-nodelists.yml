@@ -81,7 +81,7 @@ jobs:
             github_username=${{ github.actor }}
             github_token=${{ secrets.GITHUB_TOKEN }}
           build-args: |
-            SERVICE_NAME=nodehistj-historic-nodelists
+            SERVICE_NAME=nodehistj-newest-nodelists
             SKIP_TESTS=true
 
       # Sign the resulting Docker image digest except on PRs.
