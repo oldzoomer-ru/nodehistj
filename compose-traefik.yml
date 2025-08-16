@@ -93,7 +93,7 @@ services:
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
   nodehistj-download-nodelists:
-    image: gavrilovegor519/nodehistj-download-nodelists
+    image: gavrilovegor519/nodehistj-download-nodelists:master
     build:
       context: .
       dockerfile: Dockerfile
@@ -122,7 +122,7 @@ services:
   # Сервис работы с историческими данными nodelist
   # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-historic-nodelists:
-    image: gavrilovegor519/nodehistj-historic-nodelists
+    image: gavrilovegor519/nodehistj-historic-nodelists:master
     build:
       context: .
       dockerfile: Dockerfile
@@ -170,7 +170,7 @@ services:
   # Сервис работы с актуальными данными nodelist
   # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
   nodehistj-newest-nodelists:
-    image: gavrilovegor519/nodehistj-newest-nodelists
+    image: gavrilovegor519/nodehistj-newest-nodelists:master
     build:
       context: .
       dockerfile: Dockerfile
@@ -218,7 +218,7 @@ services:
   # Сервис сравнения исторических и актуальных данных
   # Основные зависимости: Kafka, PostgreSQL, Redis
   nodehistj-history-diff:
-    image: gavrilovegor519/nodehistj-history-diff
+    image: gavrilovegor519/nodehistj-history-diff:master
     build:
       context: .
       dockerfile: Dockerfile
