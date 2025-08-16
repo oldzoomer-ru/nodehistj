@@ -38,6 +38,10 @@ services:
     hostname: redpanda
     networks:
       - nodehistj
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     command:
       - redpanda start
         --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
@@ -96,6 +100,10 @@ services:
       args:
         SERVICE_NAME: nodehistj-download-nodelists
         SKIP_TESTS: "true"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - nodehistj
     labels:
@@ -124,6 +132,10 @@ services:
       secrets:
         - github_username
         - github_token
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     networks:
       - nodehistj
     expose:
@@ -168,6 +180,10 @@ services:
       secrets:
         - github_username
         - github_token
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     networks:
       - nodehistj
     expose:
@@ -212,6 +228,10 @@ services:
       secrets:
         - github_username
         - github_token
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     networks:
       - nodehistj
     expose:
