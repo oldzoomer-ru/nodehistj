@@ -1,26 +1,57 @@
-# NodehistJ Download Nodelists Module
+# NodehistJ - Загрузка списков узлов
 
-## Description
+Модуль для автоматической загрузки файлов nodelist с FTP сервера (порт 8080)
 
-Module for downloading nodelist files from FTP server and saving them to MinIO. After download sends notification via Kafka.
+## Архитектура системы
 
-## Main Components
+```mermaid
+graph TD
+    A[FTP Сервер] -->|Загрузка файлов| B(Download Service)
+    B -->|Сохранение| C[MinIO]
+    B -->|Уведомление| D[Kafka]
+    D -->|Обработка| E[Historic Service]
+    D -->|Обработка| F[Newest Service]
+```
 
-1. **FtpClient** - FTP client
-2. **UpdateNodelists** - main file download service
-3. **KafkaTopic** - Kafka topic configuration
+## Основные сервисы
 
-## Workflow
+1. **FTP Client** - загрузка файлов с FTP сервера
+2. **MinIO Storage** - хранение загруженных файлов
+3. **Kafka Producer** - отправка уведомлений о новых файлах
+4. **Scheduler** - управление периодичностью загрузок
 
-1. Connects to FTP server
-2. Checks for new nodelist files (format nodelist.###)
-3. Downloads new files to MinIO
-4. Sends list of new files via Kafka
-5. Closes FTP connection
+## API Endpoints
 
-## Dependencies
+Базовый путь: `/download`
 
-- Spring Boot 3.5.3
-- Apache Commons Net (FTP client)
-- Spring Kafka
-- MinIO Java SDK
+### Статус загрузки
+
+`GET /download/status`
+
+Пример ответа:
+
+```json
+{
+  "lastDownloadTime": "2023-10-15T14:30:00Z", 
+  "lastDownloadedFiles": ["2023/nodelist.123"],
+  "servicesStatus": {
+    "ftp": "active",
+    "minio": "active", 
+    "kafka": "active"
+  }
+}
+```
+
+## Переменные окружения
+
+| Переменная | Сервис | Описание |
+|------------|--------|----------|
+| `FTP_*` | FTP Client | Настройки подключения к FTP |
+| `MINIO_*` | MinIO Storage | Настройки хранилища |
+| `KAFKA_*` | Kafka Producer | Настройки брокера сообщений |
+
+## Запуск сервисов
+
+```bash
+# Запуск всех сервисов
+docker compose -f compose.yml up

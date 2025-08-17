@@ -1,26 +1,24 @@
-# NodehistJ History Diff Module
+# NodehistJ - Сравнение версий списков узлов
 
-## Description
+Модуль для анализа изменений между разными версиями списков узлов.
 
-Service for tracking and comparing different versions of nodelists with history and difference reports.
+## Основные возможности
 
-## Main Features
+- Сравнение разных версий списков узлов
+- Отслеживание истории изменений
+- Генерация отчетов о различиях
+- Хранение результатов сравнений
 
-- Tracks node history changes
-- Compares nodelist versions
-- Generates detailed difference reports
-- Supports multiple comparison algorithms
-- Stores history and comparison results in PostgreSQL
+## Использование
 
-## Running Tests
+### API Endpoints
+
+- `GET /diff` - получить различия между версиями
+- `GET /history` - получить историю изменений узла
+- `POST /compare` - запустить новое сравнение
+
+## Пример запроса
 
 ```bash
-./gradlew :nodehistj-history-diff:test
+curl "http://localhost:8080/diff?version1=2023-150&version2=2023-151"
 ```
-
-## Dependencies
-
-- Spring Boot 3.5.3
-- Apache Commons Text
-- Spring Data JPA
-- PostgreSQL JDBC

@@ -1,27 +1,14 @@
-# NodehistJ Newest Nodelists Module
+# NodehistJ - Актуальные списки узлов
 
-## Description
+Модуль для работы с текущими версиями списков узлов.
 
-Module for working with current versions of nodelists.
+## API Endpoints
 
-## Main Features
+- `GET /nodelist` - получить текущие списки узлов
+- `GET /nodelist/{id}` - получить конкретный список узлов
+- `POST /nodelist` - обновить список узлов
 
-- Getting current nodelist versions
-- API for accessing up-to-date data
-- Results caching
+## Пример запроса
 
-## Module Structure
-
-- `controller/` - REST controllers
-- `service/` - business logic
-- `repo/` - database repositories
-- `entity/` - database entities
-- `dto/` - data transfer objects
-- `mapper/` - mappers between entities and DTOs
-
-## Dependencies
-
-- Spring Boot 3.5.3
-- Spring Data JPA
-- Redis
-- MapStruct
+```bash
+curl http://localhost:8080/nodelist

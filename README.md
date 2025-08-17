@@ -1,83 +1,98 @@
-# NodehistJ Project
+# NodehistJ - Система работы с историческими данными узлов
 
-## Project Description
+## Основные модули и API
 
-NodehistJ is a system for working with network node historical data, consisting of several microservices:
+1. **Загрузка данных** ([документация](nodehistj-download-nodelists/README.md))
+   - Автоматическая загрузка файлов nodelist с FTP
+   - Отправка уведомлений в Kafka топик `download_nodelists_is_finished_topic`
 
-1. **nodehistj-download-nodelists** - data download service
-2. **nodehistj-historic-nodelists** - historical data service
-3. **nodehistj-newest-nodelists** - current data service
-4. **nodehistj-history-diff** - historical data comparison service
+2. **Исторические данные** (порт 8081)
+   - Базовый путь: `/historic`
+   - Основные эндпоинты:
+     - `GET /historic/historicNodelist` - получение данных
+       - Параметры:
+         - `year` (обязательный) - год данных
+         - `dayOfYear` (обязательный) - день года (1-366)
+         - `zone` - номер зоны (опционально)
+         - `network` - номер сети (требует zone)
+         - `node` - номер узла (требует zone и network)
+       - Формат ответа: JSON массив объектов nodelist
 
-## Requirements
+3. **Текущие данные** (порт 8082)
+   - Базовый путь: `/newest`
+   - Основные эндпоинты:
+     - `GET /newest/nodelist` - получение текущих списков
+     - `GET /newest/nodelist/{id}` - получение конкретного списка
+     - `POST /newest/nodelist` - обновление списков
+   - Формат ответа: JSON
 
-- Java 21
-- Docker and Docker Compose
-- Gradle (for building from sources)
+4. **Сравнение версий** (порт 8083)
+   - Базовый путь: `/diff`
+   - Основные эндпоинты:
+     - `GET /diff/diff` - сравнение версий
+       - Параметры:
+         - `version1` - первая версия (формат: год-день)
+         - `version2` - вторая версия (формат: год-день)
+     - `GET /diff/history` - история изменений узла
+   - Формат ответа: JSON с различиями
 
-## Quick Start
+## Зависимости
 
-1. Clone the repository:
+- MinIO - хранилище файлов
+- Redis - кэширование
+- Redpanda (Kafka) - обмен сообщениями
+- PostgreSQL - основное хранилище данных
 
-    ```bash
-    git clone https://github.com/oldzoomer-ru/nodehistj.git
-    cd nodehistj
-    ```
+## Быстрый старт
 
-2. Start services using Docker Compose:
+1. Склонируйте репозиторий:
 
-    ```bash
-    docker compose -f compose.yml up -d
-    ```
+```bash
+git clone https://github.com/oldzoomer-ru/nodehistj.git
+cd nodehistj
+```
 
-Services will be available at:
-
-- nodehistj-historic-nodelists: <http://localhost:8081>
-- nodehistj-newest-nodelists: <http://localhost:8082>
-- nodehistj-history-diff: <http://localhost:8083>
-
-## Configuration
-
-Before starting, create a `.env` file in the project root with the following variables:
+2. Создайте `.env` файл с минимальными настройками:
 
 ```ini
-MINIO_USER=user
+MINIO_USER=admin
 MINIO_PASSWORD=password
-MINIO_BUCKET=nodehistj
-POSTGRES_USER=user
-POSTGRES_PASSWORD=password
-GITHUB_USERNAME=user
-GITHUB_TOKEN=token
 ```
 
-## Building from Sources
+3. Запустите сервисы (выберите один вариант):
 
-To build all services:
+**Базовый вариант:**
 
 ```bash
-./gradlew build
+docker compose -f compose.yml up -d
 ```
 
-To build a specific service:
+**Для разработки (с MinIO):**
 
 ```bash
-./gradlew :nodehistj-historic-nodelists:build
+docker compose -f compose-dev.yml up -d
 ```
 
-## Architecture
+**С Traefik (для production):**
 
-The project uses:
+```bash
+docker compose -f compose-traefik.yml up -d
+```
 
-- Spring Boot 3.5.4
-- PostgreSQL for data storage
-- MinIO for file storage
-- Kafka for inter-service communication
-- Redis for caching
+## Основные переменные окружения
 
-## Project Modules
+| Переменная | Описание | Обязательно | По умолчанию |
+|------------|----------|-------------|--------------|
+| `MINIO_USER` | Пользователь MinIO | Да | - |
+| `MINIO_PASSWORD` | Пароль MinIO | Да | - |
+| `POSTGRES_PASSWORD` | Пароль PostgreSQL | Да | - |
+| `KAFKA_BOOTSTRAP_SERVER` | Адрес Kafka | Нет | redpanda:9092 |
+| `REDIS_HOST` | Адрес Redis | Нет | redis |
+| `FTP_DOWNLOAD_FROM_YEAR` | Год начала загрузки | Нет | 1984 |
+| `DOMAIN` | Домен для Traefik | Только для compose-traefik.yml | - |
 
-- `nodehistj-download-nodelists` - downloads data from external sources
-- `nodehistj-historic-nodelists` - API for historical data
-- `nodehistj-newest-nodelists` - API for current data
-- `nodehistj-history-diff` - data version comparison service
-- `lib/*` - common utilities for all services
+## Полезные команды
+
+- Остановить сервисы: `docker compose -f compose.yml down`
+- Просмотр логов: `docker compose -f compose.yml logs -f`
+- Пересборка образов: `docker compose -f compose.yml build`

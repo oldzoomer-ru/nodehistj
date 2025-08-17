@@ -1,49 +1,70 @@
-# NodehistJ Historic Nodelists Module
+# NodehistJ - Исторические списки узлов
 
-## Description
+Модуль для работы с историческими данными списков узлов через REST API (порт 8081)
 
-Provides REST API for accessing historical nodelist data stored in PostgreSQL with Redis caching.
+## Основные возможности
+
+- REST API для доступа к архивным данным (порт 8081)
+- Поддержка фильтрации по годам, дням и зонам
+- Кэширование в Redis (TTL 1 час)
+- Интеграция с MinIO (хранилище) и Kafka (события)
 
 ## API Endpoints
 
-### GET /historicNodelist
+Базовый путь: `/historic`
 
-Returns nodelist entries by specified parameters.
+### Получение данных
 
-Query parameters:
+`GET /historic/historicNodelist`
 
-- year: 4-digit year (required)
-- dayOfYear: day of year 1-366 (required)
-- zone: zone number (optional)
-- network: network number (optional, requires zone)
-- node: node number (optional, requires zone and network)
+Параметры:
 
-Response example:
+- `year` (required) - год данных (4 цифры)
+- `dayOfYear` (required) - день года (1-366)
+- `zone` (optional) - номер зоны
+- `network` (optional) - номер сети (требует zone)
+- `node` (optional) - номер узла (требует zone и network)
+
+Пример запроса:
+
+```bash
+curl "http://localhost:8081/historic/historicNodelist?year=2023&dayOfYear=150"
+```
+
+Формат ответа:
 
 ```json
 [
   {
-    "nodelistYear": 2025,
-    "nodelistName": "nodelist.123"
+    "nodelistYear": 2023,
+    "nodelistName": "nodelist.123",
+    "nodes": [...]
   }
 ]
 ```
 
-## Caching Strategy
+## Настройка кэширования
 
-- First request: loads from PostgreSQL
-- Subsequent requests: served from Redis with following cache keys:
-  - All data: "historicAllDataOfNodelist"
-  - Zone data: "historicGetZoneNodelistEntry" (key: year-dayOfYear-zone)
-  - Network data: "historicGetNetworkNodelistEntry" (key: year-dayOfYear-zone-network)
-  - Node data: "historicGetNodeNodelistEntry" (key: year-dayOfYear-zone-network-node)
+Данные кэшируются в Redis с TTL 1 час. Ключи кэша:
 
-Cache TTL: 1 hour
+- Все данные: `historicAllDataOfNodelist`
+- По зоне: `historicGetZoneNodelistEntry:год-день-зона`
+- По сети: `historicGetNetworkNodelistEntry:год-день-зона-сеть`
+- По узлу: `historicGetNodeNodelistEntry:год-день-зона-сеть-узел`
 
-## Dependencies
+## Переменные окружения
 
-- Spring Boot 3.5.3
-- Spring Data JPA
-- Spring Data Redis
-- PostgreSQL JDBC
-- Lombok
+| Переменная | Описание | Обязательно | По умолчанию |
+|------------|----------|-------------|--------------|
+| `POSTGRES_HOST` | Хост PostgreSQL | Да | - |
+| `POSTGRES_USER` | Пользователь PostgreSQL | Да | - |
+| `POSTGRES_PASSWORD` | Пароль PostgreSQL | Да | - |
+| `REDIS_HOST` | Хост Redis | Нет | redis |
+| `MINIO_URL` | URL MinIO | Да | - |
+| `MINIO_USER` | Пользователь MinIO | Да | - |
+| `MINIO_PASSWORD` | Пароль MinIO | Да | - |
+
+## Запуск
+
+```bash
+docker compose -f compose.yml up nodehistj-historic-nodelists
