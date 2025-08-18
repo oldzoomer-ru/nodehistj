@@ -65,7 +65,7 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getHost());
+        registry.add("spring.data.cassandra.contact-points", () -> String.valueOf(cassandra.getHost()));
         registry.add("spring.data.cassandra.port", () -> cassandra.getMappedPort(9042));
         registry.add("spring.data.cassandra.local-datacenter", () -> cassandra.getLocalDatacenter());
         registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
@@ -87,7 +87,9 @@ public abstract class BaseIntegrationTest {
                     )
                     .withLocalDatacenter(cassandra.getLocalDatacenter())
                     .build()) {
-                session.execute("DROP KEYSPACE IF EXISTS " + KEYSPACE_NAME + ";");
+                session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE_NAME +
+                        " WITH replication = \n" +
+                        "{'class':'SimpleStrategy','replication_factor':'1'};");
             }
         }
     }
