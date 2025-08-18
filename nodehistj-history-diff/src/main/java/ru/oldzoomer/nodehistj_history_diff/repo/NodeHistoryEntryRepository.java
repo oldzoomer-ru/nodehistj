@@ -2,86 +2,70 @@ package ru.oldzoomer.nodehistj_history_diff.repo;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import org.springframework.data.domain.Page;
+import java.util.UUID;
+import org.springframework.data.cassandra.repository.CassandraRepository;
+import org.springframework.data.cassandra.repository.Query;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.repository.query.Param;
 
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry.ChangeType;
+import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 
-public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEntry, Long> {
+public interface NodeHistoryEntryRepository extends CassandraRepository<NodeHistoryEntry, UUID> {
 
-    /**
-     * Get history for a specific node
-     */
-    Page<NodeHistoryEntry> findByZoneAndNetworkAndNodeOrderByChangeDateDesc(
+    Slice<NodeHistoryEntry> findByZoneAndNetworkAndNodeOrderByChangeDateDesc(
             Integer zone, Integer network, Integer node, Pageable pageable);
 
-    /**
-     * Get history for a specific network
-     */
-    Page<NodeHistoryEntry> findByZoneAndNetworkOrderByChangeDateDescNodeAsc(
+    Slice<NodeHistoryEntry> findByNodelistYearAndNodelistNameOrderByChangeDateDesc(
+            @Param("nodelistYear") Integer nodelistYear,
+            @Param("nodelistName") String nodelistName,
+            Pageable pageable);
+
+    Slice<NodeHistoryEntry> findByZoneAndNetworkOrderByChangeDateDescNodeAsc(
             Integer zone, Integer network, Pageable pageable);
 
-    /**
-     * Get history for a specific zone
-     */
-    Page<NodeHistoryEntry> findByZoneOrderByChangeDateDescNetworkAscNodeAsc(
+    Slice<NodeHistoryEntry> findByZoneOrderByChangeDateDescNetworkAscNodeAsc(
             Integer zone, Pageable pageable);
 
-    /**
-     * Get all history entries
-     */
-    Page<NodeHistoryEntry> findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(Pageable pageable);
+    Slice<NodeHistoryEntry> findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(Pageable pageable);
 
-    /**
-     * Get changes for a specific date
-     */
     List<NodeHistoryEntry> findByChangeDateOrderByZoneAscNetworkAscNodeAsc(LocalDate changeDate);
 
-    /**
-     * Get changes between dates
-     */
-    Page<NodeHistoryEntry> findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
-            LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Slice<NodeHistoryEntry> findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
 
-    /**
-     * Get changes by type
-     */
-    Page<NodeHistoryEntry> findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
-            NodeHistoryEntry.ChangeType changeType, Pageable pageable);
+    Slice<NodeHistoryEntry> findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
+            ChangeType changeType, Pageable pageable);
 
-    /**
-     * Get summary statistics for a date range
-     */
     @Query("""
-            SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
-                h.changeDate, h.nodelistYear, h.nodelistName,
-                    SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
-                    SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
-                    SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
-                COUNT(h)
-            )
-            FROM NodeHistoryEntry h
-            WHERE h.changeDate BETWEEN :startDate AND :endDate
-            GROUP BY h.changeDate, h.nodelistYear, h.nodelistName
-            ORDER BY h.changeDate DESC
-            """)
-    List<ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto> getChangeSummary(
-            LocalDate startDate, LocalDate endDate);
+        SELECT change_date, nodelist_year, nodelist_name,
+            SUM(CASE WHEN change_type = 'ADDED' THEN 1 ELSE 0 END) as addedCount,
+            SUM(CASE WHEN change_type = 'REMOVED' THEN 1 ELSE 0 END) as removedCount,
+            SUM(CASE WHEN change_type = 'MODIFIED' THEN 1 ELSE 0 END) as modifiedCount,
+            COUNT(*) as totalCount
+        FROM node_history_entry
+        WHERE nodelist_year = :nodelistYear AND nodelist_name = :nodelistName
+        GROUP BY change_date, nodelist_year, nodelist_name
+        """)
+    List<NodeChangeSummaryDto> getChangeSummaryByNodelist(
+            @Param("nodelistYear") Integer nodelistYear,
+            @Param("nodelistName") String nodelistName);
 
-    /**
-     * Get most active nodes (nodes with most changes)
-     */
     @Query("""
-            SELECT h.zone, h.network, h.node, COUNT(h) as changeCount
-            FROM NodeHistoryEntry h
-            WHERE h.changeDate BETWEEN :startDate AND :endDate
-            GROUP BY h.zone, h.network, h.node
-            ORDER BY changeCount DESC
-            """)
-    List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable);
+        SELECT zone, network, node, COUNT(*) as changeCount
+        FROM node_history_entry
+        WHERE nodelist_year = :nodelistYear AND nodelist_name = :nodelistName
+        GROUP BY zone, network, node
+        LIMIT :limit
+        """)
+    List<Object[]> getMostActiveNodesInNodelist(
+            @Param("nodelistYear") Integer nodelistYear,
+            @Param("nodelistName") String nodelistName,
+            @Param("limit") int limit);
 
     boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
             Integer zone, Integer network, Integer node, Integer nodelistYear, String nodelistName);

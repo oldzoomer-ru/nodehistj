@@ -2,74 +2,52 @@ package ru.oldzoomer.nodehistj_history_diff.entity;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "node_entry",
-        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
+@Table("node_entry")
 public class NodeEntry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @PrimaryKey
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private NodelistEntry nodelistEntry;
-
-    @Column(name = "zone")
     private Integer zone;
-
-    @Column(name = "network")
     private Integer network;
-
-    @Column(name = "node")
     private Integer node;
-
-    @Column(name = "keywords")
     private Keywords keywords;
-
-    @Column(name = "node_name")
     private String nodeName;
-
-    @Column(name = "location")
     private String location;
-
-    @Column(name = "sys_op_name")
     private String sysOpName;
-
-    @Column(name = "phone")
     private String phone;
-
-    @Column(name = "baud_rate")
     private Integer baudRate;
-
-    @Column(name = "flags")
     private List<String> flags;
+    private Integer nodelistYear;
+    private String nodelistName;
+
+    public NodeEntry() {
+        this.id = UUID.randomUUID();
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NodeEntry nodeEntry)) {
-            return false;
-        }
-        return Objects.equals(id, nodeEntry.id);
+        if (this == o) return true;
+        if (!(o instanceof NodeEntry)) return false;
+        NodeEntry nodeEntry = (NodeEntry) o;
+        return Objects.equals(zone, nodeEntry.zone) &&
+                Objects.equals(network, nodeEntry.network) &&
+                Objects.equals(node, nodeEntry.node) &&
+                Objects.equals(nodelistYear, nodeEntry.nodelistYear) &&
+                Objects.equals(nodelistName, nodeEntry.nodelistName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(zone, network, node, nodelistYear, nodelistName);
     }
 }

@@ -1,19 +1,22 @@
 spring:
   application:
     name: nodehistj
-  datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_newest}
-    username: ${POSTGRES_USER:user}
-    password: ${POSTGRES_PASSWORD:password}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    open-in-view: false
+  cassandra:
+    keyspace-name: nodehistj
+    contact-points: ${CASSANDRA_HOST:localhost}:9042
+    local-datacenter: ${CASSANDRA_DC:datacenter1}
+    schema-action: CREATE_IF_NOT_EXISTS
+    request:
+      timeout: 5s
+      consistency: LOCAL_ONE
+    connection:
+      connect-timeout: 5s
+      init-query-timeout: 5s
   cache:
     redis:
       time-to-live: 1h # TTL по умолчанию
       cache-null-values: false
-      key-prefix: 'nodelist:' # Префикс для ключей
+      key-prefix: 'newest:' # Префикс для ключей
       use-key-prefix: true
   data:
     redis:

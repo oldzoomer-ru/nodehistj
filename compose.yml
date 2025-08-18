@@ -54,23 +54,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-  postgres:
-    image: postgres:alpine
+  cassandra:
+    image: cassandra
     networks:
       - nodehistj
-    restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
-      - ./pgsql:/docker-entrypoint-initdb.d/
-    healthcheck:
-      test: pg_isready -U postgres || exit 1
-      start_period: 30s
-      interval: 5s
-      timeout: 10s
-      retries: 5
+      - cassandra_data:/var/lib/cassandra
+    restart: unless-stopped
 
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
@@ -128,14 +121,12 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     depends_on:
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -168,14 +159,12 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     depends_on:
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -208,14 +197,12 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     depends_on:
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -230,5 +217,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_storage:
   redpanda_data:
+  cassandra_data:

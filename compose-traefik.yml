@@ -54,23 +54,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-  postgres:
-    image: postgres:alpine
+  cassandra:
+    image: cassandra
     networks:
       - nodehistj
-    restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
-      - ./pgsql:/docker-entrypoint-initdb.d/
-    healthcheck:
-      test: pg_isready -U postgres || exit 1
-      start_period: 30s
-      interval: 5s
-      timeout: 10s
-      retries: 5
+      - cassandra_data:/var/lib/cassandra
+    restart: unless-stopped
   traefik:
     container_name: traefik
     image: traefik:latest
@@ -148,9 +141,7 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     labels:
       - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && PathPrefix(`/historic`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
@@ -162,8 +153,8 @@ services:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -196,9 +187,7 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     labels:
       - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && PathPrefix(`/newest`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
@@ -210,8 +199,8 @@ services:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -244,9 +233,7 @@ services:
       - MINIO_USER=${MINIO_USER}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
       - MINIO_BUCKET=${MINIO_BUCKET}
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - CASSANDRA_HOST=cassandra
     labels:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/diff`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
@@ -258,8 +245,8 @@ services:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      cassandra:
+        condition: service_started
       redis:
         condition: service_healthy
 
@@ -274,5 +261,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_storage:
   redpanda_data:
+  cassandra_data:

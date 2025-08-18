@@ -26,28 +26,34 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getAll(String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findByNodelistYearAndName(nodelistName, year));
     }
 
     @Override
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.get(nodelistName, year, zone));
     }
 
     @Override
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, network,
-                String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.get(nodelistName, year, zone, network));
     }
 
     @Override
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, network, node,
-                String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.get(nodelistName, year, zone, network, node));
     }
 }

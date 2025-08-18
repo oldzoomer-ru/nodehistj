@@ -2,9 +2,8 @@ dependencies {
     implementation project(':lib:common-utils')
     implementation project(':lib:minio')
     implementation project(':lib:redis')
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation 'org.postgresql:postgresql'
     implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
@@ -12,7 +11,7 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:cassandra'
     testImplementation 'org.testcontainers:redpanda:1.21.3'
     testImplementation 'org.testcontainers:minio'
     testImplementation 'com.redis:testcontainers-redis'

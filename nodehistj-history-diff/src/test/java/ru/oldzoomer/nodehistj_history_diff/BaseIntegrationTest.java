@@ -1,10 +1,13 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
+import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,15 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.MinIOContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.redis.testcontainers.RedisContainer;
 
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
@@ -29,19 +32,17 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
 @Testcontainers
-@Transactional
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
+    private static final String KEYSPACE_NAME = "nodehistj";
 
     @SuppressWarnings("resource")
     @Container
-    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:alpine")
-            .withDatabaseName("testdb")
-            .withUsername("testuser")
-            .withPassword("testpass")
+    public static final CassandraContainer cassandra = new CassandraContainer("cassandra")
+            .withExposedPorts(9042)
+            .withEnv("CASSANDRA_DC", "datacenter1")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
             DockerImageName.parse("redpandadata/redpanda"));
@@ -65,9 +66,10 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getHost());
+        registry.add("spring.data.cassandra.port", () -> cassandra.getMappedPort(9042));
+        registry.add("spring.data.cassandra.local-datacenter", () -> cassandra.getLocalDatacenter());
+        registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
@@ -78,6 +80,7 @@ public abstract class BaseIntegrationTest {
 
     private static @NotNull NodeHistoryEntry getNodeHistoryEntry() {
         NodeHistoryEntry addedEntry = new NodeHistoryEntry();
+        addedEntry.setId(UUID.randomUUID());
         addedEntry.setZone(1);
         addedEntry.setNetwork(1);
         addedEntry.setNode(1);
@@ -94,11 +97,29 @@ public abstract class BaseIntegrationTest {
         return addedEntry;
     }
 
+    @BeforeAll
+    static void createKeyspace() {
+        if (cassandra.isRunning()) {
+            try (CqlSession session = CqlSession.builder()
+                    .addContactPoint(
+                        InetSocketAddress.createUnresolved(cassandra.getHost(),
+                        cassandra.getMappedPort(9042))
+                    )
+                    .withLocalDatacenter(cassandra.getLocalDatacenter())
+                    .build()) {
+                session.execute("DROP KEYSPACE IF EXISTS " + KEYSPACE_NAME + ";");
+            }
+        }
+    }
+
     @BeforeEach
     void setUpDatabase() {
         nodeHistoryEntryRepository.deleteAll();
 
         // Create test history entries
+        NodeHistoryEntry addedEntry = getNodeHistoryEntry();
+        nodeHistoryEntryRepository.save(addedEntry);
+        
         NodeHistoryEntry modifiedEntry = getHistoryEntry();
         nodeHistoryEntryRepository.save(modifiedEntry);
     }
@@ -108,6 +129,7 @@ public abstract class BaseIntegrationTest {
         nodeHistoryEntryRepository.save(addedEntry);
 
         NodeHistoryEntry modifiedEntry = new NodeHistoryEntry();
+        modifiedEntry.setId(UUID.randomUUID());
         modifiedEntry.setZone(1);
         modifiedEntry.setNetwork(1);
         modifiedEntry.setNode(2);
@@ -124,7 +146,7 @@ public abstract class BaseIntegrationTest {
 
     @AfterAll
     static void close() {
-        postgreSQLContainer.close();
+        cassandra.close();
         minioContainer.close();
         redpandaContainer.close();
         redisContainer.close();

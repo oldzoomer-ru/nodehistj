@@ -3,6 +3,7 @@ package ru.oldzoomer.nodehistj_newest_nodelists;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication
 @EnableTransactionManagement
+@EnableCassandraRepositories(basePackages = "ru.oldzoomer.nodehistj_newest_nodelists.repo")
 @EnableCaching
 public class NodehistjApplication {
 

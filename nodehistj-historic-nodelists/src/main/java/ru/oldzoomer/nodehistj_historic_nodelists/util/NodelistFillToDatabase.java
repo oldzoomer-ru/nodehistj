@@ -15,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
-import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 import ru.oldzoomer.redis.utils.ClearRedisCache;
 
@@ -32,7 +30,6 @@ import ru.oldzoomer.redis.utils.ClearRedisCache;
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;
-    private final NodelistEntryRepository nodelistEntryRepository;
     private final ClearRedisCache clearRedisCache;
 
     /** MinIO bucket name where nodelists are stored */
@@ -47,7 +44,8 @@ public class NodelistFillToDatabase {
      */
     private static NodeEntry getNodeEntry(
         ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
-        NodelistEntry nodelistEntryNew
+        Integer year,
+        String name
     ) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
@@ -61,7 +59,8 @@ public class NodelistFillToDatabase {
         nodeEntryNew.setPhone(nodeListEntry.phone());
         nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
         nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
-        nodeEntryNew.setNodelistEntry(nodelistEntryNew);
+        nodeEntryNew.setNodelistYear(year);
+        nodeEntryNew.setNodelistName(name);
         return nodeEntryNew;
     }
 
@@ -70,23 +69,29 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
+    @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-            if (!matcher.matches()) {
-                log.debug("Object {} is not a nodelist", object);
-                continue;
-            }
+        try {
+            for (String object : modifiedObjects) {
+                Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+                if (!matcher.find()) {
+                    log.debug("Object {} is not a valid nodelist", object);
+                    continue;
+                }
 
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
-                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-            } catch (Exception e) {
-                log.error("Failed to add nodelist to database", e);
+                try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+                } catch (Exception e) {
+                    log.error("Failed to process nodelist {}", object, e);
+                }
             }
+            clearRedisCache.clearCache();
+        } catch (Exception e) {
+            log.error("Failed to update nodelists", e);
+            throw e;
         }
-        clearRedisCache.clearCache();
         log.info("Update nodelists is finished");
     }
 
@@ -101,18 +106,11 @@ public class NodelistFillToDatabase {
      */
     @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
-            log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
-
-            NodelistEntry nodelistEntryNew = new NodelistEntry();
-            nodelistEntryNew.setNodelistYear(year);
-            nodelistEntryNew.setNodelistName(name);
-            nodelistEntryRepository.save(nodelistEntryNew);
-
-            for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-                nodeEntryRepository.save(getNodeEntry(nodeListEntry, nodelistEntryNew));
-            }
-            log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
+        log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
+        
+        for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
+            nodeEntryRepository.save(getNodeEntry(nodeListEntry, year, name));
         }
+        log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
     }
 }

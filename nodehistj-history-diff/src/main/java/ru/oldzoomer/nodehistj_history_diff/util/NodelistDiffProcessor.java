@@ -122,8 +122,8 @@ public class NodelistDiffProcessor {
                 node.getZone(),
                 node.getNetwork(),
                 node.getNode(),
-                node.getNodelistEntry().getNodelistYear(),
-                node.getNodelistEntry().getNodelistName());
+                node.getNodelistYear(),
+                node.getNodelistName());
 
         if (entryExists) {
             return;
@@ -135,8 +135,8 @@ public class NodelistDiffProcessor {
         historyEntry.setNetwork(node.getNetwork());
         historyEntry.setNode(node.getNode());
         historyEntry.setChangeDate(changeDate);
-        historyEntry.setNodelistYear(node.getNodelistEntry().getNodelistYear());
-        historyEntry.setNodelistName(node.getNodelistEntry().getNodelistName());
+        historyEntry.setNodelistYear(node.getNodelistYear());
+        historyEntry.setNodelistName(node.getNodelistName());
         historyEntry.setChangeType(changeType);
 
         // Current values

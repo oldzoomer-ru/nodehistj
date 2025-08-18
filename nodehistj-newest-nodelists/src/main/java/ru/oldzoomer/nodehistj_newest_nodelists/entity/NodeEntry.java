@@ -2,63 +2,37 @@ package ru.oldzoomer.nodehistj_newest_nodelists.entity;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "node_entry",
-        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
+@Table("node_entry")
 public class NodeEntry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @PrimaryKey
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private NodelistEntry nodelistEntry;
-
-    @Column(name = "zone")
+    private Integer nodelistYear;
+    private String nodelistName;
     private Integer zone;
-
-    @Column(name = "network")
     private Integer network;
-
-    @Column(name = "node")
     private Integer node;
-
-    @Column(name = "keywords")
     private Keywords keywords;
-
-    @Column(name = "node_name")
     private String nodeName;
-
-    @Column(name = "location")
     private String location;
-
-    @Column(name = "sys_op_name")
     private String sysOpName;
-
-    @Column(name = "phone")
     private String phone;
-
-    @Column(name = "baud_rate")
     private Integer baudRate;
-
-    @Column(name = "flags")
     private List<String> flags;
+
+    public NodeEntry() {
+        this.id = UUID.randomUUID();
+    }
 
     @Override
     public boolean equals(Object o) {

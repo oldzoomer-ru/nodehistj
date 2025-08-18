@@ -3,13 +3,12 @@ package ru.oldzoomer.nodehistj_history_diff.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
@@ -49,7 +48,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
+    public Slice<Object> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetworkAndNodeOrderByChangeDateDesc(zone, network, node, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -65,7 +64,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
+    public Slice<Object> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetworkOrderByChangeDateDescNodeAsc(zone, network, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -80,7 +79,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
+    public Slice<Object> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneOrderByChangeDateDescNetworkAscNodeAsc(zone, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -94,7 +93,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
+    public Slice<Object> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -123,7 +122,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getChangesBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Slice<Object> getChangesBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(startDate, endDate, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -138,36 +137,9 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<NodeHistoryEntryDto> getChangesByType(NodeHistoryEntry.ChangeType changeType, Pageable pageable) {
+    public Slice<Object> getChangesByType(NodeHistoryEntry.ChangeType changeType, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(changeType, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Gets summary statistics of changes between dates.
-     *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @return A list of change summary statistics.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<NodeChangeSummaryDto> getChangeSummary(LocalDate startDate, LocalDate endDate) {
-        return nodeHistoryEntryRepository.getChangeSummary(startDate, endDate);
-    }
-
-    /**
-     * Gets a list of most frequently changed nodes.
-     *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @param pageable Pagination information.
-     * @return A list of active nodes with change counts.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return nodeHistoryEntryRepository.getMostActiveNodes(startDate, endDate, pageable);
     }
 }

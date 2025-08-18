@@ -18,6 +18,7 @@ class ExceptionResolverTest {
 
     private final ExceptionResolver resolver = new ExceptionResolver();
 
+    @SuppressWarnings("null")
     @Test
     @DisplayName("NoSuchElementException -> 404 Not Found и корректный ErrorDto")
     void handleNotFoundReturns404() {
@@ -33,6 +34,7 @@ class ExceptionResolverTest {
         assertEquals("entity not found", resp.getBody().getCode());
     }
 
+    @SuppressWarnings("null")
     @Test
     @DisplayName("IllegalArgumentException -> 400 Bad Request и корректный ErrorDto")
     void handleBadRequestReturns400() {
@@ -48,6 +50,7 @@ class ExceptionResolverTest {
         assertEquals("bad arg", resp.getBody().getCode());
     }
 
+    @SuppressWarnings("null")
     @Test
     @DisplayName("ConstraintViolationException -> 400 Validation Error и проксирует message")
     void handleValidationErrorReturns400() {
@@ -63,6 +66,7 @@ class ExceptionResolverTest {
         assertEquals("invalid", resp.getBody().getCode());
     }
 
+    @SuppressWarnings("null")
     @Test
     @DisplayName("MethodArgumentTypeMismatchException -> 400 Type Mismatch и форматированное сообщение")
     void handleTypeMismatchReturns400() {
@@ -82,6 +86,7 @@ class ExceptionResolverTest {
                 .contains("Invalid value 'ABC' for parameter 'year'");
     }
 
+    @SuppressWarnings("null")
     @Test
     @DisplayName("Exception -> 500 Internal Error и безопасное сообщение")
     void handleInternalErrorReturns500() {

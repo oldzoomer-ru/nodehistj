@@ -10,7 +10,8 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  */
 @Data
 public class NodeEntryDto {
-    private NodelistEntryDto nodelistEntry;
+    private Integer nodelistYear; // Denormalized from NodelistEntry
+    private String nodelistName; // Denormalized from NodelistEntry
     private Keywords keywords;
     private String nodeName;
     private String location;

@@ -9,8 +9,7 @@ import org.mapstruct.ReportingPolicy;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {NodelistEntryMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NodeEntryMapper {
     List<NodeEntryDto> toDto(List<NodeEntry> nodeEntries);
 

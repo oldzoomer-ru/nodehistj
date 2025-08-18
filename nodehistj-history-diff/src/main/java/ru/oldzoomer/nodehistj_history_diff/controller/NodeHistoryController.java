@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
@@ -46,7 +45,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/node/{zone}/{network}/{node}")
     @Cacheable(value = "nodeHistory")
-    public List<NodeHistoryEntryDto> getNodeHistory(
+    public List<Object> getNodeHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @PathVariable @Min(0) @Max(32767) Integer node,
@@ -68,7 +67,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/network/{zone}/{network}")
     @Cacheable(value = "networkHistory")
-    public List<NodeHistoryEntryDto> getNetworkHistory(
+    public List<Object> getNetworkHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @RequestParam(defaultValue = "0") int page,
@@ -88,7 +87,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/zone/{zone}")
     @Cacheable(value = "zoneHistory")
-    public List<NodeHistoryEntryDto> getZoneHistory(
+    public List<Object> getZoneHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -105,7 +104,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/all")
     @Cacheable(value = "globalHistory")
-    public List<NodeHistoryEntryDto> getAllHistory(
+    public List<Object> getAllHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -138,7 +137,7 @@ public class NodeHistoryController {
      */
     @GetMapping("/range")
     @Cacheable(value = "dateRangeHistory")
-    public List<NodeHistoryEntryDto> getChangesBetweenDates(
+    public List<Object> getChangesBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
@@ -158,48 +157,11 @@ public class NodeHistoryController {
      */
     @GetMapping("/type/{changeType}")
     @Cacheable(value = "typeHistory")
-    public List<NodeHistoryEntryDto> getChangesByType(
+    public List<Object> getChangesByType(
             @PathVariable NodeHistoryEntry.ChangeType changeType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return nodeHistoryService.getChangesByType(changeType, pageable).toList();
-    }
-
-    /**
-     * Get summary statistics of changes for a date range
-     * @param startDate Start date in ISO format (YYYY-MM-DD)
-     * @param endDate End date in ISO format (YYYY-MM-DD)
-     * @return List of NodeChangeSummaryDto with change statistics
-     * @response 200 OK - Summary retrieved successfully
-     * @response 400 Bad Request - Invalid date range
-     */
-    @GetMapping("/summary")
-    @Cacheable(value = "changeSummary")
-    public List<NodeChangeSummaryDto> getChangeSummary(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return nodeHistoryService.getChangeSummary(startDate, endDate);
-    }
-
-    /**
-     * Get most active nodes (nodes with most changes) in period
-     * @param startDate Start date in ISO format (YYYY-MM-DD)
-     * @param endDate End date in ISO format (YYYY-MM-DD)
-     * @param page Page number (0-based)
-     * @param size Page size (default 10)
-     * @return List of Object arrays with node IDs and change counts
-     * @response 200 OK - Active nodes retrieved successfully
-     * @response 400 Bad Request - Invalid date range
-     */
-    @GetMapping("/active-nodes")
-    @Cacheable(value = "activeNodes")
-    public List<Object[]> getMostActiveNodes(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getMostActiveNodes(startDate, endDate, pageable);
     }
 }

@@ -1,39 +1,40 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.repo;
 
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
+import org.springframework.data.cassandra.repository.CassandraRepository;
+import org.springframework.data.cassandra.repository.Query;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 
-public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
-    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = :nodelistName " +
-            "and nle.nodelistYear = :nodelistYear " +
-            "and zone = :zone and network = :network and node = :node")
-    @EntityGraph(attributePaths = "nodelistEntry")
-    NodeEntry get(Integer zone, Integer network, Integer node, String nodelistName, Integer nodelistYear);
+public interface NodeEntryRepository extends CassandraRepository<NodeEntry, UUID> {
 
-    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = :nodelistName " +
-            "and nle.nodelistYear = :nodelistYear " +
-            "and zone = :zone and network = :network order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
-    List<NodeEntry> get(Integer zone, Integer network, String nodelistName, Integer nodelistYear);
+    @Query("SELECT * FROM node_entry " +
+           "WHERE nodelist_name = ?0 " +
+           "AND nodelist_year = ?1 " +
+           "AND zone = ?2 " +
+           "AND network = ?3 " +
+           "AND node = ?4")
+    NodeEntry get(String nodelistName, Integer nodelistYear, Integer zone, Integer network, Integer node);
 
-    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = :nodelistName " +
-            "and nle.nodelistYear = :nodelistYear " +
-            "and zone = :zone order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
-    List<NodeEntry> get(Integer zone, String nodelistName, Integer nodelistYear);
+    @Query("SELECT * FROM node_entry " +
+           "WHERE nodelist_name = ?0 " +
+           "AND nodelist_year = ?1 " +
+           "AND zone = ?2 " +
+           "AND network = ?3 " +
+           "ORDER BY zone, network, node")
+    List<NodeEntry> get(String nodelistName, Integer nodelistYear, Integer zone, Integer network);
 
-    @Query("from NodeEntry ne join fetch ne.nodelistEntry nle " +
-            "where nle.nodelistName = :nodelistName " +
-            "and nle.nodelistYear = :nodelistYear " +
-            "order by zone, network, node")
-    @EntityGraph(attributePaths = "nodelistEntry")
+    @Query("SELECT * FROM node_entry " +
+           "WHERE nodelist_name = ?0 " +
+           "AND nodelist_year = ?1 " +
+           "AND zone = ?2 " +
+           "ORDER BY zone, network, node")
+    List<NodeEntry> get(String nodelistName, Integer nodelistYear, Integer zone);
+
+    @Query("SELECT * FROM node_entry WHERE nodelist_name = ?0 AND nodelist_year = ?1 ORDER BY zone, network, node")
     List<NodeEntry> getAll(String nodelistName, Integer nodelistYear);
+
+    @Query("SELECT * FROM node_entry WHERE nodelist_name = ?0 AND nodelist_year = ?1")
+    List<NodeEntry> findByNodelistYearAndName(String nodelistName, Integer nodelistYear);
 }

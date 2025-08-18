@@ -17,7 +17,6 @@ import org.testcontainers.utility.DockerImageName;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
             DockerImageName.parse("redpandadata/redpanda"));
