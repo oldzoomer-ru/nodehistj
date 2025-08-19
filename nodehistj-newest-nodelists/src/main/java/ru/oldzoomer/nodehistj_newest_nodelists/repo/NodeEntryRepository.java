@@ -8,12 +8,10 @@ import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 
 @Repository
 public interface NodeEntryRepository extends CassandraRepository<NodeEntry, UUID> {
-
     @AllowFiltering
     @Query("SELECT * FROM node_entry WHERE zone = :zone AND network = :network AND node = :node LIMIT 1")
     NodeEntry getLast(

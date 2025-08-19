@@ -13,8 +13,12 @@
   <module name="LineLength">
     <property name="max" value="120"/>
   </module>
+
+  <module name="SuppressWarningsFilter"/>
   
   <module name="TreeWalker">
+    <!-- Подавление ошибок через аннотацию -->
+    <module name="SuppressWarningsHolder"/>
     <!-- Импорты -->
     <module name="UnusedImports"/>
     

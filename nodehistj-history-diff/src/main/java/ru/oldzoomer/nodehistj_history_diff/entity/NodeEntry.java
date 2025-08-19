@@ -36,8 +36,12 @@ public class NodeEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof NodeEntry)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof NodeEntry)) {
+            return false;
+        }
         NodeEntry nodeEntry = (NodeEntry) o;
         return Objects.equals(zone, nodeEntry.zone) &&
                 Objects.equals(network, nodeEntry.network) &&

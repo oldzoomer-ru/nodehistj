@@ -10,9 +10,9 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
+@Table("node_entry")
 @Getter
 @Setter
-@Table("node_entry")
 public class NodeEntry {
     @PrimaryKey
     private UUID id;

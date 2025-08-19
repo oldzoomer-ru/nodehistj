@@ -14,7 +14,7 @@ public interface NodeEntryRepository extends CassandraRepository<NodeEntry, UUID
     @Query("SELECT * FROM node_entry WHERE nodelist_year = :nodelistYear AND nodelist_name = :nodelistName " +
            "ORDER BY zone, network, node")
     List<NodeEntry> findByNodelistYearAndName(@Param("nodelistYear") Integer nodelistYear,
-                                             @Param("nodelistName") String nodelistName);
+                                              @Param("nodelistName") String nodelistName);
 
     @Query("SELECT DISTINCT nodelist_year, nodelist_name FROM node_entry " +
            "ORDER BY nodelist_year DESC, nodelist_name DESC")
