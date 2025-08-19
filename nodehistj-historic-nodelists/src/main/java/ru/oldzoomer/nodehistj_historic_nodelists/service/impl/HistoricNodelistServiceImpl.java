@@ -26,20 +26,20 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getAll(String.format("nodelist.%03d", dayOfYear), year));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findAll(String.format("nodelist.%03d", dayOfYear), year));
     }
 
     @Override
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, String.format("nodelist.%03d", dayOfYear), year));
+        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, String.format("nodelist.%03d", dayOfYear), year));
     }
 
     @Override
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, network,
+        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, network,
                 String.format("nodelist.%03d", dayOfYear), year));
     }
 
@@ -47,7 +47,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        return nodeEntryMapper.toDto(nodeEntryRepository.get(zone, network, node,
+        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, network, node,
                 String.format("nodelist.%03d", dayOfYear), year));
     }
 }

@@ -26,27 +26,29 @@ public class NodelistServiceImpl implements NodelistService {
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        return nodeEntryMapper.toDto(nodeEntryRepository.getAll());
+        return nodeEntryMapper.toDto(nodeEntryRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneOrderByIdDesc(zone));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetworkOrderByIdDesc(zone, network));
     }
 
     @Override
     @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network, node));
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findFirstByZoneAndNetworkAndNodeOrderByIdDesc(zone, network, node)
+        );
     }
 }

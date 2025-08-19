@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,8 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Entity
 @Table(name = "node_entry",
         indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
+@NamedEntityGraph(name = "NodeEntry.nodelistEntry",
+        attributeNodes = @NamedAttributeNode("nodelistEntry"))
 public class NodeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

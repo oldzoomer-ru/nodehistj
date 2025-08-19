@@ -45,7 +45,7 @@ public class NodeHistoryController {
      * @example Example request: GET /history/node/1/2/3?page=0&size=10
      */
     @GetMapping("/node/{zone}/{network}/{node}")
-    @Cacheable(value = "nodeHistory")
+    @Cacheable("nodeHistory")
     public List<NodeHistoryEntryDto> getNodeHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
@@ -67,7 +67,7 @@ public class NodeHistoryController {
      * @response 404 Not Found - Network not found
      */
     @GetMapping("/network/{zone}/{network}")
-    @Cacheable(value = "networkHistory")
+    @Cacheable("networkHistory")
     public List<NodeHistoryEntryDto> getNetworkHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
@@ -87,7 +87,7 @@ public class NodeHistoryController {
      * @response 404 Not Found - Zone not found
      */
     @GetMapping("/zone/{zone}")
-    @Cacheable(value = "zoneHistory")
+    @Cacheable("zoneHistory")
     public List<NodeHistoryEntryDto> getZoneHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
@@ -104,7 +104,7 @@ public class NodeHistoryController {
      * @response 200 OK - History retrieved successfully
      */
     @GetMapping("/all")
-    @Cacheable(value = "globalHistory")
+    @Cacheable("globalHistory")
     public List<NodeHistoryEntryDto> getAllHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -120,7 +120,7 @@ public class NodeHistoryController {
      * @response 204 No Content - No changes for this date
      */
     @GetMapping("/date/{date}")
-    @Cacheable(value = "dailyHistory", key = "#date")
+    @Cacheable("dailyHistory")
     public List<NodeHistoryEntryDto> getChangesForDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return nodeHistoryService.getChangesForDate(date);
@@ -137,7 +137,7 @@ public class NodeHistoryController {
      * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/range")
-    @Cacheable(value = "dateRangeHistory")
+    @Cacheable("dateRangeHistory")
     public List<NodeHistoryEntryDto> getChangesBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -157,7 +157,7 @@ public class NodeHistoryController {
      * @response 400 Bad Request - Invalid change type
      */
     @GetMapping("/type/{changeType}")
-    @Cacheable(value = "typeHistory")
+    @Cacheable("typeHistory")
     public List<NodeHistoryEntryDto> getChangesByType(
             @PathVariable NodeHistoryEntry.ChangeType changeType,
             @RequestParam(defaultValue = "0") int page,
@@ -175,7 +175,7 @@ public class NodeHistoryController {
      * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/summary")
-    @Cacheable(value = "changeSummary")
+    @Cacheable("changeSummary")
     public List<NodeChangeSummaryDto> getChangeSummary(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -193,7 +193,7 @@ public class NodeHistoryController {
      * @response 400 Bad Request - Invalid date range
      */
     @GetMapping("/active-nodes")
-    @Cacheable(value = "activeNodes")
+    @Cacheable("activeNodes")
     public List<Object[]> getMostActiveNodes(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
