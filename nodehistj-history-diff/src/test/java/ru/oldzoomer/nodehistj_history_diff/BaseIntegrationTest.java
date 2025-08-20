@@ -67,8 +67,8 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        log.info("Cassandra host: {}", cassandra.getHost());
-        log.info("Cassandra port: {}", cassandra.getMappedPort(9042));
+        log.info("Cassandra host: {}", cassandra.getContactPoint().getHostName());
+        log.info("Cassandra port: {}", cassandra.getContactPoint().getPort());
         log.info("Cassandra local datacenter: {}", cassandra.getLocalDatacenter());
         log.info("Cassandra keyspace name: {}", KEYSPACE_NAME);
         log.info("MinIO URL: {}", minioContainer.getS3URL());
@@ -79,9 +79,9 @@ public abstract class BaseIntegrationTest {
         log.info("Redis port: {}", redisContainer.getRedisPort());
         log.info("Cassandra is running: {}", cassandra.isRunning());
         log.info("Cassandra container logs: {}", cassandra.getLogs());
-        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getHost());
-        registry.add("spring.data.cassandra.port", () -> cassandra.getMappedPort(9042));
-        registry.add("spring.data.cassandra.local-datacenter", () -> cassandra.getLocalDatacenter());
+        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
+        registry.add("spring.data.cassandra.port", () -> cassandra.getContactPoint().getPort());
+        registry.add("spring.data.cassandra.local-datacenter", cassandra::getLocalDatacenter);
         registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
