@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
 import org.springframework.data.cassandra.core.mapping.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,9 +23,6 @@ public class NodeHistoryEntry {
 
     @Indexed
     private Integer node;
-
-    @Indexed
-    private LocalDate changeDate;
 
     @Indexed
     private Integer nodelistYear;
@@ -52,8 +48,12 @@ public class NodeHistoryEntry {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         NodeHistoryEntry that = (NodeHistoryEntry) o;
         return Objects.equals(id, that.id);
     }

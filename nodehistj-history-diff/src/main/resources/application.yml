@@ -12,10 +12,15 @@ spring:
     schema-action: CREATE_IF_NOT_EXISTS
     request:
       timeout: 5s
-      consistency: LOCAL_ONE
+      consistency: LOCAL_QUORUM
     connection:
       connect-timeout: 5s
       init-query-timeout: 5s
+    compression: LZ4
+    speculative-execution-policy:
+      constant-speculative-execution-policy:
+        delay: 100ms
+        max-speculative-executions: 2
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
     consumer:

@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
 import java.net.InetSocketAddress;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -84,7 +83,6 @@ public abstract class BaseIntegrationTest {
         addedEntry.setZone(1);
         addedEntry.setNetwork(1);
         addedEntry.setNode(1);
-        addedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
         addedEntry.setNodelistYear(2023);
         addedEntry.setNodelistName("nodelist.001");
         addedEntry.setChangeType(NodeHistoryEntry.ChangeType.ADDED);
@@ -135,7 +133,6 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setZone(1);
         modifiedEntry.setNetwork(1);
         modifiedEntry.setNode(2);
-        modifiedEntry.setChangeDate(LocalDate.of(2023, 1, 2));
         modifiedEntry.setNodelistYear(2023);
         modifiedEntry.setNodelistName("nodelist.002");
         modifiedEntry.setChangeType(NodeHistoryEntry.ChangeType.MODIFIED);

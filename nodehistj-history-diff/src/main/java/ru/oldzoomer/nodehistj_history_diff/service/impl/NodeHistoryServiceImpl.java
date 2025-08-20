@@ -1,16 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
@@ -50,7 +45,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Transactional(readOnly = true)
     public Slice<Object> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneAndNetworkAndNodeOrderByChangeDateDesc(zone, network, node, pageable)
+                .findByZoneAndNetworkAndNode(zone, network, node, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -66,7 +61,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Transactional(readOnly = true)
     public Slice<Object> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneAndNetworkOrderByChangeDateDescNodeAsc(zone, network, pageable)
+                .findByZoneAndNetwork(zone, network, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -81,7 +76,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Transactional(readOnly = true)
     public Slice<Object> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneOrderByChangeDateDescNetworkAscNodeAsc(zone, pageable)
+                .findByZone(zone, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -95,51 +90,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Transactional(readOnly = true)
     public Slice<Object> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(pageable)
-                .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Retrieves all changes for a specific date.
-     *
-     * @param date The date to filter changes.
-     * @return A list of changes for the specified date.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<NodeHistoryEntryDto> getChangesForDate(LocalDate date) {
-        return nodeHistoryEntryMapper.toDto(
-                nodeHistoryEntryRepository.findByChangeDateOrderByZoneAscNetworkAscNodeAsc(date));
-    }
-
-    /**
-     * Retrieves changes between two dates with pagination.
-     *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @param pageable Pagination information.
-     * @return A page of changes in the date range.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Slice<Object> getChangesBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return nodeHistoryEntryRepository
-                .findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(startDate, endDate, pageable)
-                .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Retrieves changes filtered by change type with pagination.
-     *
-     * @param changeType The type of change to filter.
-     * @param pageable Pagination information.
-     * @return A page of changes of the specified type.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Slice<Object> getChangesByType(NodeHistoryEntry.ChangeType changeType, Pageable pageable) {
-        return nodeHistoryEntryRepository
-                .findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(changeType, pageable)
+                .findAll(pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 }

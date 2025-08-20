@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import lombok.Getter;
@@ -17,8 +18,13 @@ public class NodeEntry {
     @PrimaryKey
     private UUID id;
 
+    @Indexed
     private Integer zone;
+
+    @Indexed
     private Integer network;
+
+    @Indexed
     private Integer node;
     private Keywords keywords;
     private String nodeName;
@@ -27,7 +33,10 @@ public class NodeEntry {
     private String phone;
     private Integer baudRate;
     private List<String> flags;
+    @Indexed
     private Integer nodelistYear;
+
+    @Indexed
     private String nodelistName;
 
     public NodeEntry() {
