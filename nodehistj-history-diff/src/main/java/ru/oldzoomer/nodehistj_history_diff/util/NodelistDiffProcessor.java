@@ -1,15 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,14 +54,13 @@ public class NodelistDiffProcessor {
         }
     }
 
-    @Transactional
     private void processDiffBetweenNodelists(Integer prevYear, String prevName,
             Integer currYear, String currName) {
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
 
         // Get nodes from both nodelists
-        List<NodeEntry> previousNodes = nodeEntryRepository.findByNodelist(prevYear, prevName);
-        List<NodeEntry> currentNodes = nodeEntryRepository.findByNodelist(currYear, currName);
+        List<NodeEntry> previousNodes = nodeEntryRepository.findByNodelistYearAndName(prevYear, prevName);
+        List<NodeEntry> currentNodes = nodeEntryRepository.findByNodelistYearAndName(currYear, currName);
 
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = previousNodes.stream()
@@ -73,13 +68,11 @@ public class NodelistDiffProcessor {
         Map<String, NodeEntry> currentNodeMap = currentNodes.stream()
                 .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
 
-        LocalDate changeDate = parseNodelistDate(currYear, currName);
-
         // Find added nodes
         for (NodeEntry currentNode : currentNodes) {
             String key = getNodeKey(currentNode);
             if (!previousNodeMap.containsKey(key)) {
-                createHistoryEntry(currentNode, changeDate, NodeHistoryEntry.ChangeType.ADDED, null);
+                createHistoryEntry(currentNode, NodeHistoryEntry.ChangeType.ADDED, null);
             }
         }
 
@@ -87,7 +80,7 @@ public class NodelistDiffProcessor {
         for (NodeEntry previousNode : previousNodes) {
             String key = getNodeKey(previousNode);
             if (!currentNodeMap.containsKey(key)) {
-                createHistoryEntry(previousNode, changeDate, NodeHistoryEntry.ChangeType.REMOVED, null);
+                createHistoryEntry(previousNode, NodeHistoryEntry.ChangeType.REMOVED, null);
             }
         }
 
@@ -96,7 +89,7 @@ public class NodelistDiffProcessor {
             String key = getNodeKey(currentNode);
             NodeEntry previousNode = previousNodeMap.get(key);
             if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                createHistoryEntry(currentNode, changeDate, NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
+                createHistoryEntry(currentNode, NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
             }
         }
     }
@@ -115,10 +108,10 @@ public class NodelistDiffProcessor {
                 Objects.equals(node1.getFlags(), node2.getFlags());
     }
 
-    private void createHistoryEntry(NodeEntry node, LocalDate changeDate,
+    private void createHistoryEntry(NodeEntry node,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         // Check if similar entry already exists
-        boolean entryExists = nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
+        boolean entryExists = nodeHistoryEntryRepository.existsByZoneAndNetworkAndNode(
                 node.getZone(),
                 node.getNetwork(),
                 node.getNode(),
@@ -134,7 +127,6 @@ public class NodelistDiffProcessor {
         historyEntry.setZone(node.getZone());
         historyEntry.setNetwork(node.getNetwork());
         historyEntry.setNode(node.getNode());
-        historyEntry.setChangeDate(changeDate);
         historyEntry.setNodelistYear(node.getNodelistYear());
         historyEntry.setNodelistName(node.getNodelistName());
         historyEntry.setChangeType(changeType);
@@ -160,19 +152,5 @@ public class NodelistDiffProcessor {
         }
 
         nodeHistoryEntryRepository.save(historyEntry);
-    }
-
-    private LocalDate parseNodelistDate(Integer year, String nodelistName) {
-        // Extract day of year from nodelist name (e.g., "nodelist.001" -> day 1)
-        Pattern pattern = Pattern.compile("nodelist\\.(\\d{3})");
-        Matcher matcher = pattern.matcher(nodelistName);
-
-        if (matcher.matches()) {
-            int dayOfYear = Integer.parseInt(matcher.group(1));
-            return LocalDate.ofYearDay(year, dayOfYear);
-        }
-
-        // Fallback to current date if parsing fails
-        return LocalDate.now();
     }
 }

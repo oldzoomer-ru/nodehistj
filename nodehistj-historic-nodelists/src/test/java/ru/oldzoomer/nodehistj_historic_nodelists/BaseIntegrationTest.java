@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_historic_nodelists;
 
-import java.net.InetSocketAddress;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -24,13 +22,14 @@ import org.testcontainers.utility.DockerImageName;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.redis.testcontainers.RedisContainer;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
 @Testcontainers
-@Transactional
+@Slf4j
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
     private static final String KEYSPACE_NAME = "nodehistj";
@@ -40,6 +39,7 @@ public abstract class BaseIntegrationTest {
     public static final CassandraContainer cassandra = new CassandraContainer("cassandra")
             .withExposedPorts(9042)
             .withEnv("CASSANDRA_DC", "datacenter1")
+            .withEnv("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
             .waitingFor(Wait.forListeningPort());
 
     @Container
@@ -65,7 +65,19 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.cassandra.contact-points", () -> String.valueOf(cassandra.getHost()));
+        log.info("Cassandra host: {}", cassandra.getHost());
+        log.info("Cassandra port: {}", cassandra.getMappedPort(9042));
+        log.info("Cassandra local datacenter: {}", cassandra.getLocalDatacenter());
+        log.info("Cassandra keyspace name: {}", KEYSPACE_NAME);
+        log.info("MinIO URL: {}", minioContainer.getS3URL());
+        log.info("MinIO user: {}", minioContainer.getUserName());
+        log.info("MinIO password: {}", minioContainer.getPassword());
+        log.info("Redpanda bootstrap servers: {}", redpandaContainer.getBootstrapServers());
+        log.info("Redis host: {}", redisContainer.getRedisHost());
+        log.info("Redis port: {}", redisContainer.getRedisPort());
+        log.info("Cassandra is running: {}", cassandra.isRunning());
+        log.info("Cassandra container logs: {}", cassandra.getLogs());
+        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getHost());
         registry.add("spring.data.cassandra.port", () -> cassandra.getMappedPort(9042));
         registry.add("spring.data.cassandra.local-datacenter", () -> cassandra.getLocalDatacenter());
         registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
@@ -79,18 +91,26 @@ public abstract class BaseIntegrationTest {
 
     @BeforeAll
     static void createKeyspace() {
-        if (cassandra.isRunning()) {
-            try (CqlSession session = CqlSession.builder()
-                    .addContactPoint(
-                        InetSocketAddress.createUnresolved(cassandra.getHost(),
-                        cassandra.getMappedPort(9042))
-                    )
-                    .withLocalDatacenter(cassandra.getLocalDatacenter())
-                    .build()) {
-                session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE_NAME +
-                        " WITH replication = \n" +
-                        "{'class':'SimpleStrategy','replication_factor':'1'};");
+        log.info("Waiting for Cassandra container to start...");
+        int attempts = 0;
+        while (!cassandra.isRunning() && attempts++ < 30) {
+            try {
+                Thread.sleep(1000);
+                log.info("Waiting for Cassandra... Attempt {}", attempts);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+        }
+        if (!cassandra.isRunning()) {
+            throw new IllegalStateException("Cassandra container failed to start");
+        }
+        try (CqlSession session = CqlSession.builder()
+                .addContactPoint(cassandra.getContactPoint())
+                .withLocalDatacenter(cassandra.getLocalDatacenter())
+                .build()) {
+            session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE_NAME +
+                    " WITH replication = \n" +
+                    "{'class':'SimpleStrategy','replication_factor':'1'};");
         }
     }
 

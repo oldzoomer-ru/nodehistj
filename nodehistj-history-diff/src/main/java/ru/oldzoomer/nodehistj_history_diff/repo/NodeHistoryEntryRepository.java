@@ -12,10 +12,10 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 public interface NodeHistoryEntryRepository extends CassandraRepository<NodeHistoryEntry, UUID> {
 
     @Query("""
-        SELECT * FROM node_history_entry
-        WHERE zone = :zone AND network = :network AND node = :node
-        ORDER BY nodelist_year DESC, nodelist_name DESC, id DESC
-        """)
+            SELECT * FROM node_history_entry
+            WHERE zone = :zone AND network = :network AND node = :node
+            ORDER BY nodelist_year DESC, nodelist_name DESC, id DESC
+            """)
     Slice<NodeHistoryEntry> findByZoneAndNetworkAndNode(
             @Param("zone") Integer zone,
             @Param("network") Integer network,
@@ -23,29 +23,42 @@ public interface NodeHistoryEntryRepository extends CassandraRepository<NodeHist
             Pageable pageable);
 
     @Query("""
-        SELECT * FROM node_history_entry
-        WHERE zone = :zone AND network = :network
-        ORDER BY nodelist_year DESC, nodelist_name DESC, node DESC, id DESC
-        """)
+            SELECT * FROM node_history_entry
+            WHERE zone = :zone AND network = :network
+            ORDER BY nodelist_year DESC, nodelist_name DESC, node DESC, id DESC
+            """)
     Slice<NodeHistoryEntry> findByZoneAndNetwork(
             @Param("zone") Integer zone,
             @Param("network") Integer network,
             Pageable pageable);
 
     @Query("""
-        SELECT * FROM node_history_entry
-        WHERE zone = :zone
-        ORDER BY nodelist_year DESC, nodelist_name DESC, 
-        network DESC, node DESC, id DESC
-        """)
+            SELECT * FROM node_history_entry
+            WHERE zone = :zone
+            ORDER BY nodelist_year DESC, nodelist_name DESC,
+            network DESC, node DESC, id DESC
+            """)
     Slice<NodeHistoryEntry> findByZone(
             @Param("zone") Integer zone,
             Pageable pageable);
 
     @Query("""
-        SELECT * FROM node_history_entry
-        ORDER BY nodelist_year DESC, nodelist_name DESC,
-        zone DESC, network DESC, node DESC, id DESC
-        """)
+            SELECT * FROM node_history_entry
+            ORDER BY nodelist_year DESC, nodelist_name DESC,
+            zone DESC, network DESC, node DESC, id DESC
+            """)
     Slice<NodeHistoryEntry> findAll(Pageable pageable);
+
+    @Query("""
+            SELECT * FROM node_history_entry
+            WHERE zone = :zone AND network = :network AND node = :node
+            AND nodelist_year = :year AND nodelist_name = :name
+            LIMIT 1
+            """)
+    boolean existsByZoneAndNetworkAndNode(
+            @Param("zone") Integer zone,
+            @Param("network") Integer network,
+            @Param("node") Integer node,
+            @Param("year") Integer year,
+            @Param("name") String name);
 }

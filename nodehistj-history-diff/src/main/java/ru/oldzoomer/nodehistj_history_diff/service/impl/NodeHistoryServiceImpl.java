@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_history_diff.service.impl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
@@ -42,7 +41,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of node history entries.
      */
     @Override
-    @Transactional(readOnly = true)
     public Slice<Object> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetworkAndNode(zone, network, node, pageable)
@@ -58,7 +56,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of network history entries.
      */
     @Override
-    @Transactional(readOnly = true)
     public Slice<Object> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetwork(zone, network, pageable)
@@ -73,7 +70,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of zone history entries.
      */
     @Override
-    @Transactional(readOnly = true)
     public Slice<Object> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZone(zone, pageable)
@@ -87,7 +83,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return A page of all history entries.
      */
     @Override
-    @Transactional(readOnly = true)
     public Slice<Object> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findAll(pageable)

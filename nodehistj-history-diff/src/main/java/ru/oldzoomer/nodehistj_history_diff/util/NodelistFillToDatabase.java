@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,7 +108,6 @@ public class NodelistFillToDatabase {
         log.info("Finished processing {} nodelists", validObjects.size());
     }
 
-    @Transactional
     private void processSingleNodelist(String object) throws Exception {
         Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
         matcher.find(); // Already validated
@@ -145,7 +143,6 @@ public class NodelistFillToDatabase {
      * @param year The year of the nodelist.
      * @param name The name of the nodelist file.
      */
-    @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
         log.info("Processing nodelist from {} year and name \"{}\"", year, name);
         

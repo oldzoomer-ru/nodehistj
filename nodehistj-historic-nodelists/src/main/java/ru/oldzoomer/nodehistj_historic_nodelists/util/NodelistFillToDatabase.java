@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,6 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         try {
@@ -104,7 +102,6 @@ public class NodelistFillToDatabase {
      * @param year The year of the nodelist.
      * @param name The name of the nodelist file.
      */
-    @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
         log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
         
