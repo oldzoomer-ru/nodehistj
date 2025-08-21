@@ -7,7 +7,7 @@ dependencies {
     implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.10'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-cassandra'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
