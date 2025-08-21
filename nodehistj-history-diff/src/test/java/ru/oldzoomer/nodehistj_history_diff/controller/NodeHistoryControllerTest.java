@@ -38,7 +38,13 @@ public class NodeHistoryControllerTest extends BaseIntegrationTest {
                         .param("startDate", "2023-01-01")
                         .param("endDate", "2023-01-02"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[1].addedCount").value(1))
-                .andExpect(jsonPath("$[0].modifiedCount").value(1));
+                .andExpect(jsonPath("$[0].date").value("2023-01-01"))
+                .andExpect(jsonPath("$[0].addedCount").value(2))
+                .andExpect(jsonPath("$[0].modifiedCount").value(1))
+                .andExpect(jsonPath("$[0].removedCount").value(0))
+                .andExpect(jsonPath("$[1].date").value("2023-01-02"))
+                .andExpect(jsonPath("$[1].addedCount").value(0))
+                .andExpect(jsonPath("$[1].modifiedCount").value(0))
+                .andExpect(jsonPath("$[1].removedCount").value(1));
     }
 }

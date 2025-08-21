@@ -30,20 +30,20 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZone(zone));
     }
 
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.getLast(zone, network));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetwork(zone, network));
     }
 
     @Override
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.getLast(zone, network, node)
+            nodeEntryRepository.findByZoneAndNetworkAndNode(zone, network, node)
         );
     }
 }

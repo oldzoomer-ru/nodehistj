@@ -72,7 +72,7 @@ services:
       - MINIO_USER=${MINIO_USER:-user}
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
-      - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR:-1984}
+      - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR:-2024}
     depends_on:
       minio:
         condition: service_healthy

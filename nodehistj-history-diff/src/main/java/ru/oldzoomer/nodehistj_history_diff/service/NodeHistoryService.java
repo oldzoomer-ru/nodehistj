@@ -1,7 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+
+import ru.oldzoomer.nodehistj_history_diff.dto.ChangeSummaryDto;
+import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 
 /**
  * Service for managing node history and differences
@@ -11,20 +15,35 @@ public interface NodeHistoryService {
     /**
      * Get history for a specific node
      */
-    Slice<Object> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable);
+    List<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
      * Get history for a specific network
      */
-    Slice<Object> getNetworkHistory(Integer zone, Integer network, Pageable pageable);
+    List<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable);
 
     /**
      * Get history for a specific zone
      */
-    Slice<Object> getZoneHistory(Integer zone, Pageable pageable);
+    List<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable);
 
     /**
      * Get all history entries
      */
-    Slice<Object> getAllHistory(Pageable pageable);
+    List<NodeHistoryEntryDto> getAllHistory(Pageable pageable);
+
+    /**
+     * Get changes for a specific date
+     */
+    List<NodeHistoryEntryDto> getChangesForDate(String date);
+
+    /**
+     * Get changes by type
+     */
+    List<NodeHistoryEntryDto> getChangesByType(String changeType);
+
+    /**
+     * Get change summary for date range
+     */
+    List<ChangeSummaryDto> getChangeSummary(String startDate, String endDate);
 }

@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Main application class for analyzing differences between nodelist versions.
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * </ul>
  */
 @SpringBootApplication
-@EnableTransactionManagement
 @EnableCassandraRepositories(basePackages = "ru.oldzoomer.nodehistj_history_diff.repo")
 @EnableCaching
 public class NodehistjHistoryDiffApplication {

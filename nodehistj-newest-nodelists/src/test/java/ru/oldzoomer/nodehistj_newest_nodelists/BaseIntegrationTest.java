@@ -76,11 +76,10 @@ public abstract class BaseIntegrationTest {
         log.info("Redis host: {}", redisContainer.getRedisHost());
         log.info("Redis port: {}", redisContainer.getRedisPort());
         log.info("Cassandra is running: {}", cassandra.isRunning());
-        log.info("Cassandra container logs: {}", cassandra.getLogs());
-        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
-        registry.add("spring.data.cassandra.port", () -> cassandra.getContactPoint().getPort());
-        registry.add("spring.data.cassandra.local-datacenter", cassandra::getLocalDatacenter);
-        registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
+        registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
+        registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
+        registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
+        registry.add("spring.cassandra.keyspace-name", () -> KEYSPACE_NAME);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);

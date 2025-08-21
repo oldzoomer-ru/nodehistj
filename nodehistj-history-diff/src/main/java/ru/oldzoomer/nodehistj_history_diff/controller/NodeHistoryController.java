@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import ru.oldzoomer.nodehistj_history_diff.dto.ChangeSummaryDto;
+import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
 /**
@@ -27,44 +29,64 @@ public class NodeHistoryController {
     private final NodeHistoryService nodeHistoryService;
 
     @GetMapping("/node/{zone}/{network}/{node}")
-    @Cacheable("nodeHistory")
-    public List<Object> getNodeHistory(
+    @Cacheable(value = "nodeHistory", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getNodeHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @PathVariable @Min(0) @Max(32767) Integer node,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
+        return nodeHistoryService.getNodeHistory(zone, network, node, pageable);
     }
 
     @GetMapping("/network/{zone}/{network}")
-    @Cacheable("networkHistory")
-    public List<Object> getNetworkHistory(
+    @Cacheable(value = "networkHistory", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getNetworkHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @PathVariable @Min(1) @Max(32767) Integer network,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getNetworkHistory(zone, network, pageable).toList();
+        return nodeHistoryService.getNetworkHistory(zone, network, pageable);
     }
 
     @GetMapping("/zone/{zone}")
-    @Cacheable("zoneHistory")
-    public List<Object> getZoneHistory(
+    @Cacheable(value = "zoneHistory", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getZoneHistory(
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getZoneHistory(zone, pageable).toList();
+        return nodeHistoryService.getZoneHistory(zone, pageable);
     }
 
     @GetMapping("/all")
-    @Cacheable("globalHistory")
-    public List<Object> getAllHistory(
+    @Cacheable(value = "globalHistory", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getAllHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getAllHistory(pageable).toList();
+        return nodeHistoryService.getAllHistory(pageable);
+    }
+
+    @GetMapping("/date/{date}")
+    @Cacheable(value = "dateChanges", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getChangesForDate(@PathVariable String date) {
+        return nodeHistoryService.getChangesForDate(date);
+    }
+
+    @GetMapping("/type/{changeType}")
+    @Cacheable(value = "typeChanges", unless = "#result == null || #result.isEmpty()")
+    public List<NodeHistoryEntryDto> getChangesByType(@PathVariable String changeType) {
+        return nodeHistoryService.getChangesByType(changeType);
+    }
+
+    @GetMapping("/summary")
+    @Cacheable(value = "changeSummary", unless = "#result == null || #result.isEmpty()")
+    public List<ChangeSummaryDto> getChangeSummary(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        return nodeHistoryService.getChangeSummary(startDate, endDate);
     }
 }

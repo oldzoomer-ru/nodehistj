@@ -72,7 +72,7 @@ public class HistoricNodelistController {
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping("/historicNodelist")
-    @Cacheable("historicNodelistRequests")
+    @Cacheable(value = "historicNodelistRequests", unless = "#result == null || #result.isEmpty()")
     public List<NodeEntryDto> getNodelistEntry(
             @RequestParam @Min(1984) @Max(2100) Integer year,
             @RequestParam @Min(1) @Max(366) Integer dayOfYear,
@@ -91,6 +91,8 @@ public class HistoricNodelistController {
         return zone == null ? historicNodelistService.getNodelistEntries(year, dayOfYear)
                 : network == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone)
                 : node == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network)
-                : List.of(historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node));
+                : historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node) != null
+                    ? List.of(historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node))
+                    : List.of();
     }
 }

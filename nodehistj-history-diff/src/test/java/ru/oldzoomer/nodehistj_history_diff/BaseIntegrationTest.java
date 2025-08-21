@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,11 +79,10 @@ public abstract class BaseIntegrationTest {
         log.info("Redis host: {}", redisContainer.getRedisHost());
         log.info("Redis port: {}", redisContainer.getRedisPort());
         log.info("Cassandra is running: {}", cassandra.isRunning());
-        log.info("Cassandra container logs: {}", cassandra.getLogs());
-        registry.add("spring.data.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
-        registry.add("spring.data.cassandra.port", () -> cassandra.getContactPoint().getPort());
-        registry.add("spring.data.cassandra.local-datacenter", cassandra::getLocalDatacenter);
-        registry.add("spring.data.cassandra.keyspace-name", () -> KEYSPACE_NAME);
+        registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
+        registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
+        registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
+        registry.add("spring.cassandra.keyspace-name", () -> KEYSPACE_NAME);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
@@ -106,6 +106,7 @@ public abstract class BaseIntegrationTest {
         addedEntry.setPhone("1234567890");
         addedEntry.setBaudRate(1200);
         addedEntry.setFlags(List.of("FLAG1", "FLAG2"));
+        addedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
         return addedEntry;
     }
 
@@ -144,6 +145,24 @@ public abstract class BaseIntegrationTest {
         
         NodeHistoryEntry modifiedEntry = getHistoryEntry();
         nodeHistoryEntryRepository.save(modifiedEntry);
+        
+        // Create another entry for change summary test
+        NodeHistoryEntry removedEntry = new NodeHistoryEntry();
+        removedEntry.setId(UUID.randomUUID());
+        removedEntry.setZone(1);
+        removedEntry.setNetwork(1);
+        removedEntry.setNode(3);
+        removedEntry.setNodelistYear(2023);
+        removedEntry.setNodelistName("nodelist.003");
+        removedEntry.setChangeType(NodeHistoryEntry.ChangeType.REMOVED);
+        removedEntry.setNodeName("Removed Node");
+        removedEntry.setLocation("Removed Location");
+        removedEntry.setSysOpName("Test SysOp");
+        removedEntry.setPhone("1234567890");
+        removedEntry.setBaudRate(1200);
+        removedEntry.setFlags(List.of("FLAG1", "FLAG2"));
+        removedEntry.setChangeDate(LocalDate.of(2023, 1, 2));
+        nodeHistoryEntryRepository.save(removedEntry);
     }
 
     private @NotNull NodeHistoryEntry getHistoryEntry() {
@@ -162,6 +181,7 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setLocation("New Location");
         modifiedEntry.setPrevNodeName("Old Node");
         modifiedEntry.setPrevLocation("Old Location");
+        modifiedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
         return modifiedEntry;
     }
 

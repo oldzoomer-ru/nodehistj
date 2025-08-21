@@ -1,11 +1,14 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.data.cassandra.core.mapping.Indexed;
+import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,17 +18,33 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Setter
 @Table("node_entry")
 public class NodeEntry {
+    
+    @PrimaryKeyClass
+    @Getter
+    @Setter
+    public static class NodeEntryKey implements Serializable {
+        @PrimaryKeyColumn(name = "id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+        private UUID id;
+        
+        @PrimaryKeyColumn(name = "zone", ordinal = 1)
+        private Integer zone;
+        
+        @PrimaryKeyColumn(name = "network", ordinal = 2)
+        private Integer network;
+        
+        @PrimaryKeyColumn(name = "node", ordinal = 3)
+        private Integer node;
+        
+        @PrimaryKeyColumn(name = "nodelist_year", ordinal = 4)
+        private Integer nodelistYear;
+        
+        @PrimaryKeyColumn(name = "nodelist_name", ordinal = 5)
+        private String nodelistName;
+    }
+    
     @PrimaryKey
-    private UUID id;
-
-    @Indexed
-    private Integer zone;
-
-    @Indexed
-    private Integer network;
-
-    @Indexed
-    private Integer node;
+    private NodeEntryKey key;
+    
     private Keywords keywords;
     private String nodeName;
     private String location;
@@ -33,14 +52,19 @@ public class NodeEntry {
     private String phone;
     private Integer baudRate;
     private List<String> flags;
-    @Indexed
-    private Integer nodelistYear;
-
-    @Indexed
-    private String nodelistName;
 
     public NodeEntry() {
-        this.id = UUID.randomUUID();
+        this.key = new NodeEntryKey();
+        this.key.id = UUID.randomUUID();
+    }
+
+    public NodeEntry(Integer zone, Integer network, Integer node, Integer nodelistYear, String nodelistName) {
+        this();
+        this.key.zone = zone;
+        this.key.network = network;
+        this.key.node = node;
+        this.key.nodelistYear = nodelistYear;
+        this.key.nodelistName = nodelistName;
     }
 
     @Override
@@ -52,15 +76,63 @@ public class NodeEntry {
             return false;
         }
         NodeEntry nodeEntry = (NodeEntry) o;
-        return Objects.equals(zone, nodeEntry.zone) &&
-                Objects.equals(network, nodeEntry.network) &&
-                Objects.equals(node, nodeEntry.node) &&
-                Objects.equals(nodelistYear, nodeEntry.nodelistYear) &&
-                Objects.equals(nodelistName, nodeEntry.nodelistName);
+        return Objects.equals(key, nodeEntry.key);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(zone, network, node, nodelistYear, nodelistName);
+        return Objects.hash(key);
+    }
+
+    // Публичные методы доступа к полям ключа для обратной совместимости
+    public Integer getZone() {
+        return key != null ? key.getZone() : null;
+    }
+
+    public Integer getNetwork() {
+        return key != null ? key.getNetwork() : null;
+    }
+
+    public Integer getNode() {
+        return key != null ? key.getNode() : null;
+    }
+
+    public Integer getNodelistYear() {
+        return key != null ? key.getNodelistYear() : null;
+    }
+
+    public String getNodelistName() {
+        return key != null ? key.getNodelistName() : null;
+    }
+
+    // Публичные методы установки полей ключа для обратной совместимости
+    public void setZone(Integer zone) {
+        if (key != null) {
+            key.setZone(zone);
+        }
+    }
+
+    public void setNetwork(Integer network) {
+        if (key != null) {
+            key.setNetwork(network);
+        }
+    }
+
+    public void setNode(Integer node) {
+        if (key != null) {
+            key.setNode(node);
+        }
+    }
+
+    public void setNodelistYear(Integer nodelistYear) {
+        if (key != null) {
+            key.setNodelistYear(nodelistYear);
+        }
+    }
+
+    public void setNodelistName(String nodelistName) {
+        if (key != null) {
+            key.setNodelistName(nodelistName);
+        }
     }
 }

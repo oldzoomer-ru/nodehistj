@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.dto;
+package ru.oldzoomer.nodehistj_history_diff.dto;
 
 import java.io.Serializable;
 import java.util.List;

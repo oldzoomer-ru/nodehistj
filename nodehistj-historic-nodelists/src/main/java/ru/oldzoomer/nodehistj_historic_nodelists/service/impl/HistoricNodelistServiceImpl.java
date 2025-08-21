@@ -34,7 +34,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.get(nodelistName, year, zone));
+            nodeEntryRepository.findByNodelistYearAndNameAndZone(nodelistName, year, zone));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.get(nodelistName, year, zone, network));
+            nodeEntryRepository.findByNodelistYearAndNameAndZoneAndNetwork(nodelistName, year, zone, network));
     }
 
     @Override
@@ -52,6 +52,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network, node);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.get(nodelistName, year, zone, network, node));
+            nodeEntryRepository.findByNodelistYearAndNameAndZoneAndNetworkAndNode(
+                nodelistName, year, zone, network, node));
     }
 }

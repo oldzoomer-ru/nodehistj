@@ -1,34 +1,31 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.repo;
 
 import java.util.List;
-import java.util.UUID;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.cassandra.repository.AllowFiltering;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 
 @Repository
-public interface NodeEntryRepository extends CassandraRepository<NodeEntry, UUID> {
-    @AllowFiltering
-    @Query("SELECT * FROM node_entry WHERE zone = :zone AND network = :network AND node = :node LIMIT 1")
-    NodeEntry getLast(
-        @Param("zone") Integer zone,
-        @Param("network") Integer network,
-        @Param("node") Integer node);
+public interface NodeEntryRepository extends CassandraRepository<NodeEntry, NodeEntry.NodeEntryKey> {
+
+    @Cacheable("historicNodeEntriesByZone")
+    @Query("SELECT * FROM node_entry WHERE zone = ?0 ALLOW FILTERING")
+    List<NodeEntry> findByZone(Integer zone);
 
     @AllowFiltering
-    @Query("SELECT * FROM node_entry WHERE zone = :zone AND network = :network")
-    List<NodeEntry> getLast(
-        @Param("zone") Integer zone,
-        @Param("network") Integer network);
+    @Cacheable("historicNodeEntries")
+    @Query("SELECT * FROM node_entry WHERE zone = ?0 AND network = ?1 ALLOW FILTERING")
+    List<NodeEntry> findByZoneAndNetwork(Integer zone, Integer network);
 
     @AllowFiltering
-    @Query("SELECT * FROM node_entry WHERE zone = :zone")
-    List<NodeEntry> getLast(@Param("zone") Integer zone);
-
-    @Query("SELECT * FROM node_entry")
-    List<NodeEntry> getAll();
+    @Cacheable("historicNodeEntry")
+    @Query("""
+            SELECT * FROM node_entry WHERE zone = ?0 AND network = ?1
+            AND node = ?2ALLOW FILTERING
+            """)
+    NodeEntry findByZoneAndNetworkAndNode(Integer zone, Integer network, Integer node);
 }

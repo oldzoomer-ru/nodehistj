@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class NodeHistoryEntryDto {
+public class NodeHistoryEntryDto implements Serializable {
     private Integer zone;
     private Integer network;
     private Integer node;
