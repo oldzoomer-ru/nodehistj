@@ -68,17 +68,6 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        log.info("Cassandra host: {}", cassandra.getContactPoint().getHostName());
-        log.info("Cassandra port: {}", cassandra.getContactPoint().getPort());
-        log.info("Cassandra local datacenter: {}", cassandra.getLocalDatacenter());
-        log.info("Cassandra keyspace name: {}", KEYSPACE_NAME);
-        log.info("MinIO URL: {}", minioContainer.getS3URL());
-        log.info("MinIO user: {}", minioContainer.getUserName());
-        log.info("MinIO password: {}", minioContainer.getPassword());
-        log.info("Redpanda bootstrap servers: {}", redpandaContainer.getBootstrapServers());
-        log.info("Redis host: {}", redisContainer.getRedisHost());
-        log.info("Redis port: {}", redisContainer.getRedisPort());
-        log.info("Cassandra is running: {}", cassandra.isRunning());
         registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
         registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
         registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
