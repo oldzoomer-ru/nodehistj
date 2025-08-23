@@ -2,7 +2,7 @@
 -- Эта миграция создает основную таблицу для хранения узлов с историей
 
 -- Создание таблицы node_entry с оптимизированной структурой первичного ключа
-CREATE TABLE IF NOT EXISTS nodehistj.node_entry (
+CREATE TABLE IF NOT EXISTS nodehistj_historic.node_entry (
     zone int,
     network int,
     node int,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS nodehistj.node_entry (
     AND dclocal_read_repair_chance = 0.1;
 
 -- Создание таблицы для запросов по zone, network (без node)
-CREATE TABLE IF NOT EXISTS nodehistj.node_entry_by_zone_network (
+CREATE TABLE IF NOT EXISTS nodehistj_historic.node_entry_by_zone_network (
     zone int,
     network int,
     nodelist_year int,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS nodehistj.node_entry_by_zone_network (
     AND dclocal_read_repair_chance = 0.1;
 
 -- Создание таблицы для запросов по zone
-CREATE TABLE IF NOT EXISTS nodehistj.node_entry_by_zone (
+CREATE TABLE IF NOT EXISTS nodehistj_historic.node_entry_by_zone (
     zone int,
     nodelist_year int,
     nodelist_name text,
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS nodehistj.node_entry_by_zone (
     AND dclocal_read_repair_chance = 0.1;
 
 -- Создание материализованного представления для запросов по nodelist_year и nodelist_name
-CREATE MATERIALIZED VIEW IF NOT EXISTS nodehistj.node_entry_by_nodelist_year_name AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS nodehistj_historic.node_entry_by_nodelist_year_name AS
 SELECT nodelist_year,
        nodelist_name,
        zone,
@@ -141,7 +141,7 @@ WHERE nodelist_year IS NOT NULL AND nodelist_name IS NOT NULL
 PRIMARY KEY (nodelist_year, nodelist_name, zone, network, node);
 
 -- Создание материализованного представления для запросов по nodelist_year
-CREATE MATERIALIZED VIEW IF NOT EXISTS nodehistj.node_entry_by_nodelist_year AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS nodehistj_historic.node_entry_by_nodelist_year AS
 SELECT nodelist_year,
        zone,
        network,
