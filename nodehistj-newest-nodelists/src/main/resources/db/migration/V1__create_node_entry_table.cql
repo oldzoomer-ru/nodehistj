@@ -2,7 +2,7 @@
 -- Эта миграция создает основную таблицу для хранения последних версий узлов
 
 -- Создание таблицы node_entry с оптимизированной структурой первичного ключа
-CREATE TABLE IF NOT EXISTS nodehistj.node_entry (
+CREATE TABLE IF NOT EXISTS nodehistj_newest.node_entry (
     zone int,
     network int,
     node int,
@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS nodehistj.node_entry (
     AND dclocal_read_repair_chance = 0.1;
 
 -- Создание вторичных индексов для оптимизации запросов
-CREATE INDEX IF NOT EXISTS idx_node_entry_nodelist_year ON nodehistj.node_entry (nodelist_year);
-CREATE INDEX IF NOT EXISTS idx_node_entry_nodelist_name ON nodehistj.node_entry (nodelist_name);
-CREATE INDEX IF NOT EXISTS idx_node_entry_zone ON nodehistj.node_entry (zone);
-CREATE INDEX IF NOT EXISTS idx_node_entry_network ON nodehistj.node_entry (network);
-CREATE INDEX IF NOT EXISTS idx_node_entry_node ON nodehistj.node_entry (node);
+CREATE INDEX IF NOT EXISTS idx_node_entry_nodelist_year ON nodehistj_newest.node_entry (nodelist_year);
+CREATE INDEX IF NOT EXISTS idx_node_entry_nodelist_name ON nodehistj_newest.node_entry (nodelist_name);
+CREATE INDEX IF NOT EXISTS idx_node_entry_zone ON nodehistj_newest.node_entry (zone);
+CREATE INDEX IF NOT EXISTS idx_node_entry_network ON nodehistj_newest.node_entry (network);
+CREATE INDEX IF NOT EXISTS idx_node_entry_node ON nodehistj_newest.node_entry (node);
