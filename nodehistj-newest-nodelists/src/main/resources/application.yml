@@ -14,9 +14,9 @@ spring:
       init-query-timeout: 5s
   cache:
     redis:
-      time-to-live: 1h # TTL по умолчанию
+      time-to-live: 12h
       cache-null-values: false
-      key-prefix: 'newest:' # Префикс для ключей
+      key-prefix: 'nodelist:'
       use-key-prefix: true
   data:
     redis:
