@@ -27,7 +27,7 @@ spring:
         spring.json.trusted.packages: "*"
   cache:
     redis:
-      time-to-live: 1h # TTL по умолчанию
+      time-to-live: 12h # TTL по умолчанию
       cache-null-values: false
       key-prefix: 'diff:' # Префикс для ключей
       use-key-prefix: true
