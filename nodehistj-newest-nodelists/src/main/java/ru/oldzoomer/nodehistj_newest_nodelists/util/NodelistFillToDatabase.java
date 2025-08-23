@@ -71,7 +71,7 @@ public class NodelistFillToDatabase {
      *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    public void updateNodelist(List<String> modifiedObjects) {
+    public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
         try {

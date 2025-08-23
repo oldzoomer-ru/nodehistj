@@ -68,7 +68,7 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    public void updateNodelist(List<String> modifiedObjects) {
+    public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Starting processing {} modified nodelists", modifiedObjects.size());
         
         List<String> validObjects = modifiedObjects.stream()
