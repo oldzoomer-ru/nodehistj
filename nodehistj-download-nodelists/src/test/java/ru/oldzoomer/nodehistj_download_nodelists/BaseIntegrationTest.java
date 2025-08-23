@@ -10,24 +10,23 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
-import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
+    @SuppressWarnings("resource")
     @Container
-    public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
-            DockerImageName.parse("redpandadata/redpanda"));
+    public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
+            .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
     @SuppressWarnings("resource")
     @Container
-    public static final MinIOContainer minioContainer = new MinIOContainer(
-            DockerImageName.parse("minio/minio"))
+    public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
-            .waitingFor(Wait.forListeningPort());
+            .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
