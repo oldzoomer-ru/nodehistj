@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_newest_nodelists;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,9 +16,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
-import org.testcontainers.utility.DockerImageName;
 
-import com.datastax.oss.driver.api.core.CqlSession;
 import com.redis.testcontainers.RedisContainer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +29,6 @@ import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 @ActiveProfiles("test")
 @Slf4j
 public abstract class BaseIntegrationTest {
-    private static final String KEYSPACE_NAME = "nodehistj";
 
     @SuppressWarnings("resource")
     @Container
@@ -40,25 +36,24 @@ public abstract class BaseIntegrationTest {
             .withExposedPorts(9042)
             .withEnv("CASSANDRA_DC", "datacenter1")
             .withEnv("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
-            .waitingFor(Wait.forListeningPort());
-
-    @Container
-    public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
-            DockerImageName.parse("redpandadata/redpanda"));
+            .waitingFor(Wait.forSuccessfulCommand("cqlsh -e 'describe keyspaces;'"));
 
     @SuppressWarnings("resource")
     @Container
-    public static final MinIOContainer minioContainer = new MinIOContainer(
-            DockerImageName.parse("minio/minio"))
+    public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
+            .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
+
+    @SuppressWarnings("resource")
+    @Container
+    public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
-            .waitingFor(Wait.forListeningPort());
+            .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
     @SuppressWarnings("resource")
     @Container
-    public static final RedisContainer redisContainer = new RedisContainer(
-            DockerImageName.parse("redis:alpine"))
-            .waitingFor(Wait.forListeningPort());
+    public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
+            .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
 
     @Autowired
     private NodeEntryRepository nodeEntryRepository;
@@ -68,38 +63,12 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
         registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
         registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
-        registry.add("spring.cassandra.keyspace-name", () -> KEYSPACE_NAME);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
         registry.add("spring.data.redis.host", redisContainer::getRedisHost);
         registry.add("spring.data.redis.port", redisContainer::getRedisPort);
-    }
-
-    @BeforeAll
-    static void createKeyspace() {
-        log.info("Waiting for Cassandra container to start...");
-        int attempts = 0;
-        while (!cassandra.isRunning() && attempts++ < 30) {
-            try {
-                Thread.sleep(1000);
-                log.info("Waiting for Cassandra... Attempt {}", attempts);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (!cassandra.isRunning()) {
-            throw new IllegalStateException("Cassandra container failed to start");
-        }
-        try (CqlSession session = CqlSession.builder()
-                .addContactPoint(cassandra.getContactPoint())
-                .withLocalDatacenter(cassandra.getLocalDatacenter())
-                .build()) {
-            session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE_NAME +
-                    " WITH replication = \n" +
-                    "{'class':'SimpleStrategy','replication_factor':'1'};");
-        }
     }
 
     @BeforeEach
