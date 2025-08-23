@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -19,7 +20,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "nodelist_entry",
         indexes = @Index(columnList = "nodelistYear DESC, nodelistName DESC"))
-public class NodelistEntry {
+public class NodelistEntry implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import jakarta.validation.constraints.Max;
@@ -14,7 +15,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  * Contains all required fields for node listing with validation constraints.
  */
 @Data
-public class NodeEntryDto {
+public class NodeEntryDto implements Serializable {
     private NodelistEntryDto nodelistEntry;
 
     @NotNull

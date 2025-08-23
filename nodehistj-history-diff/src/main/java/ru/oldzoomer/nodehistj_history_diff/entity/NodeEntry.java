@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
         indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
 @NamedEntityGraph(name = "NodeEntry.nodelistEntry",
         attributeNodes = @NamedAttributeNode("nodelistEntry"))
-public class NodeEntry {
+public class NodeEntry implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +27,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
             @Index(columnList = "changeDate DESC"),
             @Index(columnList = "changeType")
         })
-public class NodeHistoryEntry {
+public class NodeHistoryEntry implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
