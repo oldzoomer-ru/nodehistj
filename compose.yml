@@ -132,7 +132,7 @@ services:
       redpanda:
         condition: service_healthy
       cassandra:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -170,7 +170,7 @@ services:
       redpanda:
         condition: service_healthy
       cassandra:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -208,7 +208,7 @@ services:
       redpanda:
         condition: service_healthy
       cassandra:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_healthy
 
