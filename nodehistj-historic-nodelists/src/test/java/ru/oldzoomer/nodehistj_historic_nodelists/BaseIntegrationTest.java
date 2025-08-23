@@ -42,22 +42,20 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
-    public static final RedpandaContainer redpandaContainer = new RedpandaContainer(
-            DockerImageName.parse("redpandadata/redpanda"));
+    public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
+            .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
     @SuppressWarnings("resource")
     @Container
-    public static final MinIOContainer minioContainer = new MinIOContainer(
-            DockerImageName.parse("minio/minio"))
+    public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
-            .waitingFor(Wait.forListeningPort());
+            .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
     @SuppressWarnings("resource")
     @Container
-    public static final RedisContainer redisContainer = new RedisContainer(
-            DockerImageName.parse("redis:alpine"))
-            .waitingFor(Wait.forListeningPort());
+    public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
+            .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
 
     @Autowired
     private NodeEntryRepository nodeEntryRepository;
