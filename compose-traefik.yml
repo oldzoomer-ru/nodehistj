@@ -64,6 +64,12 @@ services:
     volumes:
       - cassandra_data:/var/lib/cassandra
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces;"]
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
   traefik:
     container_name: traefik
     image: traefik:latest
