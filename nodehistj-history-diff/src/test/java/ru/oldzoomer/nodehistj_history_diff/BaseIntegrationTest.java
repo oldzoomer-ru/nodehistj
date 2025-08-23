@@ -63,9 +63,9 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
-        registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
-        registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
+        registry.add("cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
+        registry.add("cassandra.port", () -> cassandra.getContactPoint().getPort());
+        registry.add("cassandra.local-datacenter", cassandra::getLocalDatacenter);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);

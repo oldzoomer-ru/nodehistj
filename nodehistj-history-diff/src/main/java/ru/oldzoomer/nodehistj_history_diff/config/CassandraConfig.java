@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CassandraConfig extends AbstractCassandraConfiguration {
-    @Value("${spring.cassandra.keyspace-name:nodehistj_diff}")
+    @Value("${cassandra.keyspace-name:nodehistj_newest}")
     private String keyspaceName;
 
-    @Value("${spring.cassandra.contact-points:localhost}")
+    @Value("${cassandra.contact-points:localhost}")
     private String contactPoints;
 
-    @Value("${spring.cassandra.port:9042}")
+    @Value("${cassandra.port:9042}")
     private int port;
 
-    @Value("${spring.cassandra.local-datacenter:datacenter1}")
-    private String localDatacenter;
+    @Value("${cassandra.local-datacenter:datacenter1}")
+    private String localDataCenter;
 
-    @Value("${spring.cassandra.schema-action:CREATE_IF_NOT_EXISTS}")
+    @Value("${cassandra.schema-action:CREATE_IF_NOT_EXISTS}")
     private SchemaAction schemaAction;
 
     @Override
@@ -43,7 +43,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 
     @Override
     protected String getLocalDataCenter() {
-        return localDatacenter;
+        return localDataCenter;
     }
 
     @Override
