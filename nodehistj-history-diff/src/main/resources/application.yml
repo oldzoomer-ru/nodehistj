@@ -6,16 +6,10 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
   cassandra:
-    keyspace-name: nodehistj
     contact-points: ${CASSANDRA_HOST:localhost}
     local-datacenter: ${CASSANDRA_DC:datacenter1}
-    schema-action: CREATE_IF_NOT_EXISTS
     request:
-      timeout: 5s
       consistency: LOCAL_QUORUM
-    connection:
-      connect-timeout: 5s
-      init-query-timeout: 5s
   flyway:
     enabled: true
     locations: classpath:db/migration
