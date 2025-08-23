@@ -66,10 +66,10 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "cqlsh", "-e", "describe keyspaces;"]
-      start_period: 30s
+      start_period: 120s
       interval: 5s
       timeout: 10s
-      retries: 5
+      retries: 10
 
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
