@@ -29,7 +29,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
         })
 public class NodeHistoryEntry implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
