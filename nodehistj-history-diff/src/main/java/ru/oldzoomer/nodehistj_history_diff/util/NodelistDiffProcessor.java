@@ -25,7 +25,7 @@ public class NodelistDiffProcessor {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
-    public void processNodelistDiffs() {
+    public synchronized void processNodelistDiffs() {
         try {
             nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
 
