@@ -9,6 +9,12 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  cache:
+    redis:
+      time-to-live: 12h
+      cache-null-values: false
+      key-prefix: 'diff:'
+      use-key-prefix: true
   data:
     redis:
       host: ${REDIS_HOST:localhost}
