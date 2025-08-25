@@ -21,6 +21,7 @@ import com.redis.testcontainers.RedisContainer;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 
 @SpringBootTest
@@ -60,9 +61,9 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
-        registry.add("cassandra.port", () -> cassandra.getContactPoint().getPort());
-        registry.add("cassandra.local-datacenter", cassandra::getLocalDatacenter);
+        registry.add("spring.cassandra.contact-points", () -> cassandra.getContactPoint().getHostName());
+        registry.add("spring.cassandra.port", () -> cassandra.getContactPoint().getPort());
+        registry.add("spring.cassandra.local-datacenter", cassandra::getLocalDatacenter);
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.user", minioContainer::getUserName);
         registry.add("minio.password", minioContainer::getPassword);
@@ -75,19 +76,22 @@ public abstract class BaseIntegrationTest {
     void setUpDatabase() {
         nodeEntryRepository.deleteAll();
 
+        NodeEntryKey nodeEntryKey = new NodeEntryKey();
+        nodeEntryKey.setZone(1);
+        nodeEntryKey.setNetwork(1);
+        nodeEntryKey.setNode(1);
+        nodeEntryKey.setNodelistYear(2023);
+        nodeEntryKey.setNodelistName("nodelist.001");
+
         NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setNodelistName("nodelist.001");
-        nodeEntry.setNodelistYear(2023);
-        nodeEntry.setZone(1);
-        nodeEntry.setNetwork(1);
-        nodeEntry.setNode(1);
+        nodeEntry.setId(nodeEntryKey);
         nodeEntry.setNodeName("Test Node");
         nodeEntry.setLocation("Test Location");
         nodeEntry.setSysOpName("Test SysOp");
         nodeEntry.setPhone("1234567890");
         nodeEntry.setBaudRate(1200);
         nodeEntry.setFlags(List.of("FLAG1", "FLAG2"));
-        nodeEntryRepository.insert(nodeEntry);
+        nodeEntryRepository.save(nodeEntry);
     }
 
     @AfterAll
