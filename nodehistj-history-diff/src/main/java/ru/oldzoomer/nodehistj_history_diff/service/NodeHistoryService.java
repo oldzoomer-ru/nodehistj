@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import ru.oldzoomer.nodehistj_history_diff.dto.ChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 
 /**
@@ -33,17 +32,7 @@ public interface NodeHistoryService {
     List<NodeHistoryEntryDto> getAllHistory(Pageable pageable);
 
     /**
-     * Get changes for a specific date
-     */
-    List<NodeHistoryEntryDto> getChangesForDate(String date);
-
-    /**
      * Get changes by type
      */
     List<NodeHistoryEntryDto> getChangesByType(String changeType);
-
-    /**
-     * Get change summary for date range
-     */
-    List<ChangeSummaryDto> getChangeSummary(String startDate, String endDate);
 }

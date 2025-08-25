@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.ChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
@@ -70,23 +69,9 @@ public class NodeHistoryController {
         return nodeHistoryService.getAllHistory(pageable);
     }
 
-    @GetMapping("/date/{date}")
-    @Cacheable(value = "dateChanges", unless = "#result == null || #result.isEmpty()")
-    public List<NodeHistoryEntryDto> getChangesForDate(@PathVariable String date) {
-        return nodeHistoryService.getChangesForDate(date);
-    }
-
     @GetMapping("/type/{changeType}")
     @Cacheable(value = "typeChanges", unless = "#result == null || #result.isEmpty()")
     public List<NodeHistoryEntryDto> getChangesByType(@PathVariable String changeType) {
         return nodeHistoryService.getChangesByType(changeType);
-    }
-
-    @GetMapping("/summary")
-    @Cacheable(value = "changeSummary", unless = "#result == null || #result.isEmpty()")
-    public List<ChangeSummaryDto> getChangeSummary(
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
-        return nodeHistoryService.getChangeSummary(startDate, endDate);
     }
 }

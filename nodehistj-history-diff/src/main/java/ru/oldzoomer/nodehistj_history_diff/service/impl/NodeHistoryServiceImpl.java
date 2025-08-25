@@ -1,16 +1,12 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.ChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
@@ -104,23 +100,6 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     }
 
     /**
-     * Get changes for a specific date
-     *
-     * @param date The date to filter changes (format: yyyy-MM-dd)
-     * @return List of changes for the specified date
-     */
-    @Override
-    @Cacheable("changesForDate")
-    public List<NodeHistoryEntryDto> getChangesForDate(String date) {
-        LocalDate targetDate = LocalDate.parse(date);
-        return nodeHistoryEntryRepository.findAll().stream()
-                .filter(entry -> entry.getChangeDate() != null
-                        && entry.getChangeDate().equals(targetDate))
-                .map(nodeHistoryEntryMapper::toDto)
-                .toList();
-    }
-
-    /**
      * Get changes by type
      *
      * @param changeType The type of change to filter (ADDED, MODIFIED, REMOVED)
@@ -140,52 +119,5 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
             throw new IllegalArgumentException("Invalid change type: " + changeType +
                     ". Valid types are: ADDED, MODIFIED, REMOVED");
         }
-    }
-
-    /**
-     * Get change summary for date range
-     *
-     * @param startDate Start date of the range (format: yyyy-MM-dd)
-     * @param endDate   End date of the range (format: yyyy-MM-dd)
-     * @return List of change summary entries
-     */
-    @Override
-    @Cacheable("changeSummary")
-    public List<ChangeSummaryDto> getChangeSummary(String startDate, String endDate) {
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-
-        // Group changes by date and count by type
-        Map<LocalDate, Map<NodeHistoryEntry.ChangeType, Long>> changesByDate = nodeHistoryEntryRepository
-                .findAll().stream()
-                .filter(entry -> entry.getChangeDate() != null &&
-                        !entry.getChangeDate().isBefore(start) &&
-                        !entry.getChangeDate().isAfter(end))
-                .collect(Collectors.groupingBy(
-                        NodeHistoryEntry::getChangeDate,
-                        Collectors.groupingBy(NodeHistoryEntry::getChangeType,
-                                Collectors.counting())));
-
-        // Convert to ChangeSummaryDto
-        return changesByDate.entrySet().stream()
-                .map(entry -> {
-                    Map<NodeHistoryEntry.ChangeType, Long> counts = entry.getValue();
-                    ChangeSummaryDto summary = ChangeSummaryDto.builder()
-                            .date(entry.getKey().toString())
-                            .addedCount(counts
-                                    .getOrDefault(NodeHistoryEntry.ChangeType.ADDED,
-                                            0L)
-                                    .intValue())
-                            .modifiedCount(counts.getOrDefault(
-                                    NodeHistoryEntry.ChangeType.MODIFIED, 0L)
-                                    .intValue())
-                            .removedCount(counts.getOrDefault(
-                                    NodeHistoryEntry.ChangeType.REMOVED, 0L)
-                                    .intValue())
-                            .build();
-                    return summary;
-                })
-                .sorted((a, b) -> a.getDate().compareTo(b.getDate()))
-                .toList();
     }
 }
