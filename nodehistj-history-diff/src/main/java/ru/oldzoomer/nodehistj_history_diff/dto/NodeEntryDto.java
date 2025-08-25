@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_history_diff.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,23 +15,8 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  */
 @Data
 public class NodeEntryDto implements Serializable {
-    private Integer nodelistYear; // Denormalized from NodelistEntry
-    private String nodelistName; // Denormalized from NodelistEntry
 
-    @NotNull
-    @Min(1)
-    @Max(6)
-    private Integer zone;
-
-    @NotNull
-    @Min(1)
-    @Max(32768)
-    private Integer network;
-
-    @NotNull
-    @Min(1)
-    @Max(32768)
-    private Integer node;
+    private NodeEntryKeyDto id;
 
     private Keywords keywords;
 
