@@ -3,29 +3,30 @@ package ru.oldzoomer.nodehistj_newest_nodelists.repo;
 import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.cassandra.repository.AllowFiltering;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.Query;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.query.Param;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntryKey;
 
-@Repository
-public interface NodeEntryRepository extends CassandraRepository<NodeEntry, NodeEntry.NodeEntryKey> {
+public interface NodeEntryRepository extends CassandraRepository<NodeEntry, NodeEntryKey> {
 
-    @Cacheable("historicNodeEntriesByZone")
-    @Query("SELECT * FROM node_entry WHERE zone = ?0 ALLOW FILTERING")
-    List<NodeEntry> findByZone(Integer zone);
+    @Cacheable(value = "findByZone", unless = "#result == null || #result.isEmpty()")
+    @Query("SELECT * FROM node_entry WHERE zone = :zone")
+    List<NodeEntry> findByZone(
+        @Param("zone") Integer zone);
 
-    @AllowFiltering
-    @Cacheable("historicNodeEntries")
-    @Query("SELECT * FROM node_entry WHERE zone = ?0 AND network = ?1 ALLOW FILTERING")
-    List<NodeEntry> findByZoneAndNetwork(Integer zone, Integer network);
+    @Cacheable(value = "findByZoneAndNetwork", unless = "#result == null || #result.isEmpty()")
+    @Query("SELECT * FROM node_entry WHERE zone = :zone AND network = :network")
+    List<NodeEntry> findByZoneAndNetwork(
+        @Param("zone") Integer zone, 
+        @Param("network") Integer network);
 
-    @AllowFiltering
-    @Cacheable("historicNodeEntry")
-    @Query("""
-            SELECT * FROM node_entry WHERE zone = ?0 AND network = ?1
-            AND node = ?2ALLOW FILTERING
-            """)
-    NodeEntry findByZoneAndNetworkAndNode(Integer zone, Integer network, Integer node);
+    @Cacheable(value = "findByZoneAndNetworkAndNode", unless = "#result == null")
+    @Query("SELECT * FROM node_entry " +
+            "WHERE zone = :zone AND network = :network AND node = :node LIMIT 1")
+    NodeEntry findByZoneAndNetworkAndNode(
+        @Param("zone") Integer zone, 
+        @Param("network") Integer network, 
+        @Param("node") Integer node);
 }
