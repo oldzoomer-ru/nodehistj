@@ -95,7 +95,8 @@ public class NodelistDiffProcessor {
     }
 
     private String getNodeKey(NodeEntry node) {
-        return String.format("%d:%d/%d", node.getZone(), node.getNetwork(), node.getNode());
+        return String.format("%d:%d/%d", node.getId().getZone(),
+                node.getId().getNetwork(), node.getId().getNode());
     }
 
     private boolean nodesEqual(NodeEntry node1, NodeEntry node2) {
@@ -112,11 +113,11 @@ public class NodelistDiffProcessor {
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         // Check if similar entry already exists
         boolean entryExists = nodeHistoryEntryRepository.existsByZoneAndNetworkAndNode(
-                node.getZone(),
-                node.getNetwork(),
-                node.getNode(),
-                node.getNodelistYear(),
-                node.getNodelistName());
+                node.getId().getZone(),
+                node.getId().getNetwork(),
+                node.getId().getNode(),
+                node.getId().getNodelistYear(),
+                node.getId().getNodelistName());
 
         if (entryExists) {
             return;
@@ -124,11 +125,11 @@ public class NodelistDiffProcessor {
 
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
-        historyEntry.setZone(node.getZone());
-        historyEntry.setNetwork(node.getNetwork());
-        historyEntry.setNode(node.getNode());
-        historyEntry.setNodelistYear(node.getNodelistYear());
-        historyEntry.setNodelistName(node.getNodelistName());
+        historyEntry.getId().setZone(node.getId().getZone());
+        historyEntry.getId().setNetwork(node.getId().getNetwork());
+        historyEntry.getId().setNode(node.getId().getNode());
+        historyEntry.getId().setNodelistYear(node.getId().getNodelistYear());
+        historyEntry.getId().setNodelistName(node.getId().getNodelistName());
         historyEntry.setChangeType(changeType);
 
         // Current values
