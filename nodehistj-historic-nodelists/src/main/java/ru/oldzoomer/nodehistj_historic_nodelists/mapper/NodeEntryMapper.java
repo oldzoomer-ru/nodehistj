@@ -3,28 +3,21 @@ package ru.oldzoomer.nodehistj_historic_nodelists.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
+import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryKeyDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntryKey;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NodeEntryMapper {
     List<NodeEntryDto> toDto(List<NodeEntry> nodeEntries);
 
-    @Mapping(target = "zone", expression = "java(nodeEntry.getKey().getZone())")
-    @Mapping(target = "network", expression = "java(nodeEntry.getKey().getNetwork())")
-    @Mapping(target = "node", expression = "java(nodeEntry.getKey().getNode())")
-    @Mapping(target = "nodelistYear", expression = "java(nodeEntry.getKey().getNodelistYear())")
-    @Mapping(target = "nodelistName", expression = "java(nodeEntry.getKey().getNodelistName())")
-    @Mapping(target = "keywords", source = "keywords")
-    @Mapping(target = "nodeName", source = "nodeName")
-    @Mapping(target = "location", source = "location")
-    @Mapping(target = "sysOpName", source = "sysOpName")
-    @Mapping(target = "phone", source = "phone")
-    @Mapping(target = "baudRate", source = "baudRate")
-    @Mapping(target = "flags", source = "flags")
     NodeEntryDto toDto(NodeEntry nodeEntry);
+
+    NodeEntryKey toKey(NodeEntryDto nodeEntryDto);
+
+    NodeEntryKeyDto toKeyDto(NodeEntryKey nodeEntryKey);
 }
