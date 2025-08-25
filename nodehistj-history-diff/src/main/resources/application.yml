@@ -38,6 +38,3 @@ minio:
 app:
   minio:
     bucket: ${MINIO_BUCKET:nodehistj}
-cassandra:
-  contact-points: ${CASSANDRA_HOST:localhost}
-  local-datacenter: ${CASSANDRA_DC:datacenter1}
