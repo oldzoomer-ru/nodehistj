@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 import ru.oldzoomer.redis.utils.ClearRedisCache;
@@ -46,11 +47,16 @@ public class NodelistFillToDatabase {
         ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
         Integer year, String name
     ) {
+        NodeEntryKey nodeEntryKey = new NodeEntryKey();
+        nodeEntryKey.setZone(nodeListEntry.zone());
+        nodeEntryKey.setNetwork(nodeListEntry.network());
+        nodeEntryKey.setNode(nodeListEntry.node());
+        nodeEntryKey.setNodelistYear(year);
+        nodeEntryKey.setNodelistName(name);
+
         NodeEntry nodeEntryNew = new NodeEntry();
 
-        nodeEntryNew.setZone(nodeListEntry.zone());
-        nodeEntryNew.setNetwork(nodeListEntry.network());
-        nodeEntryNew.setNode(nodeListEntry.node());
+        nodeEntryNew.setId(nodeEntryKey);
         nodeEntryNew.setBaudRate(nodeListEntry.baudRate());
         nodeEntryNew.setKeywords(nodeListEntry.keywords());
         nodeEntryNew.setLocation(nodeListEntry.location());
@@ -58,8 +64,6 @@ public class NodelistFillToDatabase {
         nodeEntryNew.setPhone(nodeListEntry.phone());
         nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
         nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
-        nodeEntryNew.setNodelistYear(year);
-        nodeEntryNew.setNodelistName(name);
         return nodeEntryNew;
     }
 
