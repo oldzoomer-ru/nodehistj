@@ -20,11 +20,22 @@ public class ErrorDto {
     private final String code;
     private final Instant timestamp = Instant.now();
 
+    /**
+     * Constructor for ErrorDto with message and code.
+     *
+     * @param message Error message
+     * @param code Error code
+     */
     public ErrorDto(String message, String code) {
         this.message = message;
         this.code = code;
     }
 
+    /**
+     * Constructor for ErrorDto with message only.
+     *
+     * @param message Error message
+     */
     public ErrorDto(String message) {
         this.message = message;
         this.code = "GENERIC_ERROR";
