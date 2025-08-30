@@ -20,28 +20,6 @@ graph TD
 3. **Kafka Producer** - отправка уведомлений о новых файлах
 4. **Scheduler** - управление периодичностью загрузок
 
-## API Endpoints
-
-Базовый путь: `/download`
-
-### Статус загрузки
-
-`GET /download/status`
-
-Пример ответа:
-
-```json
-{
-  "lastDownloadTime": "2023-10-15T14:30:00Z", 
-  "lastDownloadedFiles": ["2023/nodelist.123"],
-  "servicesStatus": {
-    "ftp": "active",
-    "minio": "active", 
-    "kafka": "active"
-  }
-}
-```
-
 ## Переменные окружения
 
 | Переменная | Сервис | Описание |
