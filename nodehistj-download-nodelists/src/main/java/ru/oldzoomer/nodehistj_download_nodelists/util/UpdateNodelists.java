@@ -65,7 +65,7 @@ public class UpdateNodelists {
      * Runs on schedule (default every 24 hours).
      * Downloads files for current and previous years (starting from
      * downloadFromYear).
-     * 
+     *
      * @throws NodelistUpdateException if update error occurs
      */
     @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
@@ -94,7 +94,7 @@ public class UpdateNodelists {
 
     /**
      * Processes nodelist files for specified year
-     * 
+     *
      * @param year year to process
      * @throws IOException if FTP operation fails
      */
@@ -113,7 +113,7 @@ public class UpdateNodelists {
 
     /**
      * Processes single nodelist file: downloads from FTP and saves to MinIO
-     * 
+     *
      * @param filePath full path to file on FTP server
      */
     private void processFile(String filePath) {
@@ -155,7 +155,7 @@ public class UpdateNodelists {
 
     /**
      * Normalizes object name by removing leading slash if present
-     * 
+     *
      * @param objectName object name to normalize
      * @return normalized object name
      */
@@ -168,7 +168,7 @@ public class UpdateNodelists {
 
     /**
      * Validates required configuration parameters
-     * 
+     *
      * @throws IllegalArgumentException if parameters are not set
      */
     private void validateInputs() {
