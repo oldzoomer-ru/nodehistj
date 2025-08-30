@@ -80,7 +80,7 @@ public class HistoricNodelistController {
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
 
-        log.debug("Processing historic nodelist request - year: {}, day: {}, zone: {}, network: {}, node: {}", 
+        log.debug("Processing historic nodelist request - year: {}, day: {}, zone: {}, network: {}, node: {}",
             year, dayOfYear, zone, network, node);
 
         if (zone != null && network == null && node != null) {
