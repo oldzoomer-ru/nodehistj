@@ -9,12 +9,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.util.NodelistFillToDatabase;
 
+/**
+ * Component that listens to Kafka topics and processes messages.
+ * Handles messages from the download_nodelists_is_finished_topic topic.
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaListeners {
     private final NodelistFillToDatabase nodelistFillToDatabase;
 
+    /**
+     * Listens to the download_nodelists_is_finished_topic topic and updates the nodelist in the database.
+     *
+     * @param message the list of nodelist file paths that were downloaded
+     */
     @KafkaListener(topics = "download_nodelists_is_finished_topic")
     public void downloadNodelistsIsFinishedListener(List<String> message) {
         log.debug("Received message from download_nodelists_is_finished_topic");
