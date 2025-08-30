@@ -12,6 +12,17 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility class for handling FTP operations.
+ * <p>
+ * Provides functionality for:
+ * - Connecting to FTP servers
+ * - Listing files in directories
+ * - Downloading files
+ * - Managing FTP connections
+ * <p>
+ * Uses Apache Commons Net library for FTP operations.
+ */
 @Component
 @Slf4j
 public class FtpClient {
