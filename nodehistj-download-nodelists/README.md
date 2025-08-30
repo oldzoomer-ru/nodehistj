@@ -32,11 +32,11 @@ graph TD
 
 ```json
 {
-  "lastDownloadTime": "2023-10-15T14:30:00Z", 
+  "lastDownloadTime": "2023-10-15T14:30:00Z",
   "lastDownloadedFiles": ["2023/nodelist.123"],
   "servicesStatus": {
     "ftp": "active",
-    "minio": "active", 
+    "minio": "active",
     "kafka": "active"
   }
 }
