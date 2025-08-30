@@ -31,21 +31,21 @@ import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 @Service
 @RequiredArgsConstructor
 public class NodeHistoryServiceImpl implements NodeHistoryService {
-    
+
     /** Repository for accessing node history entries */
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
-    
+
     /** Mapper for converting between entity and DTO */
     private final NodeHistoryEntryMapper nodeHistoryEntryMapper;
 
     /**
      * Retrieves history for a specific node with pagination.
      *
-     * @param zone The zone number of the node.
-     * @param network The network number of the node.
-     * @param node The node number.
-     * @param pageable Pagination information.
-     * @return A page of node history entries.
+     * @param zone the zone number of the node
+     * @param network the network number of the node
+     * @param node the node number
+     * @param pageable pagination information
+     * @return a page of node history entries
      */
     @Override
     @Transactional(readOnly = true)
@@ -58,10 +58,10 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves history for a specific network with pagination.
      *
-     * @param zone The zone number of the network.
-     * @param network The network number.
-     * @param pageable Pagination information.
-     * @return A page of network history entries.
+     * @param zone the zone number of the network
+     * @param network the network number
+     * @param pageable pagination information
+     * @return a page of network history entries
      */
     @Override
     @Transactional(readOnly = true)
@@ -74,9 +74,9 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves history for a specific zone with pagination.
      *
-     * @param zone The zone number.
-     * @param pageable Pagination information.
-     * @return A page of zone history entries.
+     * @param zone the zone number
+     * @param pageable pagination information
+     * @return a page of zone history entries
      */
     @Override
     @Transactional(readOnly = true)
@@ -89,8 +89,8 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves all history entries with pagination.
      *
-     * @param pageable Pagination information.
-     * @return A page of all history entries.
+     * @param pageable pagination information
+     * @return a page of all history entries
      */
     @Override
     @Transactional(readOnly = true)
@@ -103,8 +103,8 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves all changes for a specific date.
      *
-     * @param date The date to filter changes.
-     * @return A list of changes for the specified date.
+     * @param date the date to filter changes
+     * @return a list of changes for the specified date
      */
     @Override
     @Transactional(readOnly = true)
@@ -116,10 +116,10 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves changes between two dates with pagination.
      *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @param pageable Pagination information.
-     * @return A page of changes in the date range.
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @param pageable pagination information
+     * @return a page of changes in the date range
      */
     @Override
     @Transactional(readOnly = true)
@@ -132,9 +132,9 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Retrieves changes filtered by change type with pagination.
      *
-     * @param changeType The type of change to filter.
-     * @param pageable Pagination information.
-     * @return A page of changes of the specified type.
+     * @param changeType the type of change to filter
+     * @param pageable pagination information
+     * @return a page of changes of the specified type
      */
     @Override
     @Transactional(readOnly = true)
@@ -147,9 +147,9 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Gets summary statistics of changes between dates.
      *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @return A list of change summary statistics.
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @return a list of change summary statistics
      */
     @Override
     @Transactional(readOnly = true)
@@ -160,10 +160,10 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     /**
      * Gets a list of most frequently changed nodes.
      *
-     * @param startDate The start date of the range.
-     * @param endDate The end date of the range.
-     * @param pageable Pagination information.
-     * @return A list of active nodes with change counts.
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @param pageable pagination information
+     * @return a list of active nodes with change counts
      */
     @Override
     @Transactional(readOnly = true)
