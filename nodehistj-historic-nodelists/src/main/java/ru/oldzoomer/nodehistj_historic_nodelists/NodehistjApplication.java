@@ -22,4 +22,5 @@ public class NodehistjApplication {
     public static void main(String[] args) {
         SpringApplication.run(NodehistjApplication.class, args);
     }
+
 }
