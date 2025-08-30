@@ -40,9 +40,3 @@ curl "http://localhost:8080/diff?version1=2023-150&version2=2023-151"
 | `MINIO_URL` | URL MinIO | Да | - |
 | `MINIO_USER` | Пользователь MinIO | Да | - |
 | `MINIO_PASSWORD` | Пароль MinIO | Да | - |
-
-## Рекомендации по использованию
-
-1. Миграционные скрипты находятся в `src/main/resources/db/migration/`
-
-2. Для частых запросов сравнения версий рекомендуется увеличить TTL кэша
