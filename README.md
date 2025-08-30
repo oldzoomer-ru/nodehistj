@@ -41,7 +41,7 @@
 - MinIO - хранилище файлов
 - Redis - кэширование
 - Redpanda (Kafka) - обмен сообщениями
-- PostgreSQL - основное хранилище данных
+- Cassandra - основное хранилище данных
 
 ## Быстрый старт
 
@@ -85,7 +85,6 @@ docker compose -f compose-traefik.yml up -d
 |------------|----------|-------------|--------------|
 | `MINIO_USER` | Пользователь MinIO | Да | - |
 | `MINIO_PASSWORD` | Пароль MinIO | Да | - |
-| `POSTGRES_PASSWORD` | Пароль PostgreSQL | Да | - |
 | `KAFKA_BOOTSTRAP_SERVER` | Адрес Kafka | Нет | redpanda:9092 |
 | `REDIS_HOST` | Адрес Redis | Нет | redis |
 | `FTP_DOWNLOAD_FROM_YEAR` | Год начала загрузки | Нет | 1984 |
