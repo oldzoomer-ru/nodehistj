@@ -19,6 +19,10 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
+/**
+ * Entity class representing a node entry in the database.
+ * Contains information about a specific node in a nodelist.
+ */
 @Getter
 @Setter
 @Entity
@@ -65,6 +69,13 @@ public class NodeEntry implements Serializable {
     @Column(name = "flags")
     private List<String> flags;
 
+    /**
+     * Compares this NodeEntry with another object for equality.
+     * Two NodeEntry objects are considered equal if they have the same ID.
+     *
+     * @param o the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof NodeEntry nodeEntry)) {
@@ -73,6 +84,12 @@ public class NodeEntry implements Serializable {
         return Objects.equals(id, nodeEntry.id);
     }
 
+    /**
+     * Returns a hash code value for this NodeEntry.
+     * The hash code is based on the ID of the NodeEntry.
+     *
+     * @return a hash code value for this NodeEntry
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
