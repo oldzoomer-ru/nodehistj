@@ -18,6 +18,11 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 
+/**
+ * Component for processing differences between nodelist versions.
+ * Identifies added, removed, and modified nodes between consecutive nodelist versions.
+ * Creates history entries for these changes in the database.
+ */
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -25,6 +30,11 @@ public class NodelistDiffProcessor {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
+    /**
+     * Processes differences between all available nodelist versions.
+     * Compares consecutive nodelist versions in reverse order (newest to oldest)
+     * to ensure correct comparison direction.
+     */
     public synchronized void processNodelistDiffs() {
         try {
             nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
@@ -58,6 +68,14 @@ public class NodelistDiffProcessor {
         }
     }
 
+    /**
+     * Processes differences between two specific nodelist versions.
+     *
+     * @param prevYear the year of the older nodelist
+     * @param prevName the name of the older nodelist
+     * @param currYear the year of the newer nodelist
+     * @param currName the name of the newer nodelist
+     */
     @Transactional
     private void processDiffBetweenNodelists(Integer prevYear, String prevName,
             Integer currYear, String currName) {
@@ -101,10 +119,23 @@ public class NodelistDiffProcessor {
         }
     }
 
+    /**
+     * Generates a unique key for a node based on its zone, network, and node number.
+     *
+     * @param node the node entry
+     * @return a unique key string in the format "zone:network/node"
+     */
     private String getNodeKey(NodeEntry node) {
         return String.format("%d:%d/%d", node.getZone(), node.getNetwork(), node.getNode());
     }
 
+    /**
+     * Compares two nodes for equality based on their properties.
+     *
+     * @param node1 the first node to compare
+     * @param node2 the second node to compare
+     * @return true if the nodes are equal, false otherwise
+     */
     private boolean nodesEqual(NodeEntry node1, NodeEntry node2) {
         return Objects.equals(node1.getKeywords(), node2.getKeywords()) &&
                 Objects.equals(node1.getNodeName(), node2.getNodeName()) &&
@@ -115,6 +146,14 @@ public class NodelistDiffProcessor {
                 Objects.equals(node1.getFlags(), node2.getFlags());
     }
 
+    /**
+     * Creates a history entry for a node change.
+     *
+     * @param node the node entry
+     * @param changeDate the date of the change
+     * @param changeType the type of change (ADDED, REMOVED, MODIFIED)
+     * @param previousNode the previous node state (for MODIFIED changes)
+     */
     private void createHistoryEntry(NodeEntry node, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         // Check if similar entry already exists
@@ -162,6 +201,13 @@ public class NodelistDiffProcessor {
         nodeHistoryEntryRepository.save(historyEntry);
     }
 
+    /**
+     * Parses the date from a nodelist name.
+     *
+     * @param year the year of the nodelist
+     * @param nodelistName the name of the nodelist
+     * @return the parsed LocalDate representing the nodelist date
+     */
     private LocalDate parseNodelistDate(Integer year, String nodelistName) {
         // Extract day of year from nodelist name (e.g., "nodelist.001" -> day 1)
         Pattern pattern = Pattern.compile("nodelist\\.(\\d{3})");
