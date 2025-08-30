@@ -12,6 +12,18 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Composite primary key for NodeEntry entity.
+ * <p>
+ * Represents the unique identifier for a node entry in the system, combining:
+ * - Zone identifier
+ * - Network identifier
+ * - Node identifier
+ * - Nodelist year
+ * - Nodelist name
+ * <p>
+ * This key is used to uniquely identify a node entry in the database.
+ */
 @PrimaryKeyClass
 @Getter
 @Setter
