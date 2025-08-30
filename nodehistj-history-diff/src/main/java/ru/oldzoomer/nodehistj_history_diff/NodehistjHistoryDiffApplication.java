@@ -28,4 +28,5 @@ public class NodehistjHistoryDiffApplication {
     public static void main(String[] args) {
         SpringApplication.run(NodehistjHistoryDiffApplication.class, args);
     }
+
 }
