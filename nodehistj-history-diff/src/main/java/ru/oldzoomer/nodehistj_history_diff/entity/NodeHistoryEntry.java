@@ -18,6 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
+/**
+ * Entity class representing a node history entry in the database.
+ * Contains information about changes to a specific node over time.
+ */
 @Getter
 @Setter
 @Entity
@@ -98,6 +102,13 @@ public class NodeHistoryEntry implements Serializable {
     @Column(name = "prev_flags")
     private List<String> prevFlags;
 
+    /**
+     * Compares this NodeHistoryEntry with another object for equality.
+     * Two NodeHistoryEntry objects are considered equal if they have the same ID.
+     *
+     * @param o the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof NodeHistoryEntry that)) {
@@ -106,11 +117,20 @@ public class NodeHistoryEntry implements Serializable {
         return Objects.equals(id, that.id);
     }
 
+    /**
+     * Returns a hash code value for this NodeHistoryEntry.
+     * The hash code is based on the ID of the NodeHistoryEntry.
+     *
+     * @return a hash code value for this NodeHistoryEntry
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
     }
 
+    /**
+     * Enum representing the type of change made to a node.
+     */
     public enum ChangeType {
         ADDED, REMOVED, MODIFIED
     }
