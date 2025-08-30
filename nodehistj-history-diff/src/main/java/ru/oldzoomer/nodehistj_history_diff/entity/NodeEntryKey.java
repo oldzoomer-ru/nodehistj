@@ -12,6 +12,26 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Composite primary key for NodeEntry entity.
+ * <p>
+ * Represents the unique identifier for a node entry in the system, combining:
+ * - Zone identifier
+ * - Network identifier
+ * - Node identifier
+ * - Nodelist year
+ * - Nodelist name
+ * <p>
+ * This key is used to uniquely identify a node entry in the database.
+ * <p>
+ * The key structure follows Cassandra's data modeling best practices:
+ * - Zone is used as the partition key for efficient data distribution
+ * - Network, node, year, and name are used as clustering columns to
+ *   organize data within partitions
+ * <p>
+ * This composite key allows for efficient querying of node entries by
+ * different combinations of zone, network, node, year, and name.
+ */
 @PrimaryKeyClass
 @Getter
 @Setter
