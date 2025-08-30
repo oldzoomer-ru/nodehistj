@@ -67,3 +67,4 @@ curl "http://localhost:8081/historic/historicNodelist?year=2023&dayOfYear=150"
 
 ```bash
 docker compose -f compose.yml up nodehistj-historic-nodelists
+```
