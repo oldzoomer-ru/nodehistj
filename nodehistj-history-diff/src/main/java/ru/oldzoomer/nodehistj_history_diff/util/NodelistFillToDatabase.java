@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
-import ru.oldzoomer.redis.utils.ClearRedisCache;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -33,7 +33,6 @@ public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;
     private final NodelistEntryRepository nodelistEntryRepository;
-    private final ClearRedisCache clearRedisCache;
     private final NodelistDiffProcessor nodelistDiffProcessor;
 
     /** MinIO bucket name where nodelists are stored */
@@ -71,6 +70,7 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
+    @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
@@ -89,7 +89,6 @@ public class NodelistFillToDatabase {
         }
         log.info("Update nodelists is finished");
         nodelistDiffProcessor.processNodelistDiffs();
-        clearRedisCache.clearCache();
     }
 
     /**

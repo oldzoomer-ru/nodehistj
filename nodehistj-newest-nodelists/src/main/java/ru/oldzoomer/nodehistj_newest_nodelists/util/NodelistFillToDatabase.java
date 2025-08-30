@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,6 @@ import ru.oldzoomer.nodehistj_newest_nodelists.exception.NoNewObjects;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
-import ru.oldzoomer.redis.utils.ClearRedisCache;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -36,7 +36,6 @@ public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodeEntryRepository nodeEntryRepository;
     private final NodelistEntryRepository nodelistEntryRepository;
-    private final ClearRedisCache clearRedisCache;
 
     /** MinIO bucket name where nodelists are stored */
     @Value("${app.minio.bucket}")
@@ -74,6 +73,7 @@ public class NodelistFillToDatabase {
      * 
      * @param modifiedObjects list of MinIO object paths that were modified
      */
+    @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
@@ -95,10 +95,6 @@ public class NodelistFillToDatabase {
             nodelistEntryRepository.deleteAll();
             updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
             log.info("Nodelist {} is added to database", modifiedObject);
-
-            log.info("Clearing redis cache");
-            clearRedisCache.clearCache();
-            log.info("Redis cache is cleared");
         } catch (Exception e) {
             log.error("Failed to add nodelist to database", e);
         }
