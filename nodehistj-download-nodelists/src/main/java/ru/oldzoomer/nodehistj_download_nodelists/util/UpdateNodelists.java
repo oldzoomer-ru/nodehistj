@@ -21,8 +21,21 @@ import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
- * Main service for downloading and updating nodelist files from FTP server.
- * Saves files to MinIO and sends notifications about new files via Kafka.
+ * Service for downloading and updating nodelist files from FTP server.
+ * <p>
+ * Responsibilities:
+ * - Downloads nodelist files from FTP server
+ * - Stores files in MinIO object storage
+ * - Sends notifications about new files via Kafka
+ * - Manages scheduled updates of nodelist files
+ * <p>
+ * This service handles the complete workflow of downloading nodelist files,
+ * processing them, and notifying other services about new files.
+ * <p>
+ * The service is scheduled to run periodically (default every 24 hours) to
+ * ensure that the nodelist files are always up-to-date. It processes files
+ * for the current year and previous years starting from the configured
+ * downloadFromYear.
  */
 @RequiredArgsConstructor
 @Component
