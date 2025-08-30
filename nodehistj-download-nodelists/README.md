@@ -33,3 +33,4 @@ graph TD
 ```bash
 # Запуск всех сервисов
 docker compose -f compose.yml up
+```
