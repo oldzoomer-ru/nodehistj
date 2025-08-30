@@ -75,15 +75,15 @@ public class NodelistController {
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
-        
+
         if (zone != null && network == null && node != null) {
             log.warn("Invalid request: node specified without network");
             throw new IllegalArgumentException("Cannot specify node without network");
         }
-        
-        log.debug("Processing nodelist request - zone: {}, network: {}, node: {}", 
+
+        log.debug("Processing nodelist request - zone: {}, network: {}, node: {}",
             zone, network, node);
-        
+
         return zone == null ? nodelistService.getNodelistEntries()
                 : network == null ? nodelistService.getNodelistEntry(zone)
                 : node == null ? nodelistService.getNodelistEntry(zone, network)
