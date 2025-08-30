@@ -22,24 +22,26 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
 /**
- * Controller for node history and diff operations
+ * Controller for node history and diff operations.
+ * Provides endpoints for retrieving node history, network history, zone history, and other related operations.
  */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/history")
 public class NodeHistoryController {
-    
+
     /** Service for node history operations */
     private final NodeHistoryService nodeHistoryService;
 
     /**
-     * Get paginated history for a specific node
-     * @param zone Zone ID (1-32767)
-     * @param network Network ID (1-32767)
-     * @param node Node ID (0-32767)
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto with node history
+     * Gets paginated history for a specific node.
+     *
+     * @param zone the zone ID (1-32767)
+     * @param network the network ID (1-32767)
+     * @param node the node ID (0-32767)
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects with node history
      * @response 200 OK - History retrieved successfully
      * @response 404 Not Found - Node not found
      * @example Example request: GET /history/node/1/2/3?page=0&size=10
@@ -57,12 +59,13 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get paginated history for a network
-     * @param zone Zone ID (1-32767)
-     * @param network Network ID (1-32767)
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto with network history
+     * Gets paginated history for a network.
+     *
+     * @param zone the zone ID (1-32767)
+     * @param network the network ID (1-32767)
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects with network history
      * @response 200 OK - History retrieved successfully
      * @response 404 Not Found - Network not found
      */
@@ -78,11 +81,12 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get paginated history for a zone
-     * @param zone Zone ID (1-32767)
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto with zone history
+     * Gets paginated history for a zone.
+     *
+     * @param zone the zone ID (1-32767)
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects with zone history
      * @response 200 OK - History retrieved successfully
      * @response 404 Not Found - Zone not found
      */
@@ -97,10 +101,11 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get paginated history of all nodes
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto with all history
+     * Gets paginated history of all nodes.
+     *
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects with all history
      * @response 200 OK - History retrieved successfully
      */
     @GetMapping("/all")
@@ -113,9 +118,10 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get all changes for a specific date
-     * @param date Date in ISO format (YYYY-MM-DD)
-     * @return List of NodeHistoryEntryDto for the date
+     * Gets all changes for a specific date.
+     *
+     * @param date the date in ISO format (YYYY-MM-DD)
+     * @return a list of NodeHistoryEntryDto objects for the date
      * @response 200 OK - Changes retrieved successfully
      * @response 204 No Content - No changes for this date
      */
@@ -127,12 +133,13 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get paginated changes between dates
-     * @param startDate Start date in ISO format (YYYY-MM-DD)
-     * @param endDate End date in ISO format (YYYY-MM-DD)
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto for date range
+     * Gets paginated changes between dates.
+     *
+     * @param startDate the start date in ISO format (YYYY-MM-DD)
+     * @param endDate the end date in ISO format (YYYY-MM-DD)
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects for the date range
      * @response 200 OK - Changes retrieved successfully
      * @response 400 Bad Request - Invalid date range
      */
@@ -148,11 +155,12 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get paginated changes by change type
-     * @param changeType Type of change (ADDED, REMOVED, MODIFIED)
-     * @param page Page number (0-based)
-     * @param size Page size (default 20)
-     * @return Page of NodeHistoryEntryDto filtered by change type
+     * Gets paginated changes by change type.
+     *
+     * @param changeType the type of change (ADDED, REMOVED, MODIFIED)
+     * @param page the page number (0-based)
+     * @param size the page size (default 20)
+     * @return a list of NodeHistoryEntryDto objects filtered by change type
      * @response 200 OK - Changes retrieved successfully
      * @response 400 Bad Request - Invalid change type
      */
@@ -167,10 +175,11 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get summary statistics of changes for a date range
-     * @param startDate Start date in ISO format (YYYY-MM-DD)
-     * @param endDate End date in ISO format (YYYY-MM-DD)
-     * @return List of NodeChangeSummaryDto with change statistics
+     * Gets summary statistics of changes for a date range.
+     *
+     * @param startDate the start date in ISO format (YYYY-MM-DD)
+     * @param endDate the end date in ISO format (YYYY-MM-DD)
+     * @return a list of NodeChangeSummaryDto objects with change statistics
      * @response 200 OK - Summary retrieved successfully
      * @response 400 Bad Request - Invalid date range
      */
@@ -183,12 +192,13 @@ public class NodeHistoryController {
     }
 
     /**
-     * Get most active nodes (nodes with most changes) in period
-     * @param startDate Start date in ISO format (YYYY-MM-DD)
-     * @param endDate End date in ISO format (YYYY-MM-DD)
-     * @param page Page number (0-based)
-     * @param size Page size (default 10)
-     * @return List of Object arrays with node IDs and change counts
+     * Gets most active nodes (nodes with most changes) in a period.
+     *
+     * @param startDate the start date in ISO format (YYYY-MM-DD)
+     * @param endDate the end date in ISO format (YYYY-MM-DD)
+     * @param page the page number (0-based)
+     * @param size the page size (default 10)
+     * @return a list of Object arrays with node IDs and change counts
      * @response 200 OK - Active nodes retrieved successfully
      * @response 400 Bad Request - Invalid date range
      */
