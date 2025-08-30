@@ -16,12 +16,24 @@ import io.minio.StatObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utility class for interacting with MinIO object storage.
+ * Provides methods for retrieving, creating, checking, and uploading objects to MinIO.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class MinioUtils implements DisposableBean {
     private final MinioClient minioClient;
 
+    /**
+     * Retrieves an object from MinIO.
+     *
+     * @param bucketName the name of the bucket
+     * @param object the name of the object
+     * @return an InputStream containing the object data
+     * @throws RuntimeException if an error occurs while retrieving the object
+     */
     public InputStream getObject(String bucketName, String object) {
         try {
             return minioClient.getObject(GetObjectArgs.builder()
@@ -31,6 +43,12 @@ public class MinioUtils implements DisposableBean {
         }
     }
 
+    /**
+     * Creates a new bucket in MinIO if it does not already exist.
+     *
+     * @param bucketName the name of the bucket to create
+     * @throws RuntimeException if an error occurs while creating the bucket
+     */
     public void createBucket(String bucketName) {
         try {
             if (!minioClient.bucketExists(
@@ -43,6 +61,13 @@ public class MinioUtils implements DisposableBean {
         }
     }
 
+    /**
+     * Checks if an object exists in a bucket.
+     *
+     * @param bucketName the name of the bucket
+     * @param object the name of the object
+     * @return true if the object exists, false otherwise
+     */
     public boolean isObjectExist(String bucketName, String object) {
         try {
             minioClient.statObject(StatObjectArgs.builder()
@@ -55,6 +80,14 @@ public class MinioUtils implements DisposableBean {
         }
     }
 
+    /**
+     * Uploads an object to a bucket in MinIO.
+     *
+     * @param bucketName the name of the bucket
+     * @param objectName the name of the object
+     * @param stream the ByteArrayOutputStream containing the object data
+     * @throws RuntimeException if an error occurs while uploading the object
+     */
     public void putObject(String bucketName, String objectName, ByteArrayOutputStream stream) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
@@ -67,6 +100,11 @@ public class MinioUtils implements DisposableBean {
         }
     }
 
+    /**
+     * Closes the MinIO client.
+     *
+     * @throws Exception if an error occurs while closing the client
+     */
     @Override
     public void destroy() throws Exception {
         minioClient.close();
