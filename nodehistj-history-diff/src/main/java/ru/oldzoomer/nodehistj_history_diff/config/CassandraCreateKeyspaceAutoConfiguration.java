@@ -15,12 +15,29 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Configuration class for creating Cassandra keyspace.
+ * <p>
+ * Responsible for:
+ * - Creating keyspace if it doesn't exist
+ * - Configuring Cassandra connection properties
+ * - Setting up keyspace creation conditions
+ * <p>
+ * This configuration class ensures that the required Cassandra keyspace exists
+ * before the application starts, allowing proper database operations.
+ */
 @Configuration
 @ConditionalOnClass(CqlSession.class)
 @ConditionalOnProperty(name = "spring.cassandra.create-keyspace", havingValue = "true")
 @AutoConfigureBefore(CassandraAutoConfiguration.class)
 @Slf4j
 public class CassandraCreateKeyspaceAutoConfiguration {
+    /**
+     * Constructor for CassandraCreateKeyspaceAutoConfiguration.
+     *
+     * @param cqlSessionBuilder CQL session builder
+     * @param properties Cassandra properties
+     */
     public CassandraCreateKeyspaceAutoConfiguration(
             CqlSessionBuilder cqlSessionBuilder,
             CassandraProperties properties) {
