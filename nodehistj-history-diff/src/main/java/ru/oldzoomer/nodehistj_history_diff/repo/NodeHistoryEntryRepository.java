@@ -10,50 +10,88 @@ import org.springframework.data.jpa.repository.Query;
 
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 
+/**
+ * Repository interface for NodeHistoryEntry entities.
+ * Provides methods to find NodeHistoryEntry entities based on various criteria.
+ */
 public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEntry, Long> {
 
     /**
-     * Get history for a specific node
+     * Gets history for a specific node.
+     *
+     * @param zone the zone of the node
+     * @param network the network of the node
+     * @param node the node number
+     * @param pageable the pagination information
+     * @return a page of NodeHistoryEntry entities matching the criteria
      */
     Page<NodeHistoryEntry> findByZoneAndNetworkAndNodeOrderByChangeDateDesc(
             Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
-     * Get history for a specific network
+     * Gets history for a specific network.
+     *
+     * @param zone the zone of the network
+     * @param network the network number
+     * @param pageable the pagination information
+     * @return a page of NodeHistoryEntry entities matching the criteria
      */
     Page<NodeHistoryEntry> findByZoneAndNetworkOrderByChangeDateDescNodeAsc(
             Integer zone, Integer network, Pageable pageable);
 
     /**
-     * Get history for a specific zone
+     * Gets history for a specific zone.
+     *
+     * @param zone the zone number
+     * @param pageable the pagination information
+     * @return a page of NodeHistoryEntry entities matching the criteria
      */
     Page<NodeHistoryEntry> findByZoneOrderByChangeDateDescNetworkAscNodeAsc(
             Integer zone, Pageable pageable);
 
     /**
-     * Get all history entries
+     * Gets all history entries.
+     *
+     * @param pageable the pagination information
+     * @return a page of all NodeHistoryEntry entities
      */
     Page<NodeHistoryEntry> findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(Pageable pageable);
 
     /**
-     * Get changes for a specific date
+     * Gets changes for a specific date.
+     *
+     * @param changeDate the date of the changes
+     * @return a list of NodeHistoryEntry entities for the specified date
      */
     List<NodeHistoryEntry> findByChangeDateOrderByZoneAscNetworkAscNodeAsc(LocalDate changeDate);
 
     /**
-     * Get changes between dates
+     * Gets changes between dates.
+     *
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @param pageable the pagination information
+     * @return a page of NodeHistoryEntry entities within the date range
      */
     Page<NodeHistoryEntry> findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
             LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     /**
-     * Get changes by type
+     * Gets changes by type.
+     *
+     * @param changeType the type of change
+     * @param pageable the pagination information
+     * @return a page of NodeHistoryEntry entities matching the change type
      */
     Page<NodeHistoryEntry> findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
             NodeHistoryEntry.ChangeType changeType, Pageable pageable);
 
     /**
-     * Get summary statistics for a date range
+     * Gets summary statistics for a date range.
+     *
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @return a list of NodeChangeSummaryDto objects with change statistics
      */
     @Query("""
             SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
@@ -72,7 +110,12 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
             LocalDate startDate, LocalDate endDate);
 
     /**
-     * Get most active nodes (nodes with most changes)
+     * Gets most active nodes (nodes with most changes) in a period.
+     *
+     * @param startDate the start date of the period
+     * @param endDate the end date of the period
+     * @param pageable the pagination information
+     * @return a list of Object arrays with node IDs and change counts
      */
     @Query("""
             SELECT h.zone, h.network, h.node, COUNT(h) as changeCount
@@ -83,6 +126,16 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
             """)
     List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
+    /**
+     * Checks if a NodeHistoryEntry exists based on zone, network, node, nodelist year, and nodelist name.
+     *
+     * @param zone the zone of the node
+     * @param network the network of the node
+     * @param node the node number
+     * @param nodelistYear the year of the nodelist
+     * @param nodelistName the name of the nodelist
+     * @return true if the NodeHistoryEntry exists, false otherwise
+     */
     boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
             Integer zone, Integer network, Integer node, Integer nodelistYear, String nodelistName);
 }
