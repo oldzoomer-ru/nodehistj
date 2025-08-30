@@ -11,7 +11,8 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
- * DTO for {@link NodeHistoryEntry}
+ * DTO for {@link NodeHistoryEntry}.
+ * Contains information about a node's history entry, including current and previous values.
  */
 @Getter
 @Setter
@@ -31,7 +32,7 @@ public class NodeHistoryEntryDto implements Serializable {
     private String phone;
     private Integer baudRate;
     private List<String> flags;
-    
+
     // Previous values for MODIFIED entries
     private Keywords prevKeywords;
     private String prevNodeName;
