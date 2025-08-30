@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Summary of node changes for a specific date
+ * Summary of node changes for a specific date.
+ * Contains counts of added, removed, and modified nodes for a particular date.
  */
 @Getter
 @Setter
