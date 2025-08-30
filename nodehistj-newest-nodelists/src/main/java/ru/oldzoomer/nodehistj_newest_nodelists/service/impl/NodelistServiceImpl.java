@@ -14,6 +14,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
+ * Provides methods for retrieving nodelist entries based on various criteria.
  */
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,11 @@ public class NodelistServiceImpl implements NodelistService {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
 
+    /**
+     * Gets all nodelist entries.
+     *
+     * @return a list of NodeEntryDto objects representing the nodelist entries
+     */
     @Override
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries() {
@@ -29,6 +35,12 @@ public class NodelistServiceImpl implements NodelistService {
         return nodeEntryMapper.toDto(nodeEntryRepository.findAll());
     }
 
+    /**
+     * Gets nodelist entries for a specific zone.
+     *
+     * @param zone the zone of the nodelist entries
+     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified zone
+     */
     @Override
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone) {
@@ -36,6 +48,13 @@ public class NodelistServiceImpl implements NodelistService {
         return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneOrderByIdDesc(zone));
     }
 
+    /**
+     * Gets nodelist entries for a specific network within a specific zone.
+     *
+     * @param zone the zone of the nodelist entries
+     * @param network the network of the nodelist entries
+     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified network
+     */
     @Override
     @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
@@ -43,6 +62,14 @@ public class NodelistServiceImpl implements NodelistService {
         return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetworkOrderByIdDesc(zone, network));
     }
 
+    /**
+     * Gets a specific nodelist entry for a node within a specific network and zone.
+     *
+     * @param zone the zone of the nodelist entry
+     * @param network the network of the nodelist entry
+     * @param node the node address of the nodelist entry
+     * @return a NodeEntryDto object representing the specific nodelist entry
+     */
     @Override
     @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
