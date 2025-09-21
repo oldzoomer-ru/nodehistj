@@ -1,15 +1,15 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.entity;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
-import lombok.Getter;
-import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -53,10 +53,9 @@ public class NodeEntry implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof NodeEntry)) {
+        if (!(o instanceof NodeEntry nodeEntry)) {
             return false;
         }
-        NodeEntry nodeEntry = (NodeEntry) o;
         return Objects.equals(id, nodeEntry.id);
     }
 

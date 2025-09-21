@@ -1,7 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
-import java.util.List;
-
+import com.redis.testcontainers.RedisContainer;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +17,11 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
-
-import com.redis.testcontainers.RedisContainer;
-
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
+
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -32,7 +30,6 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 @Slf4j
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
     public static final CassandraContainer cassandra = new CassandraContainer("cassandra")
             .withExposedPorts(9042)
@@ -40,19 +37,16 @@ public abstract class BaseIntegrationTest {
             .withEnv("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
             .waitingFor(Wait.forSuccessfulCommand("cqlsh -e 'describe keyspaces;'"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));

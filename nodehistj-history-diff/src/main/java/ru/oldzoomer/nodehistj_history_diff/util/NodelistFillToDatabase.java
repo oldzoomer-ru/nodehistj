@@ -1,23 +1,22 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Component;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntryKey;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
+import ru.oldzoomer.nodelistj.Nodelist;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import ru.oldzoomer.minio.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntryKey;
-import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
-import ru.oldzoomer.nodelistj.Nodelist;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -39,7 +38,6 @@ public class NodelistFillToDatabase {
     /**
      * Converts nodelist entry from common format to database entity
      * @param nodeListEntry source nodelist entry from common library
-     * @param nodelistEntryNew parent nodelist entry entity
      * @return populated NodeEntry entity ready for saving
      */
     private static NodeEntry getNodeEntry(

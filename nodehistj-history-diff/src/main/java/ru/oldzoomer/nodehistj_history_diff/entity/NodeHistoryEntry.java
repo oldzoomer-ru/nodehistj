@@ -1,13 +1,14 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
-import org.springframework.data.cassandra.core.mapping.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+import ru.oldzoomer.nodelistj.enums.Keywords;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import lombok.Getter;
-import lombok.Setter;
-import ru.oldzoomer.nodelistj.enums.Keywords;
 
 @Getter
 @Setter
@@ -47,10 +48,9 @@ public class NodeHistoryEntry implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof NodeHistoryEntry)) {
+        if (!(o instanceof NodeHistoryEntry that)) {
             return false;
         }
-        NodeHistoryEntry that = (NodeHistoryEntry) o;
         return Objects.equals(id, that.id);
     }
 
