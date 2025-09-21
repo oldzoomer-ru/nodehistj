@@ -1,20 +1,11 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
@@ -22,6 +13,14 @@ import ru.oldzoomer.nodehistj_newest_nodelists.exception.NoNewObjects;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -78,9 +77,7 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is started");
 
         String modifiedObject = modifiedObjects.stream()
-                .filter(object -> object.matches(".*/\\d{4}/nodelist\\.\\d{3}"))
-                .sorted(Comparator.reverseOrder())
-                .findFirst()
+                .filter(object -> object.matches(".*/\\d{4}/nodelist\\.\\d{3}")).max(Comparator.naturalOrder())
                 .orElseThrow(NoNewObjects::new);
 
         log.info("New object: {}", modifiedObject);

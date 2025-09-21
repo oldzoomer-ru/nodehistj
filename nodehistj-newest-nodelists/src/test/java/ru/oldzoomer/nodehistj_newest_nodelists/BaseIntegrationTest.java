@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
-import java.util.List;
-
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,12 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
-
-import com.redis.testcontainers.RedisContainer;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
+
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
@@ -40,19 +38,16 @@ public abstract class BaseIntegrationTest {
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));

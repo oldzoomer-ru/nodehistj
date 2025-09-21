@@ -16,12 +16,10 @@ import org.testcontainers.redpanda.RedpandaContainer;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
-    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
