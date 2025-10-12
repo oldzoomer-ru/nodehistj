@@ -59,24 +59,22 @@ services:
       timeout: 5s
       retries: 3
 
-  postgres:
-    image: postgres:alpine
+  cassandra:
+    image: cassandra
     networks:
       - nodehistj
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
+      - cassandra_data:/var/lib/cassandra
+    restart: unless-stopped
     healthcheck:
-      test: pg_isready -U postgres || exit 1
-      start_period: 30s
+      test: [ "CMD", "cqlsh", "-e", "describe keyspaces;" ]
+      start_period: 120s
       interval: 5s
       timeout: 10s
-      retries: 5
+      retries: 10
 
 networks:
   nodehistj:
@@ -84,5 +82,5 @@ networks:
 
 volumes:
   minio_storage:
-  postgres_storage:
   redpanda_dev_data:
+  cassandra_data:
