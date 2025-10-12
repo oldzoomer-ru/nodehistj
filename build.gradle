@@ -56,7 +56,7 @@ subprojects {
     ext {
         mapstructVersion = '1.6.3'
         therapiVersion = '0.15.0'
-        nodelistjVersion = '1.0'
+        nodelistjVersion = '1.0.1'
     }
 
     dependencies {
