@@ -1,0 +1,88 @@
+services:
+  minio:
+    image: minio/minio
+    networks:
+      - nodehistj
+    volumes:
+      - minio_storage:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: mc ready local || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER:-user}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD:-password}
+
+  redis:
+    image: redis:alpine
+    networks:
+      - nodehistj
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: redis-cli ping || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  redpanda:
+    image: redpandadata/redpanda
+    restart: unless-stopped
+    networks:
+      - nodehistj
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    command:
+      - redpanda start
+        --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+        --advertise-kafka-addr PLAINTEXT://localhost:29092,OUTSIDE://localhost:9092
+    volumes:
+      - redpanda_dev_data:/var/lib/redpanda/data
+    healthcheck:
+      test: [ "CMD", "rpk", "cluster", "health" ]
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:alpine
+    networks:
+      - nodehistj
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+networks:
+  nodehistj:
+    driver: bridge
+
+volumes:
+  minio_storage:
+  postgres_storage:
+  redpanda_dev_data:
