@@ -1,13 +1,12 @@
 package ru.oldzoomer.nodehistj_history_diff.kafka;
 
-import java.util.List;
-
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
+
+import java.util.List;
 
 @Component
 @Slf4j
@@ -23,6 +22,7 @@ public class KafkaListeners {
             log.info("Nodelist update completed successfully");
         } catch (Exception e) {
             log.error("Error updating nodelist", e);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -11,6 +11,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_newest_nodelists.exception.NoNewObjects;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+import ru.oldzoomer.nodelistj.entries.NodelistEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -54,6 +55,10 @@ public class NodelistFillToDatabase {
         nodeEntryKey.setNodelistYear(year);
         nodeEntryKey.setNodelistName(name);
 
+        return getNodeEntry(nodeListEntry, nodeEntryKey);
+    }
+
+    private static NodeEntry getNodeEntry(NodelistEntry nodeListEntry, NodeEntryKey nodeEntryKey) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setId(nodeEntryKey);
@@ -99,6 +104,7 @@ public class NodelistFillToDatabase {
                 log.info("Nodelist {} is added to database", modifiedObject);
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
+                // continue processing
             }
         } catch (NoNewObjects e) {
             log.warn("No new nodelist objects found");

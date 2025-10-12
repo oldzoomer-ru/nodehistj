@@ -121,6 +121,7 @@ public class UpdateNodelists {
             downloadedFiles.add(objectName);
         } catch (Exception e) {
             log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
+            // continue processing other files
         }
     }
 

@@ -1,18 +1,17 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -51,6 +50,7 @@ public class NodelistDiffProcessor {
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
+            throw new RuntimeException(e);
         }
     }
 

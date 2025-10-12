@@ -94,6 +94,7 @@ public class NodelistFillToDatabase {
                 processSingleNodelist(object);
             } catch (Exception e) {
                 log.error("Failed to process nodelist {}", object, e);
+                // Continue processing other nodelists
             }
         });
 
@@ -102,6 +103,7 @@ public class NodelistFillToDatabase {
             nodelistDiffProcessor.processNodelistDiffs();
         } catch (Exception e) {
             log.error("Error in post-processing steps", e);
+            throw new RuntimeException(e);
         }
         
         log.info("Finished processing {} nodelists", validObjects.size());
@@ -127,8 +129,7 @@ public class NodelistFillToDatabase {
             log.debug("Processing nodelist: year={}, name={}, size={} bytes", year, name, fileContent.length);
             updateNodelist(nodelist, year, name);
         } catch (Exception e) {
-            log.error("Failed to process nodelist from MinIO (bucket={}, object={}): {}",
-                     minioBucket, object, e.getMessage());
+            log.error("Failed to process nodelist from MinIO (bucket={}, object={})", minioBucket, object, e);
             throw e;
         }
     }

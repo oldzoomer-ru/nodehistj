@@ -1,24 +1,20 @@
 package ru.oldzoomer.nodehistj_download_nodelists.util;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Юнит-тесты для {@link FtpClient}
@@ -65,7 +61,9 @@ class FtpClientTest {
                 // open() в таком случае вызывает close() и пробрасывает исключение
                 try {
                     ftpClient.close();
-                } catch (IOException ignored) {}
+                } catch (IOException e) {
+                    Assertions.fail("Failed to close FTP client", e);
+                }
                 throw new IOException("FTP login failed");
             }
         });
@@ -85,7 +83,9 @@ class FtpClientTest {
             if (!ok || !FTPReply.isPositiveCompletion(mockApacheFtp.getReplyCode())) {
                 try {
                     ftpClient.close();
-                } catch (IOException ignored) {}
+                } catch (IOException e) {
+                    Assertions.fail("Failed to close FTP client", e);
+                }
                 throw new IOException("FTP server refused connection");
             }
         });

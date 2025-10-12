@@ -10,6 +10,7 @@ import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+import ru.oldzoomer.nodelistj.entries.NodelistEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -51,6 +52,10 @@ public class NodelistFillToDatabase {
         nodeEntryKey.setNodelistYear(year);
         nodeEntryKey.setNodelistName(name);
 
+        return getNodeEntry(nodeListEntry, nodeEntryKey);
+    }
+
+    private static NodeEntry getNodeEntry(NodelistEntry nodeListEntry, NodeEntryKey nodeEntryKey) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setId(nodeEntryKey);
@@ -85,6 +90,7 @@ public class NodelistFillToDatabase {
                     updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
                 } catch (Exception e) {
                     log.error("Failed to process nodelist {}", object, e);
+                    // continue processing other objects
                 }
             }
         } catch (Exception e) {
