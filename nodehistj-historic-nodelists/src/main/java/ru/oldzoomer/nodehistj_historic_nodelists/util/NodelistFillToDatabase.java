@@ -77,25 +77,19 @@ public class NodelistFillToDatabase {
     @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        try {
-            for (String object : modifiedObjects) {
-                Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-                if (!matcher.find()) {
-                    log.debug("Object {} is not a valid nodelist", object);
-                    continue;
-                }
-
-                try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
-                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-                } catch (Exception e) {
-                    log.error("Failed to process nodelist {}", object, e);
-                    // continue processing other objects
-                }
+        for (String object : modifiedObjects) {
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            if (!matcher.matches()) {
+                log.debug("Object {} is not a nodelist", object);
+                continue;
             }
-        } catch (Exception e) {
-            log.error("Failed to update nodelists", e);
-            throw e;
+
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+            } catch (Exception e) {
+                log.error("Failed to add nodelist to database", e);
+            }
         }
         log.info("Update nodelists is finished");
     }
@@ -111,7 +105,7 @@ public class NodelistFillToDatabase {
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
         log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
-        
+
         for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
             nodeEntryRepository.save(getNodeEntry(nodeListEntry, year, name));
         }

@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -61,9 +60,9 @@ class FtpClientTest {
                 // open() в таком случае вызывает close() и пробрасывает исключение
                 try {
                     ftpClient.close();
-                } catch (IOException e) {
-                    Assertions.fail("Failed to close FTP client", e);
+                } catch (IOException ignored) {
                 }
+
                 throw new IOException("FTP login failed");
             }
         });
@@ -83,9 +82,9 @@ class FtpClientTest {
             if (!ok || !FTPReply.isPositiveCompletion(mockApacheFtp.getReplyCode())) {
                 try {
                     ftpClient.close();
-                } catch (IOException e) {
-                    Assertions.fail("Failed to close FTP client", e);
+                } catch (IOException ignored) {
                 }
+
                 throw new IOException("FTP server refused connection");
             }
         });

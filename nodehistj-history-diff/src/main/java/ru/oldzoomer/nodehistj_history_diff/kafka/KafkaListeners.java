@@ -22,7 +22,6 @@ public class KafkaListeners {
             log.info("Nodelist update completed successfully");
         } catch (Exception e) {
             log.error("Error updating nodelist", e);
-            throw new RuntimeException(e);
         }
     }
 }
