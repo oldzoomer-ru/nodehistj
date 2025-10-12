@@ -1,25 +1,24 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -73,22 +72,66 @@ public class NodelistFillToDatabase {
     @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-            if (!matcher.matches()) {
-                log.debug("Object {} is not a nodelist", object);
-                continue;
+
+        List<String> validObjects = modifiedObjects.stream()
+                .filter(object -> {
+                    Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+                    boolean valid = matcher.find();
+                    if (!valid) {
+                        log.debug("Skipping invalid nodelist object: {}", object);
+                    }
+                    return valid;
+                })
+                .toList();
+
+        if (validObjects.isEmpty()) {
+            log.warn("No valid nodelist objects found");
+            return;
+        }
+
+        validObjects.forEach(object -> {
+            try {
+                processSingleNodelist(object);
+            } catch (Exception e) {
+                log.error("Failed to process nodelist {}", object, e);
+                // Continue processing other nodelists
+            }
+        });
+
+        try {
+            log.debug("Processing nodelist diffs");
+            nodelistDiffProcessor.processNodelistDiffs();
+        } catch (Exception e) {
+            log.error("Error in post-processing steps", e);
+            throw new RuntimeException(e);
+        }
+
+        log.info("Finished processing {} nodelists", validObjects.size());
+    }
+
+    private void processSingleNodelist(String object) throws Exception {
+        Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+        matcher.find(); // Already validated
+
+        log.debug("Downloading nodelist from MinIO: bucket={}, object={}", minioBucket, object);
+        try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+            byte[] fileContent = inputStream.readAllBytes();
+
+            if (fileContent.length == 0) {
+                log.warn("Empty nodelist file detected: {}", object);
+                return;
             }
 
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
-                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-            } catch (Exception e) {
-                log.error("Failed to add nodelist to database", e);
-            }
+            Nodelist nodelist = new Nodelist(new ByteArrayInputStream(fileContent));
+            int year = Integer.parseInt(matcher.group(1));
+            String name = matcher.group(2);
+
+            log.debug("Processing nodelist: year={}, name={}, size={} bytes", year, name, fileContent.length);
+            updateNodelist(nodelist, year, name);
+        } catch (Exception e) {
+            log.error("Failed to process nodelist from MinIO (bucket={}, object={})", minioBucket, object, e);
+            throw e;
         }
-        log.info("Update nodelists is finished");
-        nodelistDiffProcessor.processNodelistDiffs();
     }
 
     /**

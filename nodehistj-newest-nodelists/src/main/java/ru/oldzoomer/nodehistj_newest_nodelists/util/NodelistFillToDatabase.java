@@ -42,7 +42,7 @@ public class NodelistFillToDatabase {
 
     /**
      * Converts nodelist entry from common format to database entity
-     * 
+     *
      * @param nodeListEntry    source nodelist entry from common library
      * @param nodelistEntryNew parent nodelist entry entity
      * @return populated NodeEntry entity ready for saving
@@ -69,34 +69,40 @@ public class NodelistFillToDatabase {
     /**
      * Kafka listener method triggered when new nodelists are downloaded.
      * Processes each modified nodelist file from MinIO storage.
-     * 
+     *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
     @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
-        String modifiedObject = modifiedObjects.stream()
-                .filter(object -> object.matches(".*/\\d{4}/nodelist\\.\\d{3}")).max(Comparator.naturalOrder())
-                .orElseThrow(NoNewObjects::new);
+        try {
+            String modifiedObject = modifiedObjects.stream()
+                    .filter(object -> object.matches(".*/\\d{4}/nodelist\\.\\d{3}")).max(Comparator.naturalOrder())
+                    .orElseThrow(NoNewObjects::new);
 
-        log.info("New object: {}", modifiedObject);
+            log.info("New object: {}", modifiedObject);
 
-        try (InputStream inputStream = minioUtils.getObject(minioBucket, modifiedObject)) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(modifiedObject);
-            matcher.find(); // Initializes the matcher
-            Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, modifiedObject)) {
+                Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(modifiedObject);
+                if (!matcher.find()) {
+                    log.error("Invalid nodelist path format: {}", modifiedObject);
+                    return;
+                }
 
-            log.info("Starting updating nodelist {} in database", modifiedObject);
-            nodeEntryRepository.deleteAll();
-            nodelistEntryRepository.deleteAll();
-            updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-            log.info("Nodelist {} is added to database", modifiedObject);
-        } catch (Exception e) {
-            log.error("Failed to add nodelist to database", e);
+                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+
+                log.info("Starting updating nodelist {} in database", modifiedObject);
+                nodeEntryRepository.deleteAll();
+                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+                log.info("Nodelist {} is added to database", modifiedObject);
+            } catch (Exception e) {
+                log.error("Failed to add nodelist to database", e);
+                // continue processing
+            }
+        } catch (NoNewObjects e) {
+            log.warn("No new nodelist objects found");
         }
-
-        log.info("Update nodelists is finished");
     }
 
     /**

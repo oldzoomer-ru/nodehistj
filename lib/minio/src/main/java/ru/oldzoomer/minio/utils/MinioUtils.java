@@ -1,29 +1,20 @@
 package ru.oldzoomer.minio.utils;
 
+import io.minio.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.stereotype.Component;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.stereotype.Component;
-
-import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.StatObjectArgs;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-/**
- * Utility class for interacting with MinIO object storage.
- * Provides methods for retrieving, creating, checking, and uploading objects to MinIO.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class MinioUtils implements DisposableBean {
+
     private final MinioClient minioClient;
 
     /**
@@ -37,8 +28,11 @@ public class MinioUtils implements DisposableBean {
     public InputStream getObject(String bucketName, String object) {
         try {
             return minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(bucketName).object(object).build());
+                    .bucket(bucketName)
+                    .object(object)
+                    .build());
         } catch (Exception e) {
+            log.error("Error getting object {}/{}", bucketName, object, e);
             throw new RuntimeException(e);
         }
     }
@@ -57,6 +51,7 @@ public class MinioUtils implements DisposableBean {
                         MakeBucketArgs.builder().bucket(bucketName).build());
             }
         } catch (Exception e) {
+            log.error("Error creating bucket {}", bucketName, e);
             throw new RuntimeException(e);
         }
     }
@@ -76,7 +71,8 @@ public class MinioUtils implements DisposableBean {
                     .build());
             return true;
         } catch (Exception e) {
-            return false;
+            log.error("Failed to stat object {}/{}", bucketName, object, e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -96,6 +92,7 @@ public class MinioUtils implements DisposableBean {
                     .stream(new ByteArrayInputStream(stream.toByteArray()), stream.size(), -1)
                     .build());
         } catch (Exception e) {
+            log.error("Error putting object {}/{}", bucketName, objectName, e);
             throw new RuntimeException(e);
         }
     }
