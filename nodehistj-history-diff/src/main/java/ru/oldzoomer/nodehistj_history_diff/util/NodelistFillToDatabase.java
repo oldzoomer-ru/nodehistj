@@ -10,6 +10,7 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntryKey;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
+import ru.oldzoomer.nodelistj.entries.NodelistEntry;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -51,6 +52,10 @@ public class NodelistFillToDatabase {
         nodeEntryKey.setNodelistYear(year);
         nodeEntryKey.setNodelistName(name);
 
+        return getNodeEntry(nodeListEntry, nodeEntryKey);
+    }
+
+    private static NodeEntry getNodeEntry(NodelistEntry nodeListEntry, NodeEntryKey nodeEntryKey) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setId(nodeEntryKey);
@@ -69,7 +74,9 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(allEntries = true)
+    @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
+            "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
+            allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
