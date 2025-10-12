@@ -72,66 +72,22 @@ public class NodelistFillToDatabase {
     @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
+        for (String object : modifiedObjects) {
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            if (!matcher.matches()) {
+                log.debug("Object {} is not a nodelist", object);
+                continue;
+            }
 
-        List<String> validObjects = modifiedObjects.stream()
-                .filter(object -> {
-                    Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-                    boolean valid = matcher.find();
-                    if (!valid) {
-                        log.debug("Skipping invalid nodelist object: {}", object);
-                    }
-                    return valid;
-                })
-                .toList();
-
-        if (validObjects.isEmpty()) {
-            log.warn("No valid nodelist objects found");
-            return;
-        }
-
-        validObjects.forEach(object -> {
-            try {
-                processSingleNodelist(object);
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
             } catch (Exception e) {
-                log.error("Failed to process nodelist {}", object, e);
-                // Continue processing other nodelists
+                log.error("Failed to add nodelist to database", e);
             }
-        });
-
-        try {
-            log.debug("Processing nodelist diffs");
-            nodelistDiffProcessor.processNodelistDiffs();
-        } catch (Exception e) {
-            log.error("Error in post-processing steps", e);
-            throw new RuntimeException(e);
         }
-
-        log.info("Finished processing {} nodelists", validObjects.size());
-    }
-
-    private void processSingleNodelist(String object) throws Exception {
-        Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-        matcher.find(); // Already validated
-
-        log.debug("Downloading nodelist from MinIO: bucket={}, object={}", minioBucket, object);
-        try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
-            byte[] fileContent = inputStream.readAllBytes();
-
-            if (fileContent.length == 0) {
-                log.warn("Empty nodelist file detected: {}", object);
-                return;
-            }
-
-            Nodelist nodelist = new Nodelist(new ByteArrayInputStream(fileContent));
-            int year = Integer.parseInt(matcher.group(1));
-            String name = matcher.group(2);
-
-            log.debug("Processing nodelist: year={}, name={}, size={} bytes", year, name, fileContent.length);
-            updateNodelist(nodelist, year, name);
-        } catch (Exception e) {
-            log.error("Failed to process nodelist from MinIO (bucket={}, object={})", minioBucket, object, e);
-            throw e;
-        }
+        log.info("Update nodelists is finished");
+        nodelistDiffProcessor.processNodelistDiffs();
     }
 
     /**

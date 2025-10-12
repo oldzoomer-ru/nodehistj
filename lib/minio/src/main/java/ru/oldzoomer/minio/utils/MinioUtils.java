@@ -10,6 +10,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+/**
+ * Utility class for interacting with MinIO object storage.
+ * Provides methods for retrieving, creating, checking, and uploading objects to MinIO.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -71,8 +75,7 @@ public class MinioUtils implements DisposableBean {
                     .build());
             return true;
         } catch (Exception e) {
-            log.error("Failed to stat object {}/{}", bucketName, object, e);
-            throw new RuntimeException(e);
+            return false;
         }
     }
 

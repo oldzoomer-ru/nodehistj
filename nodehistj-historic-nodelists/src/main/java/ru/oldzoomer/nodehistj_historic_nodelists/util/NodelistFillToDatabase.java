@@ -82,8 +82,7 @@ public class NodelistFillToDatabase {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                 updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
             } catch (Exception e) {
-                log.error("Failed to process nodelist {}", object, e);
-                // continue processing other objects
+                log.error("Failed to add nodelist to database", e);
             }
         }
         log.info("Update nodelists is finished");

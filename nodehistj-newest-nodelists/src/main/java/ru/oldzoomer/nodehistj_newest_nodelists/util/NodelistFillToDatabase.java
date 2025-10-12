@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.exception.NoNewObjects;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
@@ -17,7 +16,6 @@ import ru.oldzoomer.nodelistj.Nodelist;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,34 +73,21 @@ public class NodelistFillToDatabase {
     @CacheEvict(allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
+        for (String object : modifiedObjects) {
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            if (!matcher.matches()) {
+                log.debug("Object {} is not a nodelist", object);
+                continue;
+            }
 
-        try {
-            String modifiedObject = modifiedObjects.stream()
-                    .filter(object -> object.matches(".*/\\d{4}/nodelist\\.\\d{3}")).max(Comparator.naturalOrder())
-                    .orElseThrow(NoNewObjects::new);
-
-            log.info("New object: {}", modifiedObject);
-
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, modifiedObject)) {
-                Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(modifiedObject);
-                if (!matcher.find()) {
-                    log.error("Invalid nodelist path format: {}", modifiedObject);
-                    return;
-                }
-
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-
-                log.info("Starting updating nodelist {} in database", modifiedObject);
-                nodeEntryRepository.deleteAll();
                 updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-                log.info("Nodelist {} is added to database", modifiedObject);
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
-                // continue processing
             }
-        } catch (NoNewObjects e) {
-            log.warn("No new nodelist objects found");
         }
+        log.info("Update nodelists is finished");
     }
 
     /**
