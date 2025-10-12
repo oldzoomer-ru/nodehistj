@@ -70,6 +70,7 @@ public class NodelistFillToDatabase {
      *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
+    @SuppressWarnings("checkstyle:Indentation")
     @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
             "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
             allEntries = true)
