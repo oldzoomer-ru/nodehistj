@@ -70,7 +70,9 @@ public class NodelistFillToDatabase {
      *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(allEntries = true)
+    @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
+            "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
+            allEntries = true)
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
