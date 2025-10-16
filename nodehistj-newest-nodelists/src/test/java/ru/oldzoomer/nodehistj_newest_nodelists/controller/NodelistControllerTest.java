@@ -1,14 +1,13 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.BaseIntegrationTest;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for NodelistController.
@@ -32,7 +31,6 @@ public class NodelistControllerTest extends BaseIntegrationTest {
     /**
      * Tests basic retrieval of current nodelist entries without any filters.
      *
-     * @throws Exception if the test fails
      */
     @Test
     void testGetNodelistEntry() throws Exception {
