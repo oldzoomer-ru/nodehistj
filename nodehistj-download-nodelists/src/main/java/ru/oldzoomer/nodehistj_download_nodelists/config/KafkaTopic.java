@@ -6,11 +6,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+/**
+ * Configuration class for Kafka topics.
+ * <p>
+ * Responsible for:
+ * - Creating Kafka topics
+ * - Configuring topic properties
+ * - Setting up topic partitions and replicas
+ */
 @Configuration
 public class KafkaTopic {
     /**
-     * Topic for signaling when nodelist downloads are complete
-     * with partitions for parallel processing
+     * Creates a Kafka topic for signaling when nodelist downloads are complete.
+     *
+     * @param partitions Number of partitions for the topic
+     * @param replicas Number of replicas for the topic
+     * @return NewTopic instance configured for nodelist download completion notifications
      */
     @Bean
     NewTopic downloadNodelistsIsFinishedTopic(

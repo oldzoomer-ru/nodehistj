@@ -3,14 +3,14 @@ package ru.oldzoomer.nodehistj_historic_nodelists;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
 /**
  * Main application class for working with historic nodelists.
  * Launches Spring Boot application with enabled transaction management.
  */
 @SpringBootApplication
-@EnableTransactionManagement
+@EnableCassandraRepositories(basePackages = "ru.oldzoomer.nodehistj_historic_nodelists.repo")
 @EnableCaching
 public class NodehistjApplication {
 

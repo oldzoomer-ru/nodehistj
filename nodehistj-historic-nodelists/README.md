@@ -56,10 +56,9 @@ curl "http://localhost:8081/historic/historicNodelist?year=2023&dayOfYear=150"
 
 | Переменная | Описание | Обязательно | По умолчанию |
 |------------|----------|-------------|--------------|
-| `POSTGRES_HOST` | Хост PostgreSQL | Да | - |
-| `POSTGRES_USER` | Пользователь PostgreSQL | Да | - |
-| `POSTGRES_PASSWORD` | Пароль PostgreSQL | Да | - |
-| `REDIS_HOST` | Хост Redis | Нет | redis |
+| `CASSANDRA_HOST` | Хост Cassandra/ScyllaDB | Да | localhost |
+| `CASSANDRA_DC` | Имя датацентра | Да | datacenter1 |
+| `REDIS_HOST` | Хост Redis | Нет | localhost |
 | `MINIO_URL` | URL MinIO | Да | - |
 | `MINIO_USER` | Пользователь MinIO | Да | - |
 | `MINIO_PASSWORD` | Пароль MinIO | Да | - |
@@ -68,3 +67,4 @@ curl "http://localhost:8081/historic/historicNodelist?year=2023&dayOfYear=150"
 
 ```bash
 docker compose -f compose.yml up nodehistj-historic-nodelists
+```

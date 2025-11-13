@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_historic_nodelists.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     private final NodeEntryRepository nodeEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
@@ -34,7 +32,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findAll(String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findByNodelistYearAndName(nodelistName, year));
     }
 
     /**
@@ -48,7 +48,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findByNodelistYearAndNameAndZone(nodelistName, year, zone));
     }
 
     /**
@@ -64,8 +66,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, network,
-                String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findByNodelistYearAndNameAndZoneAndNetwork(nodelistName, year, zone, network));
     }
 
     /**
@@ -82,7 +85,9 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        return nodeEntryMapper.toDto(nodeEntryRepository.find(zone, network, node,
-                String.format("nodelist.%03d", dayOfYear), year));
+        String nodelistName = String.format("nodelist.%03d", dayOfYear);
+        return nodeEntryMapper.toDto(
+            nodeEntryRepository.findByNodelistYearAndNameAndZoneAndNetworkAndNode(
+                nodelistName, year, zone, network, node));
     }
 }

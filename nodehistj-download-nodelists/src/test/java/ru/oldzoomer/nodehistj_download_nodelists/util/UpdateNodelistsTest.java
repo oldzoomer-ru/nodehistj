@@ -1,16 +1,11 @@
 package ru.oldzoomer.nodehistj_download_nodelists.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.kafka.core.KafkaTemplate;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,13 +14,8 @@ import java.time.Year;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.kafka.core.KafkaTemplate;
-
-import ru.oldzoomer.minio.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Юнит-тесты для {@link UpdateNodelists}

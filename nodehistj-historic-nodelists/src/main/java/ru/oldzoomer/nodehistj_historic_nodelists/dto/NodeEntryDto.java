@@ -3,20 +3,40 @@ package ru.oldzoomer.nodehistj_historic_nodelists.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
- * DTO for {@link ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry}
+ * DTO for Fidonet node entry (FTS-0005 standard).
+ * Contains all required fields for node listing with validation constraints.
  */
 @Data
 public class NodeEntryDto implements Serializable {
-    private NodelistEntryDto nodelistEntry;
+
+    private NodeEntryKeyDto id;
+
     private Keywords keywords;
+
+    @NotNull
+    @Size(max = 40)
     private String nodeName;
+
+    @NotNull
+    @Size(max = 50)
     private String location;
+
+    @NotNull
+    @Size(max = 40)
     private String sysOpName;
+
     private String phone;
+
+    @Min(300)
     private Integer baudRate;
+
+    @Size(max = 5)
     private List<String> flags;
 }

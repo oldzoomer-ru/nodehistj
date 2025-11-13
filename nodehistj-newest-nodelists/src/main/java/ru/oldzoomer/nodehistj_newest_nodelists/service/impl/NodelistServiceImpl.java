@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_newest_nodelists.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a list of NodeEntryDto objects representing the nodelist entries
      */
     @Override
-    @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
         return nodeEntryMapper.toDto(nodeEntryRepository.findAll());
@@ -42,10 +40,9 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a list of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
-    @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneOrderByIdDesc(zone));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZone(zone));
     }
 
     /**
@@ -56,10 +53,9 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a list of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
-    @Transactional(readOnly = true)
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetworkOrderByIdDesc(zone, network));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetwork(zone, network));
     }
 
     /**
@@ -71,11 +67,10 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
     @Override
-    @Transactional(readOnly = true)
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.findFirstByZoneAndNetworkAndNodeOrderByIdDesc(zone, network, node)
+            nodeEntryRepository.findByZoneAndNetworkAndNode(zone, network, node)
         );
     }
 }
