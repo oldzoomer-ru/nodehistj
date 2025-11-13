@@ -34,6 +34,7 @@ public class NodelistDiffProcessor {
      * Compares consecutive nodelist versions in reverse order (newest to oldest)
      * to ensure correct comparison direction.
      */
+    @Transactional
     public synchronized void processNodelistDiffs() {
         try {
             nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
@@ -75,7 +76,6 @@ public class NodelistDiffProcessor {
      * @param currYear the year of the newer nodelist
      * @param currName the name of the newer nodelist
      */
-    @Transactional
     private void processDiffBetweenNodelists(Integer prevYear, String prevName,
             Integer currYear, String currName) {
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);

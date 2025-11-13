@@ -71,6 +71,7 @@ public class NodelistFillToDatabase {
     @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
             "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
             allEntries = true)
+    @Transactional
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
@@ -99,7 +100,6 @@ public class NodelistFillToDatabase {
      * @param year The year of the nodelist.
      * @param name The name of the nodelist file.
      */
-    @Transactional
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
         if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
             log.info("Update nodelist from {} year and name \"{}\" is started", year, name);

@@ -1,15 +1,19 @@
 package ru.oldzoomer.nodehistj_history_diff.dto;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-
-import lombok.Data;
 
 /**
  * Summary of node changes for a specific date.
  * Contains counts of added, removed, and modified nodes for a particular date.
  */
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeChangeSummaryDto implements Serializable {
     private LocalDate changeDate;
     private Integer nodelistYear;

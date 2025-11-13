@@ -41,7 +41,7 @@
 - MinIO - хранилище файлов
 - Redis - кэширование
 - Redpanda (Kafka) - обмен сообщениями
-- Cassandra - основное хранилище данных
+- PostgreSQL - основное хранилище данных
 
 ## Быстрый старт
 
@@ -81,14 +81,15 @@ docker compose -f compose-traefik.yml up -d
 
 ## Основные переменные окружения
 
-| Переменная | Описание | Обязательно | По умолчанию |
-|------------|----------|-------------|--------------|
-| `MINIO_USER` | Пользователь MinIO | Да | - |
-| `MINIO_PASSWORD` | Пароль MinIO | Да | - |
-| `KAFKA_BOOTSTRAP_SERVER` | Адрес Kafka | Нет | redpanda:9092 |
-| `REDIS_HOST` | Адрес Redis | Нет | redis |
-| `FTP_DOWNLOAD_FROM_YEAR` | Год начала загрузки | Нет | 1984 |
-| `DOMAIN` | Домен для Traefik | Только для compose-traefik.yml | - |
+| Переменная               | Описание            | Обязательно                    | По умолчанию  |
+|--------------------------|---------------------|--------------------------------|---------------|
+| `MINIO_USER`             | Пользователь MinIO  | Да                             | -             |
+| `MINIO_PASSWORD`         | Пароль MinIO        | Да                             | -             |
+| `POSTGRES_PASSWORD`      | Пароль PostgreSQL   | Да                             | -             |
+| `KAFKA_BOOTSTRAP_SERVER` | Адрес Kafka         | Нет                            | redpanda:9092 |
+| `REDIS_HOST`             | Адрес Redis         | Нет                            | redis         |
+| `FTP_DOWNLOAD_FROM_YEAR` | Год начала загрузки | Нет                            | 1984          |
+| `DOMAIN`                 | Домен для Traefik   | Только для compose-traefik.yml | -             |
 
 ## Полезные команды
 

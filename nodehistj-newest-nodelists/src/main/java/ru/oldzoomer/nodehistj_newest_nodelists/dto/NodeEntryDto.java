@@ -1,13 +1,13 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.dto;
 
-import java.io.Serializable;
-import java.util.List;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.oldzoomer.nodelistj.enums.Keywords;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * DTO for Fidonet node entry (FTS-0005 standard).
@@ -16,7 +16,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Data
 public class NodeEntryDto implements Serializable {
 
-    private NodeEntryKeyDto id;
+    private Long id;
 
     private Keywords keywords;
 

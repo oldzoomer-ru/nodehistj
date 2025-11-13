@@ -49,6 +49,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  postgres:
+    image: postgres:alpine
+    networks:
+      - nodehistj
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+      - ./pgsql:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: pg_isready -U postgres || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
   nodehistj-download-nodelists:
@@ -108,13 +126,13 @@ services:
       - MINIO_USER=${MINIO_USER:-user}
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
-      - CASSANDRA_HOST=cassandra
+      - POSTGRES_HOST=postgres:5432
     depends_on:
       minio:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      cassandra:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -148,13 +166,13 @@ services:
       - MINIO_USER=${MINIO_USER:-user}
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
-      - CASSANDRA_HOST=cassandra
+      - POSTGRES_HOST=postgres:5432
     depends_on:
       minio:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      cassandra:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -188,33 +206,16 @@ services:
       - MINIO_USER=${MINIO_USER:-user}
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
-      - CASSANDRA_HOST=cassandra
+      - POSTGRES_HOST=postgres:5432
     depends_on:
       minio:
         condition: service_healthy
       redpanda:
         condition: service_healthy
-      cassandra:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-
-  cassandra:
-    image: cassandra
-    networks:
-      - nodehistj
-    environment:
-      - MAX_HEAP_SIZE=512M
-      - HEAP_NEWSIZE=128M
-    volumes:
-      - cassandra_data:/var/lib/cassandra
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "cqlsh", "-e", "describe keyspaces;"]
-      start_period: 120s
-      interval: 5s
-      timeout: 10s
-      retries: 10
 
 secrets:
   github_username:
@@ -228,5 +229,5 @@ networks:
 
 volumes:
   minio_storage:
+  postgres_storage:
   redpanda_dev_data:
-  cassandra_data:

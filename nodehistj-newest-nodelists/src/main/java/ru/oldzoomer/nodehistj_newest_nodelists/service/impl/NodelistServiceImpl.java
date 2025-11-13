@@ -1,15 +1,14 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
+
+import java.util.List;
 
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
@@ -42,7 +41,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZone(zone));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneOrderByIdDesc(zone));
     }
 
     /**
@@ -55,7 +54,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetwork(zone, network));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetworkOrderByIdDesc(zone, network));
     }
 
     /**
@@ -70,7 +69,7 @@ public class NodelistServiceImpl implements NodelistService {
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
         return nodeEntryMapper.toDto(
-            nodeEntryRepository.findByZoneAndNetworkAndNode(zone, network, node)
+                nodeEntryRepository.findFirstByZoneAndNetworkAndNodeOrderByIdDesc(zone, network, node)
         );
     }
 }

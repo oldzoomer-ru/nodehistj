@@ -1,0 +1,3 @@
+create database nodehistj_newest;
+create database nodehistj_historic;
+create database nodehistj_history_diff;

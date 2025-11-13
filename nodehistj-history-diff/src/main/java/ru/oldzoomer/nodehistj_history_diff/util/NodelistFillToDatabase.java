@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -71,6 +72,7 @@ public class NodelistFillToDatabase {
     @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
             "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
             allEntries = true)
+    @Transactional
     public synchronized void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
