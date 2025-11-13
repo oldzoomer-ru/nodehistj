@@ -75,6 +75,7 @@ class ExceptionResolverTest {
     @DisplayName("MethodArgumentTypeMismatchException -> 400 Type Mismatch и форматированное сообщение")
     void handleTypeMismatchReturns400() {
         // Arrange
+        //noinspection DataFlowIssue
         MethodArgumentTypeMismatchException ex = new MethodArgumentTypeMismatchException(
                 "ABC", String.class, "year", null, new IllegalArgumentException("type")
         );
