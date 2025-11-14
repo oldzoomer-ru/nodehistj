@@ -33,7 +33,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-                nodeEntryRepository.findAll(nodelistName, year));
+                nodeEntryRepository.findAllByNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+                        nodelistName, year));
     }
 
     /**
@@ -49,7 +50,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-                nodeEntryRepository.find(zone, nodelistName, year));
+                nodeEntryRepository.findAllByZoneAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+                        zone, nodelistName, year));
     }
 
     /**
@@ -67,7 +69,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-                nodeEntryRepository.find(zone, network, nodelistName, year));
+                nodeEntryRepository.findAllByZoneAndNetworkAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+                        zone, network, nodelistName, year));
     }
 
     /**
@@ -86,6 +89,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network, node);
         String nodelistName = String.format("nodelist.%03d", dayOfYear);
         return nodeEntryMapper.toDto(
-                nodeEntryRepository.find(zone, network, node, nodelistName, year));
+                nodeEntryRepository
+                        .findByZoneAndNetworkAndNodeAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+                                zone, network, node, nodelistName, year));
     }
 }

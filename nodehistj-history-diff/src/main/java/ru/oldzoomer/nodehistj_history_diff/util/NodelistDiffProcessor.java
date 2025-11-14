@@ -81,8 +81,8 @@ public class NodelistDiffProcessor {
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
 
         // Get nodes from both nodelists
-        List<NodeEntry> previousNodes = nodeEntryRepository.findByNodelist(prevYear, prevName);
-        List<NodeEntry> currentNodes = nodeEntryRepository.findByNodelist(currYear, currName);
+        List<NodeEntry> previousNodes = nodeEntryRepository.findByNodelistEntry_NodelistYearAndNodelistEntry_NodelistName(prevYear, prevName);
+        List<NodeEntry> currentNodes = nodeEntryRepository.findByNodelistEntry_NodelistYearAndNodelistEntry_NodelistName(currYear, currName);
 
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = previousNodes.stream()

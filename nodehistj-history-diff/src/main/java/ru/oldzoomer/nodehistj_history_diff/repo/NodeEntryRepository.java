@@ -1,12 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+
+import java.util.List;
 
 /**
  * Repository interface for NodeEntry entities.
@@ -21,11 +20,10 @@ public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
      * @param nodelistName the name of the nodelist
      * @return a list of NodeEntry entities matching the criteria
      */
+    @SuppressWarnings("checkstyle:MethodName")
     @EntityGraph("NodeEntry.nodelistEntry")
-    @Query("SELECT ne FROM NodeEntry ne " +
-           "WHERE ne.nodelistEntry.nodelistYear = ?1 " +
-           "AND ne.nodelistEntry.nodelistName = ?2")
-    List<NodeEntry> findByNodelist(Integer nodelistYear, String nodelistName);
+    List<NodeEntry> findByNodelistEntry_NodelistYearAndNodelistEntry_NodelistName(
+            Integer nodelistYear, String nodelistName);
 
     /**
      * Finds all nodelist versions.

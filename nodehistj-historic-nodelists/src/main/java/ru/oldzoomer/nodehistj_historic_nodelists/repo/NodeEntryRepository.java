@@ -1,12 +1,10 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.repo;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
+
+import java.util.List;
 
 /**
  * Repository interface for NodeEntry entities.
@@ -23,12 +21,10 @@ public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
      * @param nodelistYear the year of the nodelist
      * @return the found NodeEntry entity
      */
-    @Query("from NodeEntry ne " +
-            "where ne.nodelistEntry.nodelistName = :nodelistName " +
-            "and ne.nodelistEntry.nodelistYear = :nodelistYear " +
-            "and zone = :zone and network = :network and node = :node")
+    @SuppressWarnings("checkstyle:MethodName")
     @EntityGraph("NodeEntry.nodelistEntry")
-    NodeEntry find(Integer zone, Integer network, Integer node, String nodelistName, Integer nodelistYear);
+    NodeEntry findByZoneAndNetworkAndNodeAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+            Integer zone, Integer network, Integer node, String nodelistName, Integer nodelistYear);
 
     /**
      * Finds a list of NodeEntry entities based on zone, network, nodelist name, and nodelist year.
@@ -39,12 +35,10 @@ public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
      * @param nodelistYear the year of the nodelist
      * @return the list of found NodeEntry entities
      */
-    @Query("from NodeEntry ne " +
-            "where ne.nodelistEntry.nodelistName = :nodelistName " +
-            "and ne.nodelistEntry.nodelistYear = :nodelistYear " +
-            "and zone = :zone and network = :network order by zone, network, node")
+    @SuppressWarnings("checkstyle:MethodName")
     @EntityGraph("NodeEntry.nodelistEntry")
-    List<NodeEntry> find(Integer zone, Integer network, String nodelistName, Integer nodelistYear);
+    List<NodeEntry> findAllByZoneAndNetworkAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+            Integer zone, Integer network, String nodelistName, Integer nodelistYear);
 
     /**
      * Finds a list of NodeEntry entities based on zone, nodelist name, and nodelist year.
@@ -54,12 +48,10 @@ public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
      * @param nodelistYear the year of the nodelist
      * @return the list of found NodeEntry entities
      */
-    @Query("from NodeEntry ne " +
-            "where ne.nodelistEntry.nodelistName = :nodelistName " +
-            "and ne.nodelistEntry.nodelistYear = :nodelistYear " +
-            "and zone = :zone order by zone, network, node")
+    @SuppressWarnings("checkstyle:MethodName")
     @EntityGraph("NodeEntry.nodelistEntry")
-    List<NodeEntry> find(Integer zone, String nodelistName, Integer nodelistYear);
+    List<NodeEntry> findAllByZoneAndNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+            Integer zone, String nodelistName, Integer nodelistYear);
 
     /**
      * Finds all NodeEntry entities based on nodelist name and nodelist year.
@@ -68,10 +60,8 @@ public interface NodeEntryRepository extends JpaRepository<NodeEntry, Long> {
      * @param nodelistYear the year of the nodelist
      * @return the list of all found NodeEntry entities
      */
-    @Query("from NodeEntry ne " +
-            "where ne.nodelistEntry.nodelistName = :nodelistName " +
-            "and ne.nodelistEntry.nodelistYear = :nodelistYear " +
-            "order by zone, network, node")
+    @SuppressWarnings("checkstyle:MethodName")
     @EntityGraph("NodeEntry.nodelistEntry")
-    List<NodeEntry> findAll(String nodelistName, Integer nodelistYear);
+    List<NodeEntry> findAllByNodelistEntry_NodelistNameAndNodelistEntry_NodelistYear(
+            String nodelistName, Integer nodelistYear);
 }
