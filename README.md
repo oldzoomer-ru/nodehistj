@@ -1,101 +1,62 @@
-# NodehistJ - Система работы с историческими данными узлов
+**NodehistJ - System for Working with Historical FidoNet Node Data**
 
-**NodehistJ 2.x не планируется теперь. Пожалуйста, используйте NodehistJ 1.x. Master-ветка сейчас включает в себя
-NodehistJ 1.x.**
+## Dependencies
 
-## Основные модули и API
+- **MinIO** – file storage
+- **Redis** – caching
+- **Redpanda (Kafka)** – message exchange
+- **PostgreSQL** – primary data store
 
-1. **Загрузка данных** ([документация](nodehistj-download-nodelists/README.md))
-   - Автоматическая загрузка файлов nodelist с FTP
-   - Отправка уведомлений в Kafka топик `download_nodelists_is_finished_topic`
+## Quick Start
 
-2. **Исторические данные** (порт 8081)
-   - Базовый путь: `/historic`
-   - Основные эндпоинты:
-     - `GET /historic/historicNodelist` - получение данных
-       - Параметры:
-         - `year` (обязательный) - год данных
-         - `dayOfYear` (обязательный) - день года (1-366)
-         - `zone` - номер зоны (опционально)
-         - `network` - номер сети (требует zone)
-         - `node` - номер узла (требует zone и network)
-       - Формат ответа: JSON массив объектов nodelist
+1. **Clone the repository**
 
-3. **Текущие данные** (порт 8082)
-   - Базовый путь: `/newest`
-   - Основные эндпоинты:
-     - `GET /newest/nodelist` - получение текущих списков
-     - `GET /newest/nodelist/{id}` - получение конкретного списка
-     - `POST /newest/nodelist` - обновление списков
-   - Формат ответа: JSON
+   ```bash
+   git clone https://github.com/oldzoomer-ru/nodehistj.git
+   cd nodehistj
+   ```
 
-4. **Сравнение версий** (порт 8083)
-   - Базовый путь: `/diff`
-   - Основные эндпоинты:
-     - `GET /diff/diff` - сравнение версий
-       - Параметры:
-         - `version1` - первая версия (формат: год-день)
-         - `version2` - вторая версия (формат: год-день)
-     - `GET /diff/history` - история изменений узла
-   - Формат ответа: JSON с различиями
+2. **Create a `.env` file with minimal settings**
 
-## Зависимости
+   ```ini
+   MINIO_USER=admin
+   MINIO_PASSWORD=password
+   ```
 
-- MinIO - хранилище файлов
-- Redis - кэширование
-- Redpanda (Kafka) - обмен сообщениями
-- PostgreSQL - основное хранилище данных
+3. **Run the services (pick one variant)**
 
-## Быстрый старт
+   **Basic variant**
 
-1. Склонируйте репозиторий:
+   ```bash
+   docker compose -f compose.yml up -d
+   ```
 
-```bash
-git clone https://github.com/oldzoomer-ru/nodehistj.git
-cd nodehistj
-```
+   **For development (with MinIO)**
 
-2. Создайте `.env` файл с минимальными настройками:
+   ```bash
+   docker compose -f compose-dev.yml up -d
+   ```
 
-```ini
-MINIO_USER=admin
-MINIO_PASSWORD=password
-```
+   **With Traefik (for production)**
 
-3. Запустите сервисы (выберите один вариант):
+   ```bash
+   docker compose -f compose-traefik.yml up -d
+   ```
 
-**Базовый вариант:**
+## Main Environment Variables
 
-```bash
-docker compose -f compose.yml up -d
-```
+| Variable                 | Description                                     | Required | Default         |
+|--------------------------|-------------------------------------------------|----------|-----------------|
+| `MINIO_USER`             | MinIO user                                      | Yes      | –               |
+| `MINIO_PASSWORD`         | MinIO password                                  | Yes      | –               |
+| `POSTGRES_PASSWORD`      | PostgreSQL password                             | Yes      | –               |
+| `KAFKA_BOOTSTRAP_SERVER` | Kafka address                                   | No       | `redpanda:9092` |
+| `REDIS_HOST`             | Redis address                                   | No       | `redis`         |
+| `FTP_DOWNLOAD_FROM_YEAR` | Start year for downloads                        | No       | `1984`          |
+| `DOMAIN`                 | Traefik domain (only for `compose-traefik.yml`) | –        | –               |
 
-**Для разработки (с MinIO):**
+## Useful Commands
 
-```bash
-docker compose -f compose-dev.yml up -d
-```
-
-**С Traefik (для production):**
-
-```bash
-docker compose -f compose-traefik.yml up -d
-```
-
-## Основные переменные окружения
-
-| Переменная               | Описание            | Обязательно                    | По умолчанию  |
-|--------------------------|---------------------|--------------------------------|---------------|
-| `MINIO_USER`             | Пользователь MinIO  | Да                             | -             |
-| `MINIO_PASSWORD`         | Пароль MinIO        | Да                             | -             |
-| `POSTGRES_PASSWORD`      | Пароль PostgreSQL   | Да                             | -             |
-| `KAFKA_BOOTSTRAP_SERVER` | Адрес Kafka         | Нет                            | redpanda:9092 |
-| `REDIS_HOST`             | Адрес Redis         | Нет                            | redis         |
-| `FTP_DOWNLOAD_FROM_YEAR` | Год начала загрузки | Нет                            | 1984          |
-| `DOMAIN`                 | Домен для Traefik   | Только для compose-traefik.yml | -             |
-
-## Полезные команды
-
-- Остановить сервисы: `docker compose -f compose.yml down`
-- Просмотр логов: `docker compose -f compose.yml logs -f`
-- Пересборка образов: `docker compose -f compose.yml build`
+- Stop services: `docker compose -f compose.yml down`
+- View logs: `docker compose -f compose.yml logs -f`
+- Rebuild images: `docker compose -f compose.yml build
