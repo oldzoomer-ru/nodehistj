@@ -1,14 +1,14 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
+import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Repository interface for NodeHistoryEntry entities.
@@ -106,7 +106,7 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
             GROUP BY h.changeDate, h.nodelistYear, h.nodelistName
             ORDER BY h.changeDate DESC
             """)
-    List<ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto> getChangeSummary(
+    List<NodeChangeSummaryDto> getChangeSummary(
             LocalDate startDate, LocalDate endDate);
 
     /**
