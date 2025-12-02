@@ -1,4 +1,4 @@
-**NodehistJ - System for Working with Historical FidoNet Node Data**
+**NodehistJ - system for working with historical FidoNet nodelist data**
 
 ## Dependencies
 
