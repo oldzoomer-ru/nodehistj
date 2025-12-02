@@ -11,13 +11,13 @@ dependencies {
     implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.kafka:spring-kafka'
     implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
-    testImplementation 'org.testcontainers:postgresql'
-    testImplementation 'org.testcontainers:redpanda'
-    testImplementation 'org.testcontainers:minio'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testImplementation 'org.testcontainers:testcontainers-redpanda'
+    testImplementation 'org.testcontainers:testcontainers-minio'
     testImplementation 'com.redis:testcontainers-redis'
-    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 }
