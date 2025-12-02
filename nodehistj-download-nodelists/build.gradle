@@ -2,7 +2,7 @@ dependencies {
     implementation project(':lib:minio')
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'commons-net:commons-net:3.12.0'
-    testImplementation 'org.testcontainers:testcontainers-redpanda'
-    testImplementation 'org.testcontainers:testcontainers-minio'
-    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:redpanda'
+    testImplementation 'org.testcontainers:minio'
+    testImplementation 'org.testcontainers:junit-jupiter'
 }
