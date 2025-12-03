@@ -11,10 +11,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MinIOContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -30,9 +30,8 @@ import java.util.List;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
-    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:alpine")
+    public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:alpine")
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("testpass")
