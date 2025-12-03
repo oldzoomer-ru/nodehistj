@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_history_diff.util;
+package ru.oldzoomer.nodehistj_history_diff.controller;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import ru.oldzoomer.nodehistj_history_diff.dto.ErrorDto;
 
 import java.util.NoSuchElementException;
 

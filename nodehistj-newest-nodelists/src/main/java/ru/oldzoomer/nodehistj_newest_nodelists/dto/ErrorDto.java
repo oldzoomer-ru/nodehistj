@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj_historic_nodelists.util;
+package ru.oldzoomer.nodehistj_newest_nodelists.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
