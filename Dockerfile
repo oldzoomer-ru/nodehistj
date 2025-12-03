@@ -47,7 +47,10 @@ RUN ./gradlew --no-daemon --version
 COPY settings.gradle build.gradle $APP_HOME/
 COPY config/ $APP_HOME/config/
 COPY lib/ $APP_HOME/lib/
-COPY ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
+COPY nodehistj-download-nodelists/ $APP_HOME/nodehistj-download-nodelists/
+COPY nodehistj-historic-nodelists/ $APP_HOME/nodehistj-historic-nodelists/
+COPY nodehistj-history-diff/ $APP_HOME/nodehistj-history-diff/
+COPY nodehistj-newest-nodelists/ $APP_HOME/nodehistj-newest-nodelists/
 
 #
 # Build the specified service
