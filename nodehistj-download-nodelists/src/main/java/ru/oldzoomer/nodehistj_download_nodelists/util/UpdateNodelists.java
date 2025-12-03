@@ -48,7 +48,7 @@ public class UpdateNodelists {
     @Value("${ftp.path}")
     private String ftpPath;
 
-    @Value("${ftp.downloadFromYear}")
+    @Value("${ftp.download-from-year}")
     private int downloadFromYear;
 
     @Value("${app.minio.bucket}")

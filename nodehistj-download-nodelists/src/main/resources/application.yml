@@ -16,11 +16,11 @@ ftp:
   user: ${FTP_USER:anonymous}
   password: ${FTP_PASSWORD:anonymous@}
   path: ${FTP_PATH:/nodehist/}
-  downloadFromYear: ${FTP_DOWNLOAD_FROM_YEAR:1984}
+  download-from-year: ${FTP_DOWNLOAD_FROM_YEAR:1984}
 minio:
   url: ${MINIO_URL:http://localhost:9000/}
-  accessKey: ${MINIO_USER}
-  secretKey: ${MINIO_PASSWORD}
+  access-key: ${MINIO_USER}
+  secret-key: ${MINIO_PASSWORD}
 app:
   minio:
     bucket: ${MINIO_BUCKET:nodehistj}

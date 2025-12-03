@@ -9,7 +9,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.postgresql:postgresql'
     implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"

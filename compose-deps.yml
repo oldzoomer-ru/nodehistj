@@ -42,10 +42,6 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
-    deploy:
-      resources:
-        limits:
-          memory: 1G
     command:
       - redpanda start
         --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092

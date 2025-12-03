@@ -51,6 +51,7 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", () -> "jdbc:h2:mem:nodelistj;DB_CLOSE_DELAY=-1");
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.accessKey", minioContainer::getUserName);
         registry.add("minio.secretKey", minioContainer::getPassword);
