@@ -23,8 +23,6 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v3
@@ -43,8 +41,6 @@ jobs:
   nodehistj-download-nodelists:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     needs: test
 
     env:
@@ -100,8 +96,6 @@ jobs:
   nodehistj-historic-nodelists:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     needs: test
 
     env:
@@ -157,8 +151,6 @@ jobs:
   nodehistj-history-diff:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     needs: test
 
     env:
@@ -214,8 +206,6 @@ jobs:
   nodehistj-newest-nodelists:
 
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     needs: test
 
     env:
