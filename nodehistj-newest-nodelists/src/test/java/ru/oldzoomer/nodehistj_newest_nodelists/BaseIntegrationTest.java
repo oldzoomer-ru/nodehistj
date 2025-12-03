@@ -4,14 +4,13 @@ import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MinIOContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,14 +28,6 @@ import java.util.List;
 @Transactional
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
-
-    @SuppressWarnings("resource")
-    @Container
-    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:alpine")
-            .withDatabaseName("testdb")
-            .withUsername("testuser")
-            .withPassword("testpass")
-            .waitingFor(Wait.forListeningPort());
 
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
@@ -60,12 +51,9 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("minio.url", minioContainer::getS3URL);
-        registry.add("minio.user", minioContainer::getUserName);
-        registry.add("minio.password", minioContainer::getPassword);
+        registry.add("minio.accessKey", minioContainer::getUserName);
+        registry.add("minio.secretKey", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
         registry.add("spring.data.redis.host", redisContainer::getRedisHost);
         registry.add("spring.data.redis.port", redisContainer::getRedisPort);
@@ -97,7 +85,6 @@ public abstract class BaseIntegrationTest {
 
     @AfterAll
     static void close() {
-        postgreSQLContainer.close();
         minioContainer.close();
         redpandaContainer.close();
         redisContainer.close();
