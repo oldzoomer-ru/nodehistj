@@ -62,7 +62,6 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.url", () -> "jdbc:h2:mem:nodelistj;DB_CLOSE_DELAY=-1");
         registry.add("minio.url", minioContainer::getS3URL);
         registry.add("minio.accessKey", minioContainer::getUserName);
         registry.add("minio.secretKey", minioContainer::getPassword);
