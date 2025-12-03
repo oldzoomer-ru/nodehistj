@@ -1,4 +1,4 @@
-package ru.oldzoomer.common.utils;
+package ru.oldzoomer.nodehistj_newest_nodelists.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class ErrorDto {
      * Constructs a new ErrorDto with the specified message and code.
      *
      * @param message the error message
-     * @param code the error code
+     * @param code    the error code
      */
     public ErrorDto(String message, String code) {
         this.message = message;

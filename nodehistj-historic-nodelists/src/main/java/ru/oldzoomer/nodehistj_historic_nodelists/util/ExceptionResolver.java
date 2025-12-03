@@ -1,7 +1,7 @@
-package ru.oldzoomer.common.utils;
+package ru.oldzoomer.nodehistj_historic_nodelists.util;
 
-import java.util.NoSuchElementException;
-
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.NoSuchElementException;
 
 /**
  * Global exception handler for REST controllers.
@@ -66,7 +65,7 @@ public class ExceptionResolver {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String message = String.format("Invalid value '%s' for parameter '%s'",
-            ex.getValue(), ex.getName());
+                ex.getValue(), ex.getName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorDto("Type Mismatch", message));
     }
