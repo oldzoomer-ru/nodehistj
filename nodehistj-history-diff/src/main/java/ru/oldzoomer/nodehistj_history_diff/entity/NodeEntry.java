@@ -1,23 +1,13 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodelistj.enums.Keywords;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Entity class representing a node entry in the database.
@@ -32,7 +22,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
         attributeNodes = @NamedAttributeNode("nodelistEntry"))
 public class NodeEntry implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
