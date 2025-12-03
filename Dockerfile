@@ -43,18 +43,8 @@ WORKDIR $APP_HOME
 COPY gradle $APP_HOME/gradle/
 COPY gradlew $APP_HOME/
 RUN ./gradlew --no-daemon --version
+
 COPY settings.gradle build.gradle $APP_HOME/
-
-# Download dependencies first (cached unless build.gradle changes)
-RUN --mount=type=secret,id=github_username \
-    --mount=type=secret,id=github_token \
-    if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
-        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
-        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
-    fi; \
-    ./gradlew dependencies --no-daemon
-
-# Copy source code after dependencies are cached
 COPY config/ $APP_HOME/config/
 COPY lib/ $APP_HOME/lib/
 COPY ${SERVICE_NAME}/ $APP_HOME/${SERVICE_NAME}/
