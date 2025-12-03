@@ -137,7 +137,7 @@ public class UpdateNodelists {
                                 downloadedFiles.size(),
                                 "download_nodelists_is_finished_topic",
                                 ex);
-                    } else if (result != null && result.getRecordMetadata() != null) {
+                    } else if (result != null) {
                         var md = result.getRecordMetadata();
                         log.info(
                                 "Kafka send OK: topic={}, partition={}, offset={}",
