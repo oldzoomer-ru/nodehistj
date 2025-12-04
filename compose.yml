@@ -78,10 +78,6 @@ services:
       args:
         SERVICE_NAME: nodehistj-download-nodelists
         SKIP_TESTS: "true"
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     networks:
       - nodehistj
     restart: unless-stopped
@@ -108,10 +104,6 @@ services:
       secrets:
         - github_username
         - github_token
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     networks:
       - nodehistj
     ports:
@@ -148,10 +140,6 @@ services:
       secrets:
         - github_username
         - github_token
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     networks:
       - nodehistj
     ports:
@@ -188,10 +176,6 @@ services:
       secrets:
         - github_username
         - github_token
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     networks:
       - nodehistj
     ports:
