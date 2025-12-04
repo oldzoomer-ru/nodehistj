@@ -23,7 +23,7 @@ public class KafkaListeners {
      *
      * @param message the list of nodelist file paths that were downloaded
      */
-    @KafkaListener(topics = "download_nodelists_is_finished_topic")
+    @KafkaListener(topics = "download_nodelists_is_finished_topic", concurrency = "1")
     public void downloadNodelistsIsFinishedListener(List<String> message) {
         log.debug("Received message from download_nodelists_is_finished_topic");
         try {

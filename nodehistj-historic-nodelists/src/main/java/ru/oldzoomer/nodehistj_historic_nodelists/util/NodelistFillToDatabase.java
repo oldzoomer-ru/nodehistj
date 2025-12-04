@@ -68,11 +68,9 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
-                            "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
-                            allEntries = true)
+    @CacheEvict(value = "historicNodelistRequests", allEntries = true)
     @Transactional
-    public synchronized void updateNodelist(List<String> modifiedObjects) {
+    public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
         for (String object : modifiedObjects) {
             Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);

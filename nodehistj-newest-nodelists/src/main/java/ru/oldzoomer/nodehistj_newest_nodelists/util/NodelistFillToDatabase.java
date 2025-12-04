@@ -70,26 +70,30 @@ public class NodelistFillToDatabase {
      *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = {"diffNodeEntriesByVersion", "diffNodelistVersions", "nodeHistory",
-                            "networkHistory", "zoneHistory", "globalHistory", "typeChanges", "changesByType"},
-                            allEntries = true)
+    @CacheEvict(value = "nodelistRequests", allEntries = true)
     @Transactional
-    public synchronized void updateNodelist(List<String> modifiedObjects) {
+    public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
-            if (!matcher.matches()) {
-                log.debug("Object {} is not a nodelist", object);
-                continue;
-            }
 
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+        nodelistEntryRepository.deleteAll();
+        nodeEntryRepository.deleteAll();
+
+        String lastVersion = modifiedObjects.stream()
+                .filter(x -> x.matches(".*/(\\d{4})/(nodelist\\.\\d{3})"))
+                .sorted()
+                .findFirst()
+                .orElse("");
+
+        if (!lastVersion.isEmpty()) {
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(lastVersion);
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, lastVersion)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                 updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
             }
         }
+
         log.info("Update nodelists is finished");
     }
 
