@@ -1,23 +1,16 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.entity;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
-import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.oldzoomer.nodelistj.enums.Keywords;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Entity class representing a node entry in the database.
@@ -25,73 +18,44 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  */
 @Getter
 @Setter
-@Entity
-@Table(name = "node_entry",
-        indexes = @Index(columnList = "zone ASC, network ASC, node ASC"))
-@NamedEntityGraph(name = "NodeEntry.nodelistEntry",
-        attributeNodes = @NamedAttributeNode("nodelistEntry"))
+@ToString
+@EqualsAndHashCode
+@Table("node_entry")
 public class NodeEntry implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column("id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private NodelistEntry nodelistEntry;
+    @Column("nodelist_entry_id")
+    private Long nodelistEntryId;
 
-    @Column(name = "zone")
+    @Column("zone")
     private Integer zone;
 
-    @Column(name = "network")
+    @Column("network")
     private Integer network;
 
-    @Column(name = "node")
+    @Column("node")
     private Integer node;
 
-    @Column(name = "keywords")
+    @Column("keywords")
     private Keywords keywords;
 
-    @Column(name = "node_name")
+    @Column("node_name")
     private String nodeName;
 
-    @Column(name = "location")
+    @Column("location")
     private String location;
 
-    @Column(name = "sys_op_name")
+    @Column("sys_op_name")
     private String sysOpName;
 
-    @Column(name = "phone")
+    @Column("phone")
     private String phone;
 
-    @Column(name = "baud_rate")
+    @Column("baud_rate")
     private Integer baudRate;
 
-    @Column(name = "flags")
+    @Column("flags")
     private List<String> flags;
-
-    /**
-     * Compares this NodeEntry with another object for equality.
-     * Two NodeEntry objects are considered equal if they have the same ID.
-     *
-     * @param o the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof NodeEntry nodeEntry)) {
-            return false;
-        }
-        return Objects.equals(id, nodeEntry.id);
-    }
-
-    /**
-     * Returns a hash code value for this NodeEntry.
-     * The hash code is based on the ID of the NodeEntry.
-     *
-     * @return a hash code value for this NodeEntry
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }

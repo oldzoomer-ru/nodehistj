@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
-import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 public class NodelistServiceImpl implements NodelistService {
-    private final NodeEntryRepository nodeEntryRepository;
+    private final NodelistEntryRepository nodeEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
 
     /**
@@ -31,7 +31,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        return nodeEntryMapper.toDto(nodeEntryRepository.findAll());
+        return nodeEntryMapper.toDto(nodeEntryRepository.findAllNodeEntries());
     }
 
     /**
@@ -43,7 +43,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneOrderByIdDesc(zone));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByZone(zone));
     }
 
     /**
@@ -56,7 +56,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZoneAndNetworkOrderByIdDesc(zone, network));
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByNetwork(zone, network));
     }
 
     /**
@@ -70,8 +70,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        return nodeEntryMapper.toDto(
-                nodeEntryRepository.findFirstByZoneAndNetworkAndNodeOrderByIdDesc(zone, network, node)
+        return nodeEntryMapper.toDto(nodeEntryRepository.findByNode(zone, network, node)
         );
     }
 }

@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_history_diff;
 
 import com.redis.testcontainers.RedisContainer;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureMockMvc(printOnlyOnFailure = false)
+@AutoConfigureMockMvc
 @Testcontainers
 @Transactional
 @ActiveProfiles("test")
@@ -111,12 +110,5 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setPrevNodeName("Old Node");
         modifiedEntry.setPrevLocation("Old Location");
         return modifiedEntry;
-    }
-
-    @AfterAll
-    static void close() {
-        minioContainer.close();
-        redpandaContainer.close();
-        redisContainer.close();
     }
 }

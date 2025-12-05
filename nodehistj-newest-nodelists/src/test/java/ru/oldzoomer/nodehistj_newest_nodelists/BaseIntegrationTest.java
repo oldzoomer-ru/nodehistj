@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
 import com.redis.testcontainers.RedisContainer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +17,12 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 
 import java.util.List;
 
 @SpringBootTest
-@AutoConfigureMockMvc(printOnlyOnFailure = false)
+@AutoConfigureMockMvc
 @Testcontainers
 @Transactional
 @ActiveProfiles("test")
@@ -52,9 +50,6 @@ public abstract class BaseIntegrationTest {
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
 
     @Autowired
-    private NodeEntryRepository nodeEntryRepository;
-
-    @Autowired
     private NodelistEntryRepository nodelistEntryRepository;
 
     @DynamicPropertySource
@@ -72,16 +67,13 @@ public abstract class BaseIntegrationTest {
 
     @BeforeEach
     void setUpDatabase() {
-        nodeEntryRepository.deleteAll();
         nodelistEntryRepository.deleteAll();
 
         NodelistEntry nodelistEntry = new NodelistEntry();
         nodelistEntry.setNodelistYear(2023);
         nodelistEntry.setNodelistName("nodelist.001");
-        nodelistEntryRepository.save(nodelistEntry);
 
         NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setNodelistEntry(nodelistEntry);
         nodeEntry.setZone(1);
         nodeEntry.setNetwork(1);
         nodeEntry.setNode(1);
@@ -91,13 +83,8 @@ public abstract class BaseIntegrationTest {
         nodeEntry.setPhone("1234567890");
         nodeEntry.setBaudRate(1200);
         nodeEntry.setFlags(List.of("FLAG1", "FLAG2"));
-        nodeEntryRepository.save(nodeEntry);
-    }
 
-    @AfterAll
-    static void close() {
-        minioContainer.close();
-        redpandaContainer.close();
-        redisContainer.close();
+        nodelistEntry.getNodeEntries().add(nodeEntry);
+        nodelistEntryRepository.save(nodelistEntry);
     }
 }
