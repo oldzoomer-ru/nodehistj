@@ -111,6 +111,8 @@ public class NodelistFillToDatabase {
             for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
                 nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
             }
+
+            nodelistEntryRepository.save(nodelistEntryNew);
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
         }
     }
