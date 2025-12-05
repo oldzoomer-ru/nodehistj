@@ -5,11 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
@@ -20,30 +24,43 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 public class NodelistServiceImpl implements NodelistService {
-    private final NodelistEntryRepository nodeEntryRepository;
+    private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
 
     /**
      * Gets all nodelist entries.
      *
-     * @return a list of NodeEntryDto objects representing the nodelist entries
+     * @return a set of NodeEntryDto objects representing the nodelist entries
      */
     @Override
-    public List<NodeEntryDto> getNodelistEntries() {
+    public Set<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        return nodeEntryMapper.toDto(nodeEntryRepository.findAllNodeEntries());
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
+                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
+                .min(Comparator.comparing(NodelistEntry::getNodelistName))
+                .map(NodelistEntry::getNodeEntries)
+                .orElseThrow(() -> new IllegalStateException("No nodes found"));
+        return nodeEntryMapper.toDto(nodeEntries);
     }
 
     /**
      * Gets nodelist entries for a specific zone.
      *
      * @param zone the zone of the nodelist entries
-     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified zone
+     * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
-    public List<NodeEntryDto> getNodelistEntry(int zone) {
+    public Set<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByZone(zone));
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
+                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
+                .min(Comparator.comparing(NodelistEntry::getNodelistName))
+                .map(NodelistEntry::getNodeEntries)
+                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .stream()
+                .filter(x -> x.getZone().equals(zone))
+                .collect(Collectors.toSet());
+        return nodeEntryMapper.toDto(nodeEntries);
     }
 
     /**
@@ -51,12 +68,21 @@ public class NodelistServiceImpl implements NodelistService {
      *
      * @param zone the zone of the nodelist entries
      * @param network the network of the nodelist entries
-     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified network
+     * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
-    public List<NodeEntryDto> getNodelistEntry(int zone, int network) {
+    public Set<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByNetwork(zone, network));
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
+                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
+                .min(Comparator.comparing(NodelistEntry::getNodelistName))
+                .map(NodelistEntry::getNodeEntries)
+                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .stream()
+                .filter(x -> x.getZone().equals(zone))
+                .filter(x -> x.getNetwork().equals(network))
+                .collect(Collectors.toSet());
+        return nodeEntryMapper.toDto(nodeEntries);
     }
 
     /**
@@ -70,7 +96,17 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        return nodeEntryMapper.toDto(nodeEntryRepository.findByNode(zone, network, node)
-        );
+        NodeEntry nodeEntry = nodelistEntryRepository.findAll().stream()
+                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
+                .min(Comparator.comparing(NodelistEntry::getNodelistName))
+                .map(NodelistEntry::getNodeEntries)
+                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .stream()
+                .filter(x -> x.getZone().equals(zone))
+                .filter(x -> x.getNetwork().equals(network))
+                .filter(x -> x.getNode().equals(node))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No nodes found"));
+        return nodeEntryMapper.toDto(nodeEntry);
     }
 }

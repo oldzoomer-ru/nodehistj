@@ -101,7 +101,7 @@ public class NodelistFillToDatabase {
      * @param name     The name of the nodelist file.
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        if (!nodelistEntryRepository.existsByYearAndName(year, name)) {
+        if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
             log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
             NodelistEntry nodelistEntryNew = new NodelistEntry();

@@ -1,13 +1,12 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.mapper;
 
-import java.util.List;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+
+import java.util.Set;
 
 /**
  * Mapper interface for converting NodeEntry entities to NodeEntryDto objects.
@@ -20,9 +19,9 @@ public interface NodeEntryMapper {
      * Converts a list of NodeEntry entities to a list of NodeEntryDto objects.
      *
      * @param nodeEntries the list of NodeEntry entities to convert
-     * @return the list of converted NodeEntryDto objects
+     * @return the set of converted NodeEntryDto objects
      */
-    List<NodeEntryDto> toDto(List<NodeEntry> nodeEntries);
+    Set<NodeEntryDto> toDto(Set<NodeEntry> nodeEntries);
 
     /**
      * Converts a single NodeEntry entity to a NodeEntryDto object.

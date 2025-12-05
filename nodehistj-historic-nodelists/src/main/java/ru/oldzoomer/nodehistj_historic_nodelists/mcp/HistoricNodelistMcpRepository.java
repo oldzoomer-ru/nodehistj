@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
 
-import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +27,7 @@ public class HistoricNodelistMcpRepository {
 
     @McpTool(description = "Get list of node data by their 2D (zone:network) " +
             "address (eg. 2:5015), year, and day of nodelist")
-    public List<NodeEntryDto> getNodesByNetworkAndYearAndDay(String address, int year, int day) {
+    public Set<NodeEntryDto> getNodesByNetworkAndYearAndDay(String address, int year, int day) {
         Matcher matcher = Pattern.compile("(\\d+):(\\d+)").matcher(address);
         int zone = Integer.parseInt(matcher.group(1));
         int network = Integer.parseInt(matcher.group(2));
@@ -36,7 +36,7 @@ public class HistoricNodelistMcpRepository {
     }
 
     @McpTool(description = "Get list of node data by their zone, year, and day of nodelist")
-    public List<NodeEntryDto> getNodesByZoneAndYearAndDay(int zone, int year, int day) {
+    public Set<NodeEntryDto> getNodesByZoneAndYearAndDay(int zone, int year, int day) {
         return historicNodelistService.getNodelistEntry(zone, year, day);
     }
 }

@@ -1,19 +1,18 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import java.util.List;
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
+
+import java.util.Set;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -67,13 +66,13 @@ public class HistoricNodelistController {
      * @param zone Zone identifier (optional, 1-32767)
      * @param network Network identifier (optional, 1-32767)
      * @param node Node identifier (optional, 0-32767)
-     * @return List of {@link NodeEntryDto} objects matching filter criteria
+     * @return Set of {@link NodeEntryDto} objects matching filter criteria
      * @throws jakarta.validation.ConstraintViolationException if validation fails (400)
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping("/historicNodelist")
     @Cacheable(value = "historicNodelistRequests", unless = "#result == null || #result.isEmpty()")
-    public List<NodeEntryDto> getNodelistEntry(
+    public Set<NodeEntryDto> getNodelistEntry(
             @RequestParam @Min(1984) @Max(2100) Integer year,
             @RequestParam @Min(1) @Max(366) Integer dayOfYear,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
@@ -92,7 +91,7 @@ public class HistoricNodelistController {
                 : network == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone)
                 : node == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network)
                 : historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node) != null
-                    ? List.of(historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node))
-                    : List.of();
+                ? Set.of(historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node))
+                : Set.of();
     }
 }

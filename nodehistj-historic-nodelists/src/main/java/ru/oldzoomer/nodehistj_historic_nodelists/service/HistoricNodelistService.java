@@ -1,8 +1,8 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.service;
 
-import java.util.List;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
+
+import java.util.Set;
 
 /**
  * Historic nodelist service layer interface.
@@ -14,9 +14,9 @@ public interface HistoricNodelistService {
      *
      * @param year the year of the nodelist
      * @param dayOfYear the day of year of the nodelist
-     * @return a list of NodeEntryDto objects representing the nodelist entries
+     * @return a set of NodeEntryDto objects representing the nodelist entries
      */
-    List<NodeEntryDto> getNodelistEntries(int year, int dayOfYear);
+    Set<NodeEntryDto> getNodelistEntries(int year, int dayOfYear);
 
     /**
      * Gets nodelist entries for a specific zone within a specific year and day of year.
@@ -24,9 +24,9 @@ public interface HistoricNodelistService {
      * @param year the year of the nodelist
      * @param dayOfYear the day of year of the nodelist
      * @param zone the zone of the nodelist entries
-     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified zone
+     * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
-    List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone);
+    Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone);
 
     /**
      * Gets nodelist entries for a specific network within a specific zone, year, and day of year.
@@ -35,9 +35,9 @@ public interface HistoricNodelistService {
      * @param dayOfYear the day of year of the nodelist
      * @param zone the zone of the nodelist entries
      * @param network the network of the nodelist entries
-     * @return a list of NodeEntryDto objects representing the nodelist entries for the specified network
+     * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
-    List<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network);
+    Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network);
 
     /**
      * Gets a specific nodelist entry for a node within a specific network, zone, year, and day of year.
