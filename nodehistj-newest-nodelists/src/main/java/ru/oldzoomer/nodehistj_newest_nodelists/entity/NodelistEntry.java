@@ -34,5 +34,6 @@ public class NodelistEntry implements Serializable {
     private String nodelistName;
 
     @MappedCollection(idColumn = "nodelist_entry_id")
+    @EqualsAndHashCode.Exclude
     private Set<NodeEntry> nodeEntries = new HashSet<>();
 }
