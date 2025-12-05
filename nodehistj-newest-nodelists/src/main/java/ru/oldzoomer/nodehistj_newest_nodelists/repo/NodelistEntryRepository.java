@@ -19,9 +19,11 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      * @return true if the NodelistEntry entity exists, false otherwise
      */
     @Query("""
-            SELECT 1 FROM nodelist_entry nl
-            WHERE nl.nodelist_year = :nodelistYear
-            AND nl.nodelist_name = :nodelistName
+            SELECT EXISTS(
+                SELECT 1 FROM nodelist_entry nl
+                WHERE nl.nodelist_year = :nodelistYear
+                AND nl.nodelist_name = :nodelistName
+            )
             """)
     boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 
