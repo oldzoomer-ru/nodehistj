@@ -1,14 +1,13 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.BaseIntegrationTest;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for HistoricNodelistController.
@@ -24,7 +23,7 @@ import ru.oldzoomer.nodehistj_historic_nodelists.BaseIntegrationTest;
  * This test class verifies that the HistoricNodelistController correctly handles
  * different types of requests and returns the expected responses.
  */
-public class HistoricNodelistControllerTest extends BaseIntegrationTest {
+class HistoricNodelistControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

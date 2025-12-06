@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * test to catch any early configuration issues before more complex tests
  * are run.
  */
-public class ContextLoadTest extends BaseIntegrationTest {
+class ContextLoadTest extends BaseIntegrationTest {
     /**
      * Tests that the application context loads successfully.
      * <p>
