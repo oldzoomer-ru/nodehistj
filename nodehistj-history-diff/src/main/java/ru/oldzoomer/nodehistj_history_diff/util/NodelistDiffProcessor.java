@@ -89,7 +89,7 @@ public class NodelistDiffProcessor {
         Integer currYear = newNodelist.getNodelistYear();
         String currName = newNodelist.getNodelistName();
 
-        if (!prevName.equals(currName) && !prevYear.equals(currYear) &&
+        if ((prevName.equals(currName) && prevYear.equals(currYear)) ||
                 nodelistEntryRepository.existsByNodelistYearAndNodelistName(currYear, currName)) {
             return;
         }
