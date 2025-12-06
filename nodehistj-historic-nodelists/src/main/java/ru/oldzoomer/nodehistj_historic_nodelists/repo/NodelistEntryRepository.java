@@ -33,7 +33,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      */
     @Query("""
             SELECT * FROM nodelist_entry nl
-            JOIN node_entry n
+            LEFT JOIN node_entry n
             ON nl.id = n.nodelist_entry_id
             WHERE nl.nodelist_year = :nodelistYear
             AND nl.nodelist_name = :nodelistName
