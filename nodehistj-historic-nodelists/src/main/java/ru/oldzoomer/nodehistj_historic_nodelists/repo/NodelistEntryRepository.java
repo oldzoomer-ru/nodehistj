@@ -4,8 +4,6 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 
-import java.util.Set;
-
 /**
  * Repository interface for NodelistEntry entities.
  * Provides methods to find NodelistEntry entities based on various criteria.
@@ -39,6 +37,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
             ON nl.id = n.nodelist_entry_id
             WHERE nl.nodelist_year = :nodelistYear
             AND nl.nodelist_name = :nodelistName
+            LIMIT 1
             """)
-    Set<NodelistEntry> findByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
+    NodelistEntry findByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 }

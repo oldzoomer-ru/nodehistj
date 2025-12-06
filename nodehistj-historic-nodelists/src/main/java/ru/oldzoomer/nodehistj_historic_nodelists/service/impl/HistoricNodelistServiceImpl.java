@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
 
-import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,11 +50,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName).stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"));
+                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .getNodeEntries();
         return nodeEntryMapper.toDto(nodeEntry);
     }
 
@@ -73,11 +68,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName).stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .collect(Collectors.toSet());
@@ -99,11 +91,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName).stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))
@@ -127,11 +116,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network, node);
         String nodelistName = buildNodelistName(dayOfYear);
         NodeEntry nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName).stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))
