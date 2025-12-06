@@ -125,17 +125,4 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
             ORDER BY changeCount DESC
             """)
     List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable);
-
-    /**
-     * Checks if a NodeHistoryEntry exists based on zone, network, node, nodelist year, and nodelist name.
-     *
-     * @param zone the zone of the node
-     * @param network the network of the node
-     * @param node the node number
-     * @param nodelistYear the year of the nodelist
-     * @param nodelistName the name of the nodelist
-     * @return true if the NodeHistoryEntry exists, false otherwise
-     */
-    boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
-            Integer zone, Integer network, Integer node, Integer nodelistYear, String nodelistName);
 }

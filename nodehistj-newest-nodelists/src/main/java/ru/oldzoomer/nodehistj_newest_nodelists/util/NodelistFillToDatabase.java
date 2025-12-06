@@ -15,6 +15,7 @@ import ru.oldzoomer.nodelistj.Nodelist;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,17 +75,21 @@ public class NodelistFillToDatabase {
 
         String lastVersion = modifiedObjects.stream()
                 .filter(x -> x.matches(".*/(\\d{4})/(nodelist\\.\\d{3})"))
-                .sorted()
-                .findFirst()
+                .min(Comparator.comparing(x -> List.of(x.split("/")).getLast()))
                 .orElse("");
 
-        if (!lastVersion.isEmpty()) {
+        if (!lastVersion.isBlank()) {
             Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(lastVersion);
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, lastVersion)) {
-                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-            } catch (Exception e) {
-                log.error("Failed to add nodelist to database", e);
+            if (matcher.matches()) {
+                log.info("Last version: {}", lastVersion);
+                try (InputStream inputStream = minioUtils.getObject(minioBucket, lastVersion)) {
+                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+                } catch (Exception e) {
+                    log.error("Failed to add nodelist to database", e);
+                }
+            } else {
+                log.error("Failed to parse last version: {}", lastVersion);
             }
         }
 

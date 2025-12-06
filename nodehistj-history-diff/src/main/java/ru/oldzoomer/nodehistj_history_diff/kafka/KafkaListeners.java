@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import ru.oldzoomer.nodehistj_history_diff.util.NodelistDiffProcessor;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KafkaListeners {
     private final NodelistFillToDatabase nodelistFillToDatabase;
+    private final NodelistDiffProcessor nodelistDiffProcessor;
 
     /**
      * Listens to the download_nodelists_is_finished_topic topic and updates the nodelist in the database.
@@ -28,6 +30,7 @@ public class KafkaListeners {
         log.debug("Received message from download_nodelists_is_finished_topic");
         try {
             nodelistFillToDatabase.updateNodelist(message);
+            nodelistDiffProcessor.processNodelistDiffs();
             log.info("Nodelist update completed successfully");
         } catch (Exception e) {
             log.error("Error updating nodelist", e);

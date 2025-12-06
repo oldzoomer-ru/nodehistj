@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodelistEntryRepository nodelistEntryRepository;
-    private final NodelistDiffProcessor nodelistDiffProcessor;
 
     /** MinIO bucket name where nodelists are stored */
     @Value("${app.minio.bucket}")
@@ -85,7 +84,6 @@ public class NodelistFillToDatabase {
             }
         }
         log.info("Update nodelists is finished");
-        nodelistDiffProcessor.processNodelistDiffs();
     }
 
     /**

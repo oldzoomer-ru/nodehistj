@@ -1,16 +1,15 @@
 package ru.oldzoomer.nodehistj_history_diff.controller;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import ru.oldzoomer.nodehistj_history_diff.BaseIntegrationTest;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-
-import ru.oldzoomer.nodehistj_history_diff.BaseIntegrationTest;
-
-public class NodeHistoryControllerTest extends BaseIntegrationTest {
+class NodeHistoryControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

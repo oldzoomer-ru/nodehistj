@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 
-import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,11 +33,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"));
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest().getNodeEntries();
         return nodeEntryMapper.toDto(nodeEntries);
     }
 
@@ -52,11 +46,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest()
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .collect(Collectors.toSet());
@@ -73,11 +64,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.findAll().stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest()
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))
@@ -96,11 +84,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        NodeEntry nodeEntry = nodelistEntryRepository.findAll().stream()
-                .sorted(Comparator.comparing(NodelistEntry::getNodelistYear))
-                .min(Comparator.comparing(NodelistEntry::getNodelistName))
-                .map(NodelistEntry::getNodeEntries)
-                .orElseThrow(() -> new IllegalStateException("No nodes found"))
+        NodeEntry nodeEntry = nodelistEntryRepository.latest()
+                .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))

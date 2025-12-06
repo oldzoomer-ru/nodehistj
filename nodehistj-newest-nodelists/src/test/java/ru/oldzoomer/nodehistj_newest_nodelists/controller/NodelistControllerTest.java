@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This test class verifies that the NodelistController correctly handles
  * different types of requests and returns the expected responses.
  */
-public class NodelistControllerTest extends BaseIntegrationTest {
+class NodelistControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

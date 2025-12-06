@@ -2,6 +2,9 @@ package ru.oldzoomer.nodehistj_history_diff.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
@@ -36,32 +39,35 @@ public class NodelistDiffProcessor {
      * to ensure correct comparison direction.
      */
     @Transactional
-    public synchronized void processNodelistDiffs() {
+    public void processNodelistDiffs() {
         try {
-            nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
+            log.info("Processing nodelist diffs...");
 
-            // Get all nodelist versions sorted by date (newest first)
-            Set<NodelistEntry> nodelistVersions = nodelistEntryRepository.findAll();
+            Page<NodelistEntry> nodeListEntries = nodelistEntryRepository
+                    .findAll(PageRequest.of(0, 10,
+                            Sort.by(Sort.Direction.DESC, "nodelistYear", "nodelistName")));
 
-            if (nodelistVersions.size() < 2) {
+            // Check if there are at least two nodelist versions to compare
+            if (nodeListEntries.getTotalElements() < 2) {
                 log.info("Not enough nodelist versions to compare");
                 return;
             }
 
+            nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
+
             // Process differences between consecutive nodelists in reverse order
             // (from newest to oldest to ensure correct comparison)
-            for (int i = nodelistVersions.size() - 1; i > 0; i--) {
-                Object older = nodelistVersions.toArray()[i];
-                Object newer = nodelistVersions.toArray()[i - 1];
-
-                if (older instanceof NodelistEntry olderNew && newer instanceof NodelistEntry newerNew) {
-                    Integer olderYear = olderNew.getNodelistYear();
-                    String olderName = olderNew.getNodelistName();
-                    Integer newerYear = newerNew.getNodelistYear();
-                    String newerName = newerNew.getNodelistName();
-
-                    processDiffBetweenNodelists(olderYear, olderName, newerYear, newerName);
+            NodelistEntry newNodelist = null;
+            NodelistEntry oldNodelist;
+            while (nodeListEntries.hasNext()) {
+                for (int i = 0; i < nodeListEntries.getSize(); i++) {
+                    oldNodelist = newNodelist;
+                    newNodelist = nodeListEntries.getContent().get(i);
+                    if (oldNodelist != null) {
+                        processDiffBetweenNodelists(oldNodelist, newNodelist);
+                    }
                 }
+                nodeListEntries = nodelistEntryRepository.findAll(nodeListEntries.nextPageable());
             }
 
             log.info("Nodelist diff processing completed");
@@ -74,22 +80,25 @@ public class NodelistDiffProcessor {
     /**
      * Processes differences between two specific nodelist versions.
      *
-     * @param prevYear the year of the older nodelist
-     * @param prevName the name of the older nodelist
-     * @param currYear the year of the newer nodelist
-     * @param currName the name of the newer nodelist
+     * @param oldNodelist the previous nodelist version
+     * @param newNodelist the current nodelist version
      */
-    private void processDiffBetweenNodelists(Integer prevYear, String prevName,
-            Integer currYear, String currName) {
+    private void processDiffBetweenNodelists(NodelistEntry oldNodelist, NodelistEntry newNodelist) {
+        Integer prevYear = oldNodelist.getNodelistYear();
+        String prevName = oldNodelist.getNodelistName();
+        Integer currYear = newNodelist.getNodelistYear();
+        String currName = newNodelist.getNodelistName();
+
+        if (!prevName.equals(currName) && !prevYear.equals(currYear) &&
+                nodelistEntryRepository.existsByNodelistYearAndNodelistName(currYear, currName)) {
+            return;
+        }
+
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
 
         // Get nodes from both nodelists
-        Set<NodeEntry> previousNodes = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(prevYear, prevName)
-                .getNodeEntries();
-        Set<NodeEntry> currentNodes = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(currYear, currName)
-                .getNodeEntries();
+        Set<NodeEntry> previousNodes = oldNodelist.getNodeEntries();
+        Set<NodeEntry> currentNodes = newNodelist.getNodeEntries();
 
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = previousNodes.stream()
@@ -166,18 +175,6 @@ public class NodelistDiffProcessor {
     private void createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     String nodelistName, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
-        // Check if similar entry already exists
-        boolean entryExists = nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
-                node.getZone(),
-                node.getNetwork(),
-                node.getNode(),
-                nodelistYear,
-                nodelistName);
-
-        if (entryExists) {
-            return;
-        }
-
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
         historyEntry.setZone(node.getZone());

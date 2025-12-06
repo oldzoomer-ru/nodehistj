@@ -16,8 +16,6 @@ import java.util.List;
 @Data
 public class NodeEntryDto implements Serializable {
 
-    private Long id;
-
     private Keywords keywords;
 
     @NotNull

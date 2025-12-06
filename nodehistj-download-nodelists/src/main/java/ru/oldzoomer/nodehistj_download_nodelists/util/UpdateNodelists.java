@@ -101,7 +101,6 @@ public class UpdateNodelists {
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
                 .filter(file -> file.matches(".*/nodelist\\.\\d{3}"))
                 .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
-                .peek(file -> log.debug("Processing new file: {}", file))
                 .toList();
 
         log.info("Found {} new files for year {}", newFiles.size(), year);
