@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_history_diff.repo.NodeEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
@@ -30,7 +29,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
-    private final NodeEntryRepository nodeEntryRepository;
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodelistDiffProcessor nodelistDiffProcessor;
 
@@ -41,12 +39,10 @@ public class NodelistFillToDatabase {
     /**
      * Converts nodelist entry from common format to database entity
      * @param nodeListEntry source nodelist entry from common library
-     * @param nodelistEntryNew parent nodelist entry entity
      * @return populated NodeEntry entity ready for saving
      */
     private static NodeEntry getNodeEntry(
-        ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry,
-        ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry nodelistEntryNew
+            ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry
     ) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
@@ -60,7 +56,6 @@ public class NodelistFillToDatabase {
         nodeEntryNew.setPhone(nodeListEntry.phone());
         nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
         nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
-        nodeEntryNew.setNodelistEntry(nodelistEntryNew);
         return nodeEntryNew;
     }
 
@@ -109,11 +104,12 @@ public class NodelistFillToDatabase {
             NodelistEntry nodelistEntryNew = new NodelistEntry();
             nodelistEntryNew.setNodelistYear(year);
             nodelistEntryNew.setNodelistName(name);
-            nodelistEntryRepository.save(nodelistEntryNew);
 
             for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-                nodeEntryRepository.save(getNodeEntry(nodeListEntry, nodelistEntryNew));
+                nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
             }
+
+            nodelistEntryRepository.save(nodelistEntryNew);
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
         }
     }
