@@ -1,22 +1,15 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import ru.oldzoomer.nodelistj.enums.Keywords;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import ru.oldzoomer.nodelistj.enums.Keywords;
 
 /**
  * Entity class representing a node history entry in the database.
@@ -25,6 +18,8 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Getter
 @Setter
 @Entity
+@ToString
+@EqualsAndHashCode
 @Table(name = "node_history_entry",
         indexes = {
             @Index(columnList = "zone ASC, network ASC, node ASC, changeDate DESC"),
@@ -101,32 +96,6 @@ public class NodeHistoryEntry implements Serializable {
 
     @Column(name = "prev_flags")
     private List<String> prevFlags;
-
-    /**
-     * Compares this NodeHistoryEntry with another object for equality.
-     * Two NodeHistoryEntry objects are considered equal if they have the same ID.
-     *
-     * @param o the object to compare with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof NodeHistoryEntry that)) {
-            return false;
-        }
-        return Objects.equals(id, that.id);
-    }
-
-    /**
-     * Returns a hash code value for this NodeHistoryEntry.
-     * The hash code is based on the ID of the NodeHistoryEntry.
-     *
-     * @return a hash code value for this NodeHistoryEntry
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 
     /**
      * Enum representing the type of change made to a node.
