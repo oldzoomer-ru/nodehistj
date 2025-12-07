@@ -89,12 +89,6 @@ public class NodelistDiffProcessor {
         Integer currYear = newNodelist.getNodelistYear();
         String currName = newNodelist.getNodelistName();
 
-        if ((prevName.equals(currName) && prevYear.equals(currYear)) ||
-                nodelistEntryRepository.existsByNodelistYearAndNodelistName(currYear, currName)) {
-            log.info("This nodelist is not capable to diff: {}/{}", currYear, currName);
-            return;
-        }
-
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
 
         // Get nodes from both nodelists
