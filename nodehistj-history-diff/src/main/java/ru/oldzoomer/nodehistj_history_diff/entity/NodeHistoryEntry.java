@@ -1,10 +1,12 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
-import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
 import java.io.Serializable;
@@ -17,84 +19,76 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Entity
 @ToString
 @EqualsAndHashCode
-@Table(name = "node_history_entry",
-        indexes = {
-            @Index(columnList = "zone ASC, network ASC, node ASC, changeDate DESC"),
-            @Index(columnList = "changeDate DESC"),
-            @Index(columnList = "changeType")
-        })
+@Table("node_history_entry")
 public class NodeHistoryEntry implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column("id")
     private Long id;
 
-    @Column(name = "zone", nullable = false)
+    @Column("zone")
     private Integer zone;
 
-    @Column(name = "network", nullable = false)
+    @Column("network")
     private Integer network;
 
-    @Column(name = "node", nullable = false)
+    @Column("node")
     private Integer node;
 
-    @Column(name = "change_date", nullable = false)
+    @Column("change_date")
     private LocalDate changeDate;
 
-    @Column(name = "nodelist_year", nullable = false)
+    @Column("nodelist_year")
     private Integer nodelistYear;
 
-    @Column(name = "nodelist_name", nullable = false)
+    @Column("nodelist_name")
     private String nodelistName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "change_type", nullable = false)
+    @Column("change_type")
     private ChangeType changeType;
 
-    @Column(name = "keywords")
+    @Column("keywords")
     private Keywords keywords;
 
-    @Column(name = "node_name")
+    @Column("node_name")
     private String nodeName;
 
-    @Column(name = "location")
+    @Column("location")
     private String location;
 
-    @Column(name = "sys_op_name")
+    @Column("sys_op_name")
     private String sysOpName;
 
-    @Column(name = "phone")
+    @Column("phone")
     private String phone;
 
-    @Column(name = "baud_rate")
+    @Column("baud_rate")
     private Integer baudRate;
 
-    @Column(name = "flags")
+    @Column("flags")
     private List<String> flags;
 
     // Previous values for MODIFIED entries
-    @Column(name = "prev_keywords")
+    @Column("prev_keywords")
     private Keywords prevKeywords;
 
-    @Column(name = "prev_node_name")
+    @Column("prev_node_name")
     private String prevNodeName;
 
-    @Column(name = "prev_location")
+    @Column("prev_location")
     private String prevLocation;
 
-    @Column(name = "prev_sys_op_name")
+    @Column("prev_sys_op_name")
     private String prevSysOpName;
 
-    @Column(name = "prev_phone")
+    @Column("prev_phone")
     private String prevPhone;
 
-    @Column(name = "prev_baud_rate")
+    @Column("prev_baud_rate")
     private Integer prevBaudRate;
 
-    @Column(name = "prev_flags")
+    @Column("prev_flags")
     private List<String> prevFlags;
 
     /**

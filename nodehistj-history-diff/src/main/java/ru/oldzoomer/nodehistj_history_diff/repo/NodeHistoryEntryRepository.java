@@ -2,14 +2,16 @@ package ru.oldzoomer.nodehistj_history_diff.repo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 
 /**
  * Repository interface for NodeHistoryEntry entities.
  * Provides methods to find NodeHistoryEntry entities based on various criteria.
  */
-public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEntry, Long> {
+public interface NodeHistoryEntryRepository
+        extends PagingAndSortingRepository<NodeHistoryEntry, Long>, CrudRepository<NodeHistoryEntry, Long> {
 
     /**
      * Gets history for a specific node.
