@@ -91,6 +91,7 @@ public class NodelistDiffProcessor {
 
         if ((prevName.equals(currName) && prevYear.equals(currYear)) ||
                 nodelistEntryRepository.existsByNodelistYearAndNodelistName(currYear, currName)) {
+            log.info("This nodelist is not capable to diff: {}/{}", currYear, currName);
             return;
         }
 
