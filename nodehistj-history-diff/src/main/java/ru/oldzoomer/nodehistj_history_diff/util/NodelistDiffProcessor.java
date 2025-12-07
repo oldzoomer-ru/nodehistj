@@ -33,6 +33,8 @@ public class NodelistDiffProcessor {
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
+    private NodelistEntry newNodelist;
+
     /**
      * Processes differences between all available nodelist versions.
      * Compares consecutive nodelist versions in reverse order (newest to oldest)
@@ -57,23 +59,33 @@ public class NodelistDiffProcessor {
 
             // Process differences between consecutive nodelists in reverse order
             // (from newest to oldest to ensure correct comparison)
-            NodelistEntry newNodelist = null;
-            NodelistEntry oldNodelist;
+            processNodelistEntriesSlice(nodeListEntries);
+
+            // Process remaining nodelist entries if any
             while (nodeListEntries.hasNext()) {
-                for (int i = 0; i < nodeListEntries.getSize(); i++) {
-                    oldNodelist = newNodelist;
-                    newNodelist = nodeListEntries.getContent().get(i);
-                    if (oldNodelist != null) {
-                        processDiffBetweenNodelists(oldNodelist, newNodelist);
-                    }
-                }
                 nodeListEntries = nodelistEntryRepository.findAll(nodeListEntries.nextPageable());
+                processNodelistEntriesSlice(nodeListEntries);
             }
 
             log.info("Nodelist diff processing completed");
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
+        }
+    }
+
+    /**
+     * Processes differences between consecutive nodelist entries in a slice.
+     *
+     * @param nodeListEntries the slice of nodelist entries to process
+     */
+    private void processNodelistEntriesSlice(Slice<NodelistEntry> nodeListEntries) {
+        for (int i = 0; i < nodeListEntries.getSize(); i++) {
+            NodelistEntry oldNodelist = newNodelist;
+            newNodelist = nodeListEntries.getContent().get(i);
+            if (oldNodelist != null) {
+                processDiffBetweenNodelists(oldNodelist, newNodelist);
+            }
         }
     }
 
