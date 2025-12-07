@@ -76,6 +76,15 @@ services:
       - "443:443"
     networks:
       - nodehistj
+    command: |
+      --providers.docker=true
+      --entrypoints.web.address=:80
+      --entrypoints.web.http.redirections.entryPoint.to=websecure
+      --entrypoints.web.http.redirections.entryPoint.scheme=https
+      --entrypoints.websecure.address=:443
+      --certificatesresolvers.myresolver.acme.tlschallenge=true
+      --certificatesresolvers.myresolver.acme.email=${TRAEFIK_EMAIL}
+      --certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json
     volumes:
       - ./traefik:/etc/traefik/
       - /var/run/docker.sock:/var/run/docker.sock:ro
