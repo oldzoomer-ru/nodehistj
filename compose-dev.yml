@@ -75,6 +75,8 @@ services:
         SKIP_TESTS: "true"
     networks:
       - nodehistj
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
@@ -83,6 +85,10 @@ services:
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - FTP_DOWNLOAD_FROM_YEAR=${FTP_DOWNLOAD_FROM_YEAR:-2025}
+      - FTP_HOST=${FTP_HOST:-wfido.ru}
+      - FTP_PATH=${FTP_PATH:-/nodehist/}
+      - FTP_USER=${FTP_USER:-anonymous}
+      - FTP_PASSWORD=${FTP_PASSWORD:-anonymous@}
     depends_on:
       minio:
         condition: service_healthy
