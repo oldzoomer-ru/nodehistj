@@ -50,7 +50,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries();
         return nodeEntryMapper.toDto(nodeEntry);
     }
@@ -68,7 +68,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -91,7 +91,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network);
         String nodelistName = buildNodelistName(dayOfYear);
         Set<NodeEntry> nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -116,7 +116,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
                 year, dayOfYear, zone, network, node);
         String nodelistName = buildNodelistName(dayOfYear);
         NodeEntry nodeEntry = nodelistEntryRepository
-                .findByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))

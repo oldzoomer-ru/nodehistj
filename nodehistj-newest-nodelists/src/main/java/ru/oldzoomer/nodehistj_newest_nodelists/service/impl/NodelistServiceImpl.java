@@ -33,7 +33,9 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest().getNodeEntries();
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository
+                .findFirstBy()
+                .getNodeEntries();
         return nodeEntryMapper.toDto(nodeEntries);
     }
 
@@ -46,7 +48,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(int zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest()
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository
+                .findFirstBy()
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -64,7 +67,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(int zone, int network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        Set<NodeEntry> nodeEntries = nodelistEntryRepository.latest()
+        Set<NodeEntry> nodeEntries = nodelistEntryRepository
+                .findFirstBy()
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -84,7 +88,8 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        NodeEntry nodeEntry = nodelistEntryRepository.latest()
+        NodeEntry nodeEntry = nodelistEntryRepository
+                .findFirstBy()
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
