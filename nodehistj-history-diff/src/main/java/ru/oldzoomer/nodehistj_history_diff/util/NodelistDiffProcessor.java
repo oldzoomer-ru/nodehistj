@@ -2,8 +2,8 @@ package ru.oldzoomer.nodehistj_history_diff.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +43,12 @@ public class NodelistDiffProcessor {
         try {
             log.info("Processing nodelist diffs...");
 
-            Page<NodelistEntry> nodeListEntries = nodelistEntryRepository
+            Slice<NodelistEntry> nodeListEntries = nodelistEntryRepository
                     .findAll(PageRequest.of(0, 10,
                             Sort.by(Sort.Direction.DESC, "nodelistYear", "nodelistName")));
 
             // Check if there are at least two nodelist versions to compare
-            if (nodeListEntries.getTotalElements() < 2) {
+            if (nodeListEntries.getNumberOfElements() < 2) {
                 log.info("Not enough nodelist versions to compare");
                 return;
             }
