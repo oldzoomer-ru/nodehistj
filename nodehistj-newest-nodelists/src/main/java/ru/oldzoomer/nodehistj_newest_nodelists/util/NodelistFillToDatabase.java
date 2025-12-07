@@ -75,7 +75,7 @@ public class NodelistFillToDatabase {
 
         String lastVersion = modifiedObjects.stream()
                 .filter(x -> x.matches(".*/(\\d{4})/(nodelist\\.\\d{3})"))
-                .min(Comparator.comparing(x -> List.of(x.split("/")).getLast()))
+                .max(Comparator.naturalOrder())
                 .orElse("");
 
         if (!lastVersion.isBlank()) {
