@@ -3,12 +3,7 @@ package ru.oldzoomer.nodehistj_history_diff.repo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Repository interface for NodeHistoryEntry entities.
@@ -56,73 +51,4 @@ public interface NodeHistoryEntryRepository extends JpaRepository<NodeHistoryEnt
      * @return a page of all NodeHistoryEntry entities
      */
     Page<NodeHistoryEntry> findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(Pageable pageable);
-
-    /**
-     * Gets changes for a specific date.
-     *
-     * @param changeDate the date of the changes
-     * @return a list of NodeHistoryEntry entities for the specified date
-     */
-    List<NodeHistoryEntry> findByChangeDateOrderByZoneAscNetworkAscNodeAsc(LocalDate changeDate);
-
-    /**
-     * Gets changes between dates.
-     *
-     * @param startDate the start date of the range
-     * @param endDate the end date of the range
-     * @param pageable the pagination information
-     * @return a page of NodeHistoryEntry entities within the date range
-     */
-    Page<NodeHistoryEntry> findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
-            LocalDate startDate, LocalDate endDate, Pageable pageable);
-
-    /**
-     * Gets changes by type.
-     *
-     * @param changeType the type of change
-     * @param pageable the pagination information
-     * @return a page of NodeHistoryEntry entities matching the change type
-     */
-    Page<NodeHistoryEntry> findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(
-            NodeHistoryEntry.ChangeType changeType, Pageable pageable);
-
-    /**
-     * Gets summary statistics for a date range.
-     *
-     * @param startDate the start date of the range
-     * @param endDate the end date of the range
-     * @return a list of NodeChangeSummaryDto objects with change statistics
-     */
-    @Query("""
-            SELECT new ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto(
-                h.changeDate, h.nodelistYear, h.nodelistName,
-                    SUM(CASE WHEN h.changeType = 'ADDED' THEN 1 ELSE 0 END),
-                    SUM(CASE WHEN h.changeType = 'REMOVED' THEN 1 ELSE 0 END),
-                    SUM(CASE WHEN h.changeType = 'MODIFIED' THEN 1 ELSE 0 END),
-                COUNT(h)
-            )
-            FROM NodeHistoryEntry h
-            WHERE h.changeDate BETWEEN :startDate AND :endDate
-            GROUP BY h.changeDate, h.nodelistYear, h.nodelistName
-            ORDER BY h.changeDate DESC
-            """)
-    List<NodeChangeSummaryDto> getChangeSummary(
-            LocalDate startDate, LocalDate endDate);
-
-    /**
-     * Gets most active nodes (nodes with most changes) in a period.
-     *
-     * @param startDate the start date of the period
-     * @param endDate the end date of the period
-     * @param pageable the pagination information
-     * @return a list of Object arrays with node IDs and change counts
-     */
-    @Query("""
-            SELECT h.zone, h.network, h.node, COUNT(h) as changeCount
-            FROM NodeHistoryEntry h
-            WHERE h.changeDate BETWEEN :startDate AND :endDate
-            GROUP BY h.zone, h.network, h.node
-            ORDER BY changeCount DESC
-            """)
-    List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

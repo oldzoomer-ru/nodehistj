@@ -1,25 +1,16 @@
 package ru.oldzoomer.nodehistj_history_diff.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
+
+import java.util.List;
 
 /**
  * Controller for node history and diff operations.
@@ -115,101 +106,5 @@ public class NodeHistoryController {
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return nodeHistoryService.getAllHistory(pageable).toList();
-    }
-
-    /**
-     * Gets all changes for a specific date.
-     *
-     * @param date the date in ISO format (YYYY-MM-DD)
-     * @return a list of NodeHistoryEntryDto objects for the date
-     * @response 200 OK - Changes retrieved successfully
-     * @response 204 No Content - No changes for this date
-     */
-    @GetMapping("/date/{date}")
-    @Cacheable("dailyHistory")
-    public List<NodeHistoryEntryDto> getChangesForDate(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return nodeHistoryService.getChangesForDate(date);
-    }
-
-    /**
-     * Gets paginated changes between dates.
-     *
-     * @param startDate the start date in ISO format (YYYY-MM-DD)
-     * @param endDate the end date in ISO format (YYYY-MM-DD)
-     * @param page the page number (0-based)
-     * @param size the page size (default 20)
-     * @return a list of NodeHistoryEntryDto objects for the date range
-     * @response 200 OK - Changes retrieved successfully
-     * @response 400 Bad Request - Invalid date range
-     */
-    @GetMapping("/range")
-    @Cacheable("dateRangeHistory")
-    public List<NodeHistoryEntryDto> getChangesBetweenDates(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getChangesBetweenDates(startDate, endDate, pageable).toList();
-    }
-
-    /**
-     * Gets paginated changes by change type.
-     *
-     * @param changeType the type of change (ADDED, REMOVED, MODIFIED)
-     * @param page the page number (0-based)
-     * @param size the page size (default 20)
-     * @return a list of NodeHistoryEntryDto objects filtered by change type
-     * @response 200 OK - Changes retrieved successfully
-     * @response 400 Bad Request - Invalid change type
-     */
-    @GetMapping("/type/{changeType}")
-    @Cacheable("typeHistory")
-    public List<NodeHistoryEntryDto> getChangesByType(
-            @PathVariable NodeHistoryEntry.ChangeType changeType,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getChangesByType(changeType, pageable).toList();
-    }
-
-    /**
-     * Gets summary statistics of changes for a date range.
-     *
-     * @param startDate the start date in ISO format (YYYY-MM-DD)
-     * @param endDate the end date in ISO format (YYYY-MM-DD)
-     * @return a list of NodeChangeSummaryDto objects with change statistics
-     * @response 200 OK - Summary retrieved successfully
-     * @response 400 Bad Request - Invalid date range
-     */
-    @GetMapping("/summary")
-    @Cacheable("changeSummary")
-    public List<NodeChangeSummaryDto> getChangeSummary(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return nodeHistoryService.getChangeSummary(startDate, endDate);
-    }
-
-    /**
-     * Gets most active nodes (nodes with most changes) in a period.
-     *
-     * @param startDate the start date in ISO format (YYYY-MM-DD)
-     * @param endDate the end date in ISO format (YYYY-MM-DD)
-     * @param page the page number (0-based)
-     * @param size the page size (default 10)
-     * @return a list of Object arrays with node IDs and change counts
-     * @response 200 OK - Active nodes retrieved successfully
-     * @response 400 Bad Request - Invalid date range
-     */
-    @GetMapping("/active-nodes")
-    @Cacheable("activeNodes")
-    public List<Object[]> getMostActiveNodes(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return nodeHistoryService.getMostActiveNodes(startDate, endDate, pageable);
     }
 }

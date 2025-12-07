@@ -5,15 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeChangeSummaryDto;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Service implementation for node history operations.
@@ -94,71 +89,5 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
         return nodeHistoryEntryRepository
                 .findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(pageable)
                 .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Retrieves all changes for a specific date.
-     *
-     * @param date the date to filter changes
-     * @return a list of changes for the specified date
-     */
-    @Override
-    public List<NodeHistoryEntryDto> getChangesForDate(LocalDate date) {
-        return nodeHistoryEntryMapper.toDto(
-                nodeHistoryEntryRepository.findByChangeDateOrderByZoneAscNetworkAscNodeAsc(date));
-    }
-
-    /**
-     * Retrieves changes between two dates with pagination.
-     *
-     * @param startDate the start date of the range
-     * @param endDate the end date of the range
-     * @param pageable pagination information
-     * @return a page of changes in the date range
-     */
-    @Override
-    public Page<NodeHistoryEntryDto> getChangesBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return nodeHistoryEntryRepository
-                .findByChangeDateBetweenOrderByChangeDateDescZoneAscNetworkAscNodeAsc(startDate, endDate, pageable)
-                .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Retrieves changes filtered by change type with pagination.
-     *
-     * @param changeType the type of change to filter
-     * @param pageable pagination information
-     * @return a page of changes of the specified type
-     */
-    @Override
-    public Page<NodeHistoryEntryDto> getChangesByType(NodeHistoryEntry.ChangeType changeType, Pageable pageable) {
-        return nodeHistoryEntryRepository
-                .findByChangeTypeOrderByChangeDateDescZoneAscNetworkAscNodeAsc(changeType, pageable)
-                .map(nodeHistoryEntryMapper::toDto);
-    }
-
-    /**
-     * Gets summary statistics of changes between dates.
-     *
-     * @param startDate the start date of the range
-     * @param endDate the end date of the range
-     * @return a list of change summary statistics
-     */
-    @Override
-    public List<NodeChangeSummaryDto> getChangeSummary(LocalDate startDate, LocalDate endDate) {
-        return nodeHistoryEntryRepository.getChangeSummary(startDate, endDate);
-    }
-
-    /**
-     * Gets a list of most frequently changed nodes.
-     *
-     * @param startDate the start date of the range
-     * @param endDate the end date of the range
-     * @param pageable pagination information
-     * @return a list of active nodes with change counts
-     */
-    @Override
-    public List<Object[]> getMostActiveNodes(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        return nodeHistoryEntryRepository.getMostActiveNodes(startDate, endDate, pageable);
     }
 }
