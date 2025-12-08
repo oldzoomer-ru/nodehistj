@@ -36,3 +36,6 @@ minio:
 app:
   minio:
     bucket: ${MINIO_BUCKET:nodehistj}
+  diff:
+    fetch:
+      size: ${DIFF_FETCH_SIZE:50}

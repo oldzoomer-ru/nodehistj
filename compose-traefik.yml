@@ -236,6 +236,7 @@ services:
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - DIFF_FETCH_SIZE=${DIFF_FETCH_SIZE:-50}
     labels:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/diff`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"

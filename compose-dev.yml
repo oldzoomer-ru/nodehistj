@@ -193,6 +193,7 @@ services:
       - MINIO_PASSWORD=${MINIO_PASSWORD:-password}
       - MINIO_BUCKET=nodehistj
       - POSTGRES_HOST=postgres:5432
+      - DIFF_FETCH_SIZE=${DIFF_FETCH_SIZE:-50}
     depends_on:
       minio:
         condition: service_healthy
