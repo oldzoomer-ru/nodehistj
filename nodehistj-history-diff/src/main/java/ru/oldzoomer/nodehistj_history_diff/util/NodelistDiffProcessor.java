@@ -119,38 +119,34 @@ public class NodelistDiffProcessor {
         Map<String, NodeEntry> currentNodeMap = currentNodes.stream()
                 .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
 
-        try {
-            LocalDate changeDate = parseNodelistDate(currYear, currName);
+        LocalDate changeDate = parseNodelistDate(currYear, currName);
 
-            // Find added nodes
-            for (NodeEntry currentNode : currentNodes) {
-                String key = getNodeKey(currentNode);
-                if (!previousNodeMap.containsKey(key)) {
-                    createHistoryEntry(currentNode, currYear, currName, changeDate,
-                            NodeHistoryEntry.ChangeType.ADDED, null);
-                }
+        // Find added nodes
+        for (NodeEntry currentNode : currentNodes) {
+            String key = getNodeKey(currentNode);
+            if (!previousNodeMap.containsKey(key)) {
+                createHistoryEntry(currentNode, currYear, currName, changeDate,
+                        NodeHistoryEntry.ChangeType.ADDED, null);
             }
+        }
 
-            // Find removed nodes
-            for (NodeEntry previousNode : previousNodes) {
-                String key = getNodeKey(previousNode);
-                if (!currentNodeMap.containsKey(key)) {
-                    createHistoryEntry(previousNode, currYear, currName, changeDate,
-                            NodeHistoryEntry.ChangeType.REMOVED, null);
-                }
+        // Find removed nodes
+        for (NodeEntry previousNode : previousNodes) {
+            String key = getNodeKey(previousNode);
+            if (!currentNodeMap.containsKey(key)) {
+                createHistoryEntry(previousNode, currYear, currName, changeDate,
+                        NodeHistoryEntry.ChangeType.REMOVED, null);
             }
+        }
 
-            // Find modified nodes
-            for (NodeEntry currentNode : currentNodes) {
-                String key = getNodeKey(currentNode);
-                NodeEntry previousNode = previousNodeMap.get(key);
-                if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                    createHistoryEntry(currentNode, currYear, currName, changeDate,
-                            NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
-                }
+        // Find modified nodes
+        for (NodeEntry currentNode : currentNodes) {
+            String key = getNodeKey(currentNode);
+            NodeEntry previousNode = previousNodeMap.get(key);
+            if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
+                createHistoryEntry(currentNode, currYear, currName, changeDate,
+                        NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
             }
-        } catch (IllegalArgumentException e) {
-            log.info("Nodelist is skipped: {}/{}", currYear, currName);
         }
     }
 
@@ -192,6 +188,11 @@ public class NodelistDiffProcessor {
     private void createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     String nodelistName, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
+        if (nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
+                node.getZone(), node.getNetwork(), node.getNode(), nodelistYear, nodelistName)) {
+            return;
+        }
+
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
         historyEntry.setZone(node.getZone());

@@ -103,7 +103,7 @@ public class NodelistFillToDatabase {
      * @param name The name of the nodelist file.
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        try {
+        if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
             log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
             NodelistEntry nodelistEntryNew = new NodelistEntry();
@@ -119,8 +119,6 @@ public class NodelistFillToDatabase {
                 flushBatch();
             }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
-        } catch (DataIntegrityViolationException e) {
-            log.debug("Skipped duplicate nodelist entries in batch", e);
         }
     }
 

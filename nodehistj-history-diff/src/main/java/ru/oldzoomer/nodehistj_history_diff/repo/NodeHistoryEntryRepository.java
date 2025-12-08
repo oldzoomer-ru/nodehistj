@@ -45,4 +45,20 @@ public interface NodeHistoryEntryRepository
      */
     Page<NodeHistoryEntry> findByZone(
             Integer zone, Pageable pageable);
+
+    /**
+     * Checks if a NodeHistoryEntry entity with the given parameters already exists.
+     *
+     * @param zone         the zone of the network
+     * @param network      the network number
+     * @param node         the node number
+     * @param nodelistYear the year of the nodelist
+     * @param nodelistName the name of the nodelist
+     * @return true if an entity with the given parameters already exists, false otherwise
+     */
+    boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(Integer zone,
+                                                                        Integer network,
+                                                                        Integer node,
+                                                                        Integer nodelistYear,
+                                                                        String nodelistName);
 }
