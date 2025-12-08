@@ -1,7 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 
 /**
@@ -13,32 +13,32 @@ public interface NodeHistoryService {
     /**
      * Gets history for a specific node.
      *
-     * @param zone the zone of the node
-     * @param network the network of the node
-     * @param node the node number
+     * @param zone     the zone of the node
+     * @param network  the network of the node
+     * @param node     the node number
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntryDto objects with node history
      */
-    Page<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable);
+    Slice<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
      * Gets history for a specific network.
      *
-     * @param zone the zone of the network
-     * @param network the network number
+     * @param zone     the zone of the network
+     * @param network  the network number
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntryDto objects with network history
      */
-    Page<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable);
+    Slice<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable);
 
     /**
      * Gets history for a specific zone.
      *
-     * @param zone the zone number
+     * @param zone     the zone number
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntryDto objects with zone history
      */
-    Page<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable);
+    Slice<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable);
 
     /**
      * Gets all history entries.
@@ -46,5 +46,5 @@ public interface NodeHistoryService {
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntryDto objects with all history entries
      */
-    Page<NodeHistoryEntryDto> getAllHistory(Pageable pageable);
+    Slice<NodeHistoryEntryDto> getAllHistory(Pageable pageable);
 }
