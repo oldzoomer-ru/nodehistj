@@ -35,7 +35,7 @@ public class NodelistDiffProcessor {
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
     @Value("${app.diff.fetch.size}")
-    private Integer fetchSize;
+    private int fetchSize;
 
     private NodelistEntry newNodelist;
 
@@ -84,7 +84,7 @@ public class NodelistDiffProcessor {
      * @param nodeListEntries the slice of nodelist entries to process
      */
     private void processNodelistEntriesSlice(Slice<NodelistEntry> nodeListEntries) {
-        for (int i = 0; i < nodeListEntries.getSize(); i++) {
+        for (int i = 0; i < nodeListEntries.getNumberOfElements(); i++) {
             NodelistEntry oldNodelist = newNodelist;
             newNodelist = nodeListEntries.getContent().get(i);
             if (oldNodelist != null) {
