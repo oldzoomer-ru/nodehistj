@@ -50,7 +50,7 @@ public class NodelistDiffProcessor {
             log.info("Processing nodelist diffs...");
 
             Slice<NodelistEntry> nodeListEntries = nodelistEntryRepository
-                    .findAll(PageRequest.of(0, 10,
+                    .findAll(PageRequest.of(0, fetchSize,
                             Sort.by(Sort.Direction.DESC, "nodelistYear", "nodelistName")));
 
             // Check if there are at least two nodelist versions to compare
