@@ -191,6 +191,7 @@ services:
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - DIFF_FETCH_SIZE=${DIFF_FETCH_SIZE:-50}
     depends_on:
       redpanda:
         condition: service_healthy
