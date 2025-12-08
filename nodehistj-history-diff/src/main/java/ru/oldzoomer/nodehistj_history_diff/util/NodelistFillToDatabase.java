@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
@@ -14,6 +15,7 @@ import ru.oldzoomer.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,6 +30,9 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class NodelistFillToDatabase {
+    private static final int BATCH_SIZE = 50;
+    private final List<NodelistEntry> batch = new ArrayList<>(BATCH_SIZE);
+
     private final MinioUtils minioUtils;
     private final NodelistEntryRepository nodelistEntryRepository;
 
@@ -83,6 +88,8 @@ public class NodelistFillToDatabase {
                 log.error("Failed to add nodelist to database", e);
             }
         }
+
+        flushBatch();
         log.info("Update nodelists is finished");
     }
 
@@ -96,7 +103,7 @@ public class NodelistFillToDatabase {
      * @param name The name of the nodelist file.
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+        try {
             log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
             NodelistEntry nodelistEntryNew = new NodelistEntry();
@@ -107,8 +114,27 @@ public class NodelistFillToDatabase {
                 nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
             }
 
-            nodelistEntryRepository.save(nodelistEntryNew);
+            batch.add(nodelistEntryNew);
+            if (batch.size() >= BATCH_SIZE) {
+                flushBatch();
+            }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
+        } catch (DataIntegrityViolationException e) {
+            log.debug("Skipped duplicate nodelist entries in batch", e);
+        }
+    }
+
+    /**
+     * Flushes the batch to the database.
+     */
+    private void flushBatch() {
+        if (!batch.isEmpty()) {
+            try {
+                nodelistEntryRepository.saveAll(batch);
+            } catch (DataIntegrityViolationException e) {
+                log.debug("Skipped duplicate history entries in batch", e);
+            }
+            batch.clear();
         }
     }
 }

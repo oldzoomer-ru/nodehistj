@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
@@ -14,22 +15,24 @@ import ru.oldzoomer.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Component for processing and storing historical nodelists in the database.
- * Listens to Kafka topic for new nodelist files, downloads them from MinIO
- * storage,
+ * Listens to Kafka topic for new nodelist files, downloads them from MinIO storage,
  * parses and saves to database, then clears Redis cache.
  */
 @RequiredArgsConstructor
 @Component
 @Slf4j
 public class NodelistFillToDatabase {
+    private static final int BATCH_SIZE = 50;
+    private final List<NodelistEntry> batch = new ArrayList<>(BATCH_SIZE);
+
     private final MinioUtils minioUtils;
     private final NodelistEntryRepository nodelistEntryRepository;
 
@@ -39,12 +42,12 @@ public class NodelistFillToDatabase {
 
     /**
      * Converts nodelist entry from common format to database entity
-     *
-     * @param nodeListEntry    source nodelist entry from common library
+     * @param nodeListEntry source nodelist entry from common library
      * @return populated NodeEntry entity ready for saving
      */
     private static NodeEntry getNodeEntry(
-            ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry) {
+            ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry
+    ) {
         NodeEntry nodeEntryNew = new NodeEntry();
 
         nodeEntryNew.setZone(nodeListEntry.zone());
@@ -63,36 +66,30 @@ public class NodelistFillToDatabase {
     /**
      * Kafka listener method triggered when new nodelists are downloaded.
      * Processes each modified nodelist file from MinIO storage.
-     *
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = "nodelistRequests", allEntries = true)
+    @CacheEvict(value = {"nodeHistory", "networkHistory", "zoneHistory",
+            "globalHistory", "dailyHistory", "dateRangeHistory", "typeHistory",
+            "changeSummary", "activeNodes"}, allEntries = true)
     @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
+        for (String object : modifiedObjects) {
+            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            if (!matcher.matches()) {
+                log.debug("Object {} is not a nodelist", object);
+                continue;
+            }
 
-        nodelistEntryRepository.deleteAll();
-
-        String lastVersion = modifiedObjects.stream()
-                .filter(x -> x.matches(".*/(\\d{4})/(nodelist\\.\\d{3})"))
-                .max(Comparator.naturalOrder())
-                .orElse("");
-
-        if (!lastVersion.isBlank()) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(lastVersion);
-            if (matcher.matches()) {
-                log.info("Last version: {}", lastVersion);
-                try (InputStream inputStream = minioUtils.getObject(minioBucket, lastVersion)) {
-                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
-                } catch (Exception e) {
-                    log.error("Failed to add nodelist to database", e);
-                }
-            } else {
-                log.error("Failed to parse last version: {}", lastVersion);
+            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+            } catch (Exception e) {
+                log.error("Failed to add nodelist to database", e);
             }
         }
 
+        flushBatch();
         log.info("Update nodelists is finished");
     }
 
@@ -102,11 +99,11 @@ public class NodelistFillToDatabase {
      * with the corresponding entries for the specified year and nodelist name.
      *
      * @param nodelist The parsed nodelist object containing node entries.
-     * @param year     The year of the nodelist.
-     * @param name     The name of the nodelist file.
+     * @param year The year of the nodelist.
+     * @param name The name of the nodelist file.
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        if (!nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+        try {
             log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
             NodelistEntry nodelistEntryNew = new NodelistEntry();
@@ -117,8 +114,27 @@ public class NodelistFillToDatabase {
                 nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
             }
 
-            nodelistEntryRepository.save(nodelistEntryNew);
+            batch.add(nodelistEntryNew);
+            if (batch.size() >= BATCH_SIZE) {
+                flushBatch();
+            }
             log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
+        } catch (DataIntegrityViolationException e) {
+            log.debug("Skipped duplicate nodelist entries in batch", e);
+        }
+    }
+
+    /**
+     * Flushes the batch to the database.
+     */
+    private void flushBatch() {
+        if (!batch.isEmpty()) {
+            try {
+                nodelistEntryRepository.saveAll(batch);
+            } catch (DataIntegrityViolationException e) {
+                log.debug("Skipped duplicate history entries in batch", e);
+            }
+            batch.clear();
         }
     }
 }
