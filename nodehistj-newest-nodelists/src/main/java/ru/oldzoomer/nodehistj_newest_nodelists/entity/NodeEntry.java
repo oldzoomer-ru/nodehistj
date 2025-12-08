@@ -4,11 +4,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,9 +19,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "nodelistEntryId")
 @Table("node_entry")
-public class NodeEntry implements Serializable {
+public class NodeEntry {
+    @Id
     @Column("nodelist_entry_id")
     private Long nodelistEntryId;
 
@@ -52,5 +54,5 @@ public class NodeEntry implements Serializable {
     private Integer baudRate;
 
     @Column("flags")
-    private List<String> flags;
+    private List<String> flags = new ArrayList<>();
 }

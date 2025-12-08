@@ -9,7 +9,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,9 +19,9 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "id")
 @Table("nodelist_entry")
-public class NodelistEntry implements Serializable {
+public class NodelistEntry {
     @Id
     @Column("id")
     private Long id;
@@ -34,6 +33,6 @@ public class NodelistEntry implements Serializable {
     private String nodelistName;
 
     @MappedCollection(idColumn = "nodelist_entry_id")
-    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<NodeEntry> nodeEntries = new HashSet<>();
 }
