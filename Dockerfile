@@ -61,7 +61,7 @@ RUN --mount=type=secret,id=github_username \
         export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
         export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
     fi; \
-    ./gradlew :${SERVICE_NAME}:build --no-daemon -x test;
+    ./gradlew :${SERVICE_NAME}:build --no-daemon -x check;
 
 #
 # Java image for the application to run in.
