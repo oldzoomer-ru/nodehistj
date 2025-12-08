@@ -3,6 +3,7 @@ package ru.oldzoomer.nodehistj_history_diff.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -15,9 +16,7 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +30,9 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class NodelistDiffProcessor {
+    private static final int BATCH_SIZE = 500;
+    private final List<NodeHistoryEntry> batch = new ArrayList<>(BATCH_SIZE);
+
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
@@ -59,8 +61,6 @@ public class NodelistDiffProcessor {
                 return;
             }
 
-            nodeHistoryEntryRepository.deleteAll(); // Clear existing history data before processing new diffs
-
             // Process differences between consecutive nodelists in reverse order
             // (from newest to oldest to ensure correct comparison)
             processNodelistEntriesSlice(nodeListEntries);
@@ -70,6 +70,8 @@ public class NodelistDiffProcessor {
                 nodeListEntries = nodelistEntryRepository.findAll(nodeListEntries.nextPageable());
                 processNodelistEntriesSlice(nodeListEntries);
             }
+
+            flushBatch();
 
             log.info("Nodelist diff processing completed");
 
@@ -117,34 +119,38 @@ public class NodelistDiffProcessor {
         Map<String, NodeEntry> currentNodeMap = currentNodes.stream()
                 .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
 
-        LocalDate changeDate = parseNodelistDate(currYear, currName);
+        try {
+            LocalDate changeDate = parseNodelistDate(currYear, currName);
 
-        // Find added nodes
-        for (NodeEntry currentNode : currentNodes) {
-            String key = getNodeKey(currentNode);
-            if (!previousNodeMap.containsKey(key)) {
-                createHistoryEntry(currentNode, currYear, currName, changeDate,
-                        NodeHistoryEntry.ChangeType.ADDED, null);
+            // Find added nodes
+            for (NodeEntry currentNode : currentNodes) {
+                String key = getNodeKey(currentNode);
+                if (!previousNodeMap.containsKey(key)) {
+                    createHistoryEntry(currentNode, currYear, currName, changeDate,
+                            NodeHistoryEntry.ChangeType.ADDED, null);
+                }
             }
-        }
 
-        // Find removed nodes
-        for (NodeEntry previousNode : previousNodes) {
-            String key = getNodeKey(previousNode);
-            if (!currentNodeMap.containsKey(key)) {
-                createHistoryEntry(previousNode, currYear, currName, changeDate,
-                        NodeHistoryEntry.ChangeType.REMOVED, null);
+            // Find removed nodes
+            for (NodeEntry previousNode : previousNodes) {
+                String key = getNodeKey(previousNode);
+                if (!currentNodeMap.containsKey(key)) {
+                    createHistoryEntry(previousNode, currYear, currName, changeDate,
+                            NodeHistoryEntry.ChangeType.REMOVED, null);
+                }
             }
-        }
 
-        // Find modified nodes
-        for (NodeEntry currentNode : currentNodes) {
-            String key = getNodeKey(currentNode);
-            NodeEntry previousNode = previousNodeMap.get(key);
-            if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                createHistoryEntry(currentNode, currYear, currName, changeDate,
-                        NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
+            // Find modified nodes
+            for (NodeEntry currentNode : currentNodes) {
+                String key = getNodeKey(currentNode);
+                NodeEntry previousNode = previousNodeMap.get(key);
+                if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
+                    createHistoryEntry(currentNode, currYear, currName, changeDate,
+                            NodeHistoryEntry.ChangeType.MODIFIED, previousNode);
+                }
             }
+        } catch (IllegalArgumentException e) {
+            log.info("Nodelist is skipped: {}/{}", currYear, currName);
         }
     }
 
@@ -216,7 +222,24 @@ public class NodelistDiffProcessor {
             historyEntry.setPrevFlags(previousNode.getFlags());
         }
 
-        nodeHistoryEntryRepository.save(historyEntry);
+        batch.add(historyEntry);
+        if (batch.size() >= BATCH_SIZE) {
+            flushBatch();
+        }
+    }
+
+    /**
+     * Flushes the batch to the database.
+     */
+    private void flushBatch() {
+        if (!batch.isEmpty()) {
+            try {
+                nodeHistoryEntryRepository.saveAll(batch);
+            } catch (DataIntegrityViolationException e) {
+                log.debug("Skipped duplicate history entries in batch", e);
+            }
+            batch.clear();
+        }
     }
 
     /**
@@ -234,9 +257,9 @@ public class NodelistDiffProcessor {
         if (matcher.matches()) {
             int dayOfYear = Integer.parseInt(matcher.group(1));
             return LocalDate.ofYearDay(year, dayOfYear);
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Incorrect name of nodelist: %s", nodelistName));
         }
-
-        // Fallback to current date if parsing fails
-        return LocalDate.now();
     }
 }
