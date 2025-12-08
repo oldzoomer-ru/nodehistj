@@ -45,7 +45,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Override
     public Slice<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneAndNetworkAndNodeOrderByChangeDateDesc(zone, network, node, pageable)
+                .findByZoneAndNetworkAndNode(zone, network, node, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -60,7 +60,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Override
     public Slice<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneAndNetworkOrderByChangeDateDescNodeAsc(zone, network, pageable)
+                .findByZoneAndNetwork(zone, network, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -74,7 +74,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Override
     public Slice<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findByZoneOrderByChangeDateDescNetworkAscNodeAsc(zone, pageable)
+                .findByZone(zone, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 
@@ -87,7 +87,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
     @Override
     public Slice<NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
-                .findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(pageable)
+                .findAll(pageable)
                 .map(nodeHistoryEntryMapper::toDto);
     }
 }

@@ -22,7 +22,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetworkAndNodeOrderByChangeDateDesc(
+    Page<NodeHistoryEntry> findByZoneAndNetworkAndNode(
             Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
@@ -33,7 +33,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetworkOrderByChangeDateDescNodeAsc(
+    Page<NodeHistoryEntry> findByZoneAndNetwork(
             Integer zone, Integer network, Pageable pageable);
 
     /**
@@ -43,14 +43,6 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneOrderByChangeDateDescNetworkAscNodeAsc(
+    Page<NodeHistoryEntry> findByZone(
             Integer zone, Pageable pageable);
-
-    /**
-     * Gets all history entries.
-     *
-     * @param pageable the pagination information
-     * @return a page of all NodeHistoryEntry entities
-     */
-    Page<NodeHistoryEntry> findAllByOrderByChangeDateDescZoneAscNetworkAscNodeAsc(Pageable pageable);
 }

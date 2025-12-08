@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
@@ -45,7 +46,11 @@ public class NodeHistoryController {
             @PathVariable @Min(0) @Max(32767) Integer node,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.asc("zone"),
+                        Sort.Order.asc("network"),
+                        Sort.Order.asc("node"),
+                        Sort.Order.desc("changeDate")));
         return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
     }
 
@@ -67,7 +72,11 @@ public class NodeHistoryController {
             @PathVariable @Min(1) @Max(32767) Integer network,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.asc("zone"),
+                        Sort.Order.asc("network"),
+                        Sort.Order.asc("node"),
+                        Sort.Order.desc("changeDate")));
         return nodeHistoryService.getNetworkHistory(zone, network, pageable).toList();
     }
 
@@ -87,7 +96,11 @@ public class NodeHistoryController {
             @PathVariable @Min(1) @Max(32767) Integer zone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.asc("zone"),
+                        Sort.Order.asc("network"),
+                        Sort.Order.asc("node"),
+                        Sort.Order.desc("changeDate")));
         return nodeHistoryService.getZoneHistory(zone, pageable).toList();
     }
 
@@ -104,7 +117,11 @@ public class NodeHistoryController {
     public List<NodeHistoryEntryDto> getAllHistory(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.asc("zone"),
+                        Sort.Order.asc("network"),
+                        Sort.Order.asc("node"),
+                        Sort.Order.desc("changeDate")));
         return nodeHistoryService.getAllHistory(pageable).toList();
     }
 }
