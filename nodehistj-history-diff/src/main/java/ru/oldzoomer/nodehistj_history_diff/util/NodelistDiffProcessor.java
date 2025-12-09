@@ -3,7 +3,7 @@ package ru.oldzoomer.nodehistj_history_diff.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -235,8 +235,8 @@ public class NodelistDiffProcessor {
         if (!batch.isEmpty()) {
             try {
                 nodeHistoryEntryRepository.saveAll(batch);
-            } catch (DataIntegrityViolationException e) {
-                log.debug("Skipped duplicate history entries in batch", e);
+            } catch (DuplicateKeyException e) {
+                log.info("Duplicate history entries in batch!", e);
             }
             batch.clear();
         }

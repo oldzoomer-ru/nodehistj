@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
@@ -103,25 +103,21 @@ public class NodelistFillToDatabase {
      * @param name The name of the nodelist file.
      */
     private void updateNodelist(Nodelist nodelist, Integer year, String name) {
-        try {
-            log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
+        log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
-            NodelistEntry nodelistEntryNew = new NodelistEntry();
-            nodelistEntryNew.setNodelistYear(year);
-            nodelistEntryNew.setNodelistName(name);
+        NodelistEntry nodelistEntryNew = new NodelistEntry();
+        nodelistEntryNew.setNodelistYear(year);
+        nodelistEntryNew.setNodelistName(name);
 
-            for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-                nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
-            }
-
-            batch.add(nodelistEntryNew);
-            if (batch.size() >= BATCH_SIZE) {
-                flushBatch();
-            }
-            log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
-        } catch (DataIntegrityViolationException e) {
-            log.debug("Skipped duplicate nodelist entries in batch", e);
+        for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
+            nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
         }
+
+        batch.add(nodelistEntryNew);
+        if (batch.size() >= BATCH_SIZE) {
+            flushBatch();
+        }
+        log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
     }
 
     /**
@@ -131,8 +127,8 @@ public class NodelistFillToDatabase {
         if (!batch.isEmpty()) {
             try {
                 nodelistEntryRepository.saveAll(batch);
-            } catch (DataIntegrityViolationException e) {
-                log.debug("Skipped duplicate history entries in batch", e);
+            } catch (DuplicateKeyException e) {
+                log.info("Skipped duplicate history entries in batch", e);
             }
             batch.clear();
         }
