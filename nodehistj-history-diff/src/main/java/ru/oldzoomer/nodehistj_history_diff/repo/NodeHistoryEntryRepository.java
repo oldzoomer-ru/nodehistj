@@ -1,7 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
@@ -22,7 +22,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetworkAndNode(
+    Slice<NodeHistoryEntry> findByZoneAndNetworkAndNode(
             Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
@@ -33,7 +33,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetwork(Integer zone, Integer network, Pageable pageable);
+    Slice<NodeHistoryEntry> findByZoneAndNetwork(Integer zone, Integer network, Pageable pageable);
 
     /**
      * Gets history for a specific zone.
@@ -42,5 +42,5 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
+    Slice<NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
 }
