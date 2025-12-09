@@ -39,3 +39,6 @@ app:
   diff:
     fetch:
       size: ${DIFF_FETCH_SIZE:50}
+logging:
+  level:
+    ru.oldzoomer: ${LOG_LEVEL:INFO}

@@ -24,3 +24,6 @@ minio:
 app:
   minio:
     bucket: ${MINIO_BUCKET:nodehistj}
+logging:
+  level:
+    ru.oldzoomer: ${LOG_LEVEL:INFO}
