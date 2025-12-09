@@ -42,7 +42,7 @@ WORKDIR $APP_HOME
 #
 COPY gradle $APP_HOME/gradle/
 COPY gradlew $APP_HOME/
-RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon --version
+RUN ./gradlew --no-daemon --version
 
 COPY settings.gradle build.gradle $APP_HOME/
 COPY lib/minio/build.gradle $APP_HOME/lib/minio/
