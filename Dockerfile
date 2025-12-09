@@ -42,19 +42,33 @@ WORKDIR $APP_HOME
 #
 COPY gradle $APP_HOME/gradle/
 COPY gradlew $APP_HOME/
-RUN ./gradlew --no-daemon --version
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon --version
 
 COPY settings.gradle build.gradle $APP_HOME/
-COPY config/ $APP_HOME/config/
-COPY lib/ $APP_HOME/lib/
-COPY nodehistj-download-nodelists/ $APP_HOME/nodehistj-download-nodelists/
-COPY nodehistj-historic-nodelists/ $APP_HOME/nodehistj-historic-nodelists/
-COPY nodehistj-history-diff/ $APP_HOME/nodehistj-history-diff/
-COPY nodehistj-newest-nodelists/ $APP_HOME/nodehistj-newest-nodelists/
+COPY lib/minio/build.gradle $APP_HOME/lib/minio/
+COPY nodehistj-download-nodelists/build.gradle $APP_HOME/nodehistj-download-nodelists/
+COPY nodehistj-historic-nodelists/build.gradle $APP_HOME/nodehistj-historic-nodelists/
+COPY nodehistj-history-diff/build.gradle $APP_HOME/nodehistj-history-diff/
+COPY nodehistj-newest-nodelists/build.gradle $APP_HOME/nodehistj-newest-nodelists/
+
+RUN --mount=type=secret,id=github_username \
+    --mount=type=secret,id=github_token \
+    if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
+        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
+        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+    fi; \
+    ./gradlew :dependencies --no-daemon;
 
 #
 # Build the specified service
 #
+COPY config/ $APP_HOME/config/
+COPY lib/minio/src/ $APP_HOME/lib/minio/src/
+COPY nodehistj-download-nodelists/src/ $APP_HOME/nodehistj-download-nodelists/src/
+COPY nodehistj-historic-nodelists/src/ $APP_HOME/nodehistj-historic-nodelists/src/
+COPY nodehistj-history-diff/src/ $APP_HOME/nodehistj-history-diff/src/
+COPY nodehistj-newest-nodelists/src/ $APP_HOME/nodehistj-newest-nodelists/src/
+
 RUN --mount=type=secret,id=github_username \
     --mount=type=secret,id=github_token \
     if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
@@ -66,7 +80,7 @@ RUN --mount=type=secret,id=github_username \
 #
 # Java image for the application to run in.
 #
-FROM eclipse-temurin:21-jre-alpine
+FROM gcr.io/distroless/java21-debian12
 
 #
 # Build arguments
@@ -83,4 +97,4 @@ COPY --from=build-image $APP_HOME/${SERVICE_NAME}/build/libs/${SERVICE_NAME}-0.0
 #
 # The command to run when the container starts.
 #
-CMD ["java", "-jar", "app.jar"]
+CMD ["app.jar"]
