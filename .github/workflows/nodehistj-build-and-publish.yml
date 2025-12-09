@@ -40,6 +40,8 @@ jobs:
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v5
 
   nodehistj-download-nodelists:
 
