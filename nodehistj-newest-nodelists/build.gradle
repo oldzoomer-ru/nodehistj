@@ -1,5 +1,6 @@
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework:spring-aspects'
     implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc:1.1.2'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation project(':lib:minio')
@@ -24,8 +25,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
-    testImplementation 'org.testcontainers:testcontainers-redpanda'
     testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testImplementation 'org.testcontainers:testcontainers-redpanda'
     testImplementation 'org.testcontainers:testcontainers-minio'
     testImplementation 'com.redis:testcontainers-redis'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'

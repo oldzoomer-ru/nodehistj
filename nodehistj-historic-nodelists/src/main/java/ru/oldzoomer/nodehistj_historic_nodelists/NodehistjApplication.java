@@ -3,6 +3,8 @@ package ru.oldzoomer.nodehistj_historic_nodelists;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.AdviceMode;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Main application class for working with historic nodelists.
@@ -10,6 +12,7 @@ import org.springframework.cache.annotation.EnableCaching;
  */
 @SpringBootApplication
 @EnableCaching
+@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
 public class NodehistjApplication {
 
     /**

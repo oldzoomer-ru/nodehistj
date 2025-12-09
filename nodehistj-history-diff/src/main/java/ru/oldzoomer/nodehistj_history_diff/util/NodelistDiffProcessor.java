@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
@@ -233,13 +234,31 @@ public class NodelistDiffProcessor {
      */
     private void flushBatch() {
         if (!batch.isEmpty()) {
-            try {
-                nodeHistoryEntryRepository.saveAll(batch);
-            } catch (DuplicateKeyException e) {
-                log.info("Duplicate history entries in batch!", e);
+            for (NodeHistoryEntry historyEntry : batch) {
+                try {
+                    log.debug("Saving history entry for node {}:{}/{} in nodelist {}/{}!",
+                            historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
+                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
+                    saveNodeHistoryEntry(historyEntry);
+                } catch (DuplicateKeyException e) {
+                    log.info("Duplicate history entry for node {}:{}/{} in nodelist {}/{}!",
+                            historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
+                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
+                    log.debug("Exception: {}", e.getMessage());
+                }
             }
             batch.clear();
         }
+    }
+
+    /**
+     * Saves a node history entry to the database.
+     *
+     * @param historyEntry the node history entry to save
+     */
+    @Transactional(propagation = Propagation.NESTED)
+    private void saveNodeHistoryEntry(NodeHistoryEntry historyEntry) {
+        nodeHistoryEntryRepository.save(historyEntry);
     }
 
     /**

@@ -33,8 +33,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetwork(
-            Integer zone, Integer network, Pageable pageable);
+    Page<NodeHistoryEntry> findByZoneAndNetwork(Integer zone, Integer network, Pageable pageable);
 
     /**
      * Gets history for a specific zone.
@@ -43,6 +42,5 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZone(
-            Integer zone, Pageable pageable);
+    Page<NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
 }

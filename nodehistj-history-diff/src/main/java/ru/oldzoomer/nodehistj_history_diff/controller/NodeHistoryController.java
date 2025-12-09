@@ -47,10 +47,7 @@ public class NodeHistoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Order.asc("zone"),
-                        Sort.Order.asc("network"),
-                        Sort.Order.asc("node"),
-                        Sort.Order.desc("changeDate")));
+                Sort.by(Sort.Order.desc("changeDate")));
         return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
     }
 
@@ -73,10 +70,7 @@ public class NodeHistoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Order.asc("zone"),
-                        Sort.Order.asc("network"),
-                        Sort.Order.asc("node"),
-                        Sort.Order.desc("changeDate")));
+                Sort.by(Sort.Order.desc("changeDate")));
         return nodeHistoryService.getNetworkHistory(zone, network, pageable).toList();
     }
 
@@ -97,10 +91,7 @@ public class NodeHistoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Order.asc("zone"),
-                        Sort.Order.asc("network"),
-                        Sort.Order.asc("node"),
-                        Sort.Order.desc("changeDate")));
+                Sort.by(Sort.Order.desc("changeDate")));
         return nodeHistoryService.getZoneHistory(zone, pageable).toList();
     }
 
@@ -118,10 +109,7 @@ public class NodeHistoryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Order.asc("zone"),
-                        Sort.Order.asc("network"),
-                        Sort.Order.asc("node"),
-                        Sort.Order.desc("changeDate")));
+                Sort.by(Sort.Order.desc("changeDate")));
         return nodeHistoryService.getAllHistory(pageable).toList();
     }
 }

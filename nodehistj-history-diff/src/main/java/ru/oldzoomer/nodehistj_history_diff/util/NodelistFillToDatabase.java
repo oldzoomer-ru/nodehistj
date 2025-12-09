@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
@@ -125,12 +126,26 @@ public class NodelistFillToDatabase {
      */
     private void flushBatch() {
         if (!batch.isEmpty()) {
-            try {
-                nodelistEntryRepository.saveAll(batch);
-            } catch (DuplicateKeyException e) {
-                log.info("Skipped duplicate history entries in batch", e);
+            for (NodelistEntry historyEntry : batch) {
+                try {
+                    saveNodelistEntry(historyEntry);
+                } catch (DuplicateKeyException e) {
+                    log.info("Duplicate entry of nodelist {}/{}!",
+                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
+                    log.debug("Exception: {}", e.getMessage());
+                }
             }
             batch.clear();
         }
+    }
+
+    /**
+     * Saves a nodelist entry to the database.
+     *
+     * @param historyEntry the nodelist entry to save
+     */
+    @Transactional(propagation = Propagation.NESTED)
+    private void saveNodelistEntry(NodelistEntry historyEntry) {
+        nodelistEntryRepository.save(historyEntry);
     }
 }
