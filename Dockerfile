@@ -63,11 +63,11 @@ RUN --mount=type=secret,id=github_username \
 # Build the specified service
 #
 COPY config/ $APP_HOME/config/
-COPY lib/minio/src/ $APP_HOME/lib/minio/src/
-COPY nodehistj-download-nodelists/src/ $APP_HOME/nodehistj-download-nodelists/src/
-COPY nodehistj-historic-nodelists/src/ $APP_HOME/nodehistj-historic-nodelists/src/
-COPY nodehistj-history-diff/src/ $APP_HOME/nodehistj-history-diff/src/
-COPY nodehistj-newest-nodelists/src/ $APP_HOME/nodehistj-newest-nodelists/src/
+COPY lib/minio/src/main/ $APP_HOME/lib/minio/src/main/
+COPY nodehistj-download-nodelists/src/main/ $APP_HOME/nodehistj-download-nodelists/src/main/
+COPY nodehistj-historic-nodelists/src/main/ $APP_HOME/nodehistj-historic-nodelists/src/main/
+COPY nodehistj-history-diff/src/main/ $APP_HOME/nodehistj-history-diff/src/main/
+COPY nodehistj-newest-nodelists/src/main/ $APP_HOME/nodehistj-newest-nodelists/src/main/
 
 RUN --mount=type=secret,id=github_username \
     --mount=type=secret,id=github_token \
