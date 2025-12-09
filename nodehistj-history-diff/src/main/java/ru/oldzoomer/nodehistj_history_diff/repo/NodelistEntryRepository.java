@@ -10,12 +10,4 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
  */
 public interface NodelistEntryRepository
         extends PagingAndSortingRepository<NodelistEntry, Long>, CrudRepository<NodelistEntry, Long> {
-    /**
-     * Checks if a NodelistEntry entity exists based on the nodelist year and name.
-     *
-     * @param nodelistYear the year of the nodelist
-     * @param nodelistName the name of the nodelist
-     * @return true if the NodelistEntry entity exists, false otherwise
-     */
-    boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 }
