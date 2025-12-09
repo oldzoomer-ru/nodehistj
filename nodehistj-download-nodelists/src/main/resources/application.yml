@@ -26,4 +26,5 @@ app:
     bucket: ${MINIO_BUCKET:nodehistj}
 logging:
   level:
-    ru.oldzoomer: ${LOG_LEVEL:INFO}
+    ru:
+      oldzoomer: ${LOG_LEVEL:INFO}
