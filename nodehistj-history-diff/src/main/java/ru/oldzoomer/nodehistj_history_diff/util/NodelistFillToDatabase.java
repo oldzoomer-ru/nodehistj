@@ -75,6 +75,8 @@ public class NodelistFillToDatabase {
     @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
+        nodelistEntryRepository.deleteAll();
+
         for (String object : modifiedObjects) {
             Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
             if (!matcher.matches()) {
