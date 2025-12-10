@@ -17,7 +17,9 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,16 +33,14 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class NodelistDiffProcessor {
-    private static final int BATCH_SIZE = 500;
-    private final List<NodeHistoryEntry> batch = new ArrayList<>(BATCH_SIZE);
+    // Precompiled pattern for nodelist date parsing to avoid recompilation per call
+    private static final Pattern NODELIST_DATE_PATTERN = Pattern.compile("nodelist\\.(\\d{3})");
 
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
     @Value("${app.diff.fetch.size}")
     private int fetchSize;
-
-    private NodelistEntry newNodelist;
 
     /**
      * Processes differences between all available nodelist versions.
@@ -62,37 +62,29 @@ public class NodelistDiffProcessor {
                 return;
             }
 
-            // Process differences between consecutive nodelists in reverse order
-            // (from newest to oldest to ensure correct comparison)
-            processNodelistEntriesSlice(nodeListEntries);
+            NodelistEntry newNodelist = null;
 
             // Process remaining nodelist entries if any
-            while (nodeListEntries.hasNext()) {
-                nodeListEntries = nodelistEntryRepository.findAll(nodeListEntries.nextPageable());
-                processNodelistEntriesSlice(nodeListEntries);
-            }
+            while (true) {
+                for (NodelistEntry nodelistEntry : nodeListEntries.getContent()) {
+                    NodelistEntry oldNodelist = newNodelist;
+                    newNodelist = nodelistEntry;
+                    if (oldNodelist != null) {
+                        processDiffBetweenNodelists(oldNodelist, newNodelist);
+                    }
+                }
 
-            flushBatch();
+                if (nodeListEntries.hasNext()) {
+                    nodeListEntries = nodelistEntryRepository.findAll(nodeListEntries.nextPageable());
+                } else {
+                    break;
+                }
+            }
 
             log.info("Nodelist diff processing completed");
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
-        }
-    }
-
-    /**
-     * Processes differences between consecutive nodelist entries in a slice.
-     *
-     * @param nodeListEntries the slice of nodelist entries to process
-     */
-    private void processNodelistEntriesSlice(Slice<NodelistEntry> nodeListEntries) {
-        for (int i = 0; i < nodeListEntries.getNumberOfElements(); i++) {
-            NodelistEntry oldNodelist = newNodelist;
-            newNodelist = nodeListEntries.getContent().get(i);
-            if (oldNodelist != null) {
-                processDiffBetweenNodelists(oldNodelist, newNodelist);
-            }
         }
     }
 
@@ -223,31 +215,16 @@ public class NodelistDiffProcessor {
             historyEntry.setPrevFlags(previousNode.getFlags());
         }
 
-        batch.add(historyEntry);
-        if (batch.size() >= BATCH_SIZE) {
-            flushBatch();
-        }
-    }
-
-    /**
-     * Flushes the batch to the database.
-     */
-    private void flushBatch() {
-        if (!batch.isEmpty()) {
-            for (NodeHistoryEntry historyEntry : batch) {
-                try {
-                    log.debug("Saving history entry for node {}:{}/{} in nodelist {}/{}!",
-                            historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
-                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
-                    saveNodeHistoryEntry(historyEntry);
-                } catch (DuplicateKeyException e) {
-                    log.info("Duplicate history entry for node {}:{}/{} in nodelist {}/{}!",
-                            historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
-                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
-                    log.debug("Exception: {}", e.getMessage());
-                }
-            }
-            batch.clear();
+        try {
+            log.debug("Saving history entry for node {}:{}/{} in nodelist {}/{}!",
+                    historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
+                    historyEntry.getNodelistYear(), historyEntry.getNodelistName());
+            saveNodeHistoryEntry(historyEntry);
+        } catch (DuplicateKeyException e) {
+            log.info("Duplicate history entry for node {}:{}/{} in nodelist {}/{}!",
+                    historyEntry.getZone(), historyEntry.getNetwork(), historyEntry.getNode(),
+                    historyEntry.getNodelistYear(), historyEntry.getNodelistName());
+            log.debug("Exception: {}", e.getMessage());
         }
     }
 
@@ -269,16 +246,11 @@ public class NodelistDiffProcessor {
      * @return the parsed LocalDate representing the nodelist date
      */
     private LocalDate parseNodelistDate(Integer year, String nodelistName) {
-        // Extract day of year from nodelist name (e.g., "nodelist.001" -> day 1)
-        Pattern pattern = Pattern.compile("nodelist\\.(\\d{3})");
-        Matcher matcher = pattern.matcher(nodelistName);
-
+        Matcher matcher = NODELIST_DATE_PATTERN.matcher(nodelistName);
         if (matcher.matches()) {
             int dayOfYear = Integer.parseInt(matcher.group(1));
             return LocalDate.ofYearDay(year, dayOfYear);
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Incorrect name of nodelist: %s", nodelistName));
         }
+        throw new IllegalArgumentException(String.format("Incorrect name of nodelist: %s", nodelistName));
     }
 }

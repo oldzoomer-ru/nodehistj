@@ -16,7 +16,6 @@ import ru.oldzoomer.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,15 +30,15 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class NodelistFillToDatabase {
-    private static final int BATCH_SIZE = 50;
-    private final List<NodelistEntry> batch = new ArrayList<>(BATCH_SIZE);
-
     private final MinioUtils minioUtils;
     private final NodelistEntryRepository nodelistEntryRepository;
 
     /** MinIO bucket name where nodelists are stored */
     @Value("${app.minio.bucket}")
     private String minioBucket;
+
+    // Precompiled pattern to extract year and name from MinIO object path
+    private static final Pattern OBJECT_PATH_PATTERN = Pattern.compile(".*/(\\d{4})/(nodelist\\.(\\d{3}))");
 
     /**
      * Converts nodelist entry from common format to database entity
@@ -75,10 +74,9 @@ public class NodelistFillToDatabase {
     @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
-        nodelistEntryRepository.deleteAll();
 
         for (String object : modifiedObjects) {
-            Matcher matcher = Pattern.compile(".*/(\\d{4})/(nodelist\\.\\d{3})").matcher(object);
+            Matcher matcher = OBJECT_PATH_PATTERN.matcher(object);
             if (!matcher.matches()) {
                 log.debug("Object {} is not a nodelist", object);
                 continue;
@@ -92,7 +90,6 @@ public class NodelistFillToDatabase {
             }
         }
 
-        flushBatch();
         log.info("Update nodelists is finished");
     }
 
@@ -116,28 +113,13 @@ public class NodelistFillToDatabase {
             nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
         }
 
-        batch.add(nodelistEntryNew);
-        if (batch.size() >= BATCH_SIZE) {
-            flushBatch();
-        }
-        log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
-    }
-
-    /**
-     * Flushes the batch to the database.
-     */
-    private void flushBatch() {
-        if (!batch.isEmpty()) {
-            for (NodelistEntry historyEntry : batch) {
-                try {
-                    saveNodelistEntry(historyEntry);
-                } catch (DuplicateKeyException e) {
-                    log.info("Duplicate entry of nodelist {}/{}!",
-                            historyEntry.getNodelistYear(), historyEntry.getNodelistName());
-                    log.debug("Exception: {}", e.getMessage());
-                }
-            }
-            batch.clear();
+        try {
+            saveNodelistEntry(nodelistEntryNew);
+            log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
+        } catch (DuplicateKeyException e) {
+            log.info("Duplicate entry of nodelist {}/{}!",
+                    nodelistEntryNew.getNodelistYear(), nodelistEntryNew.getNodelistName());
+            log.debug("Exception: {}", e.getMessage());
         }
     }
 
