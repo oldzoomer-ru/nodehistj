@@ -49,6 +49,8 @@ jobs:
 
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
 
     env:
       IMAGE_NAME: nodehistj-download-nodelists
@@ -104,6 +106,8 @@ jobs:
 
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
 
     env:
       IMAGE_NAME: nodehistj-historic-nodelists
