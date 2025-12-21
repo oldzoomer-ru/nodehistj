@@ -12,6 +12,9 @@ on:
     tags: [ 'v*.*.*' ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: docker.io
   ACCOUNT_NAME: gavrilovegor519
