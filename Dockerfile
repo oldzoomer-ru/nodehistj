@@ -27,7 +27,7 @@ ARG BUILD_HOME=/build
 #
 # Gradle image for the build stage.
 #
-FROM eclipse-temurin:21-jdk-alpine AS build-image
+FROM eclipse-temurin:25-jdk-alpine AS build-image
 
 #
 # Set the working directory.
@@ -80,7 +80,7 @@ RUN --mount=type=secret,id=github_username \
 #
 # Java image for the application to run in.
 #
-FROM gcr.io/distroless/java21-debian12
+FROM gcr.io/distroless/java25-debian13
 
 #
 # Build arguments
