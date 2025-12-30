@@ -54,6 +54,8 @@ public class NodelistDiffProcessor {
                 return;
             }
 
+            nodeHistoryEntryRepository.deleteAll();
+
             Stream<NodelistEntry> nodeListEntries = nodelistEntryRepository.findAllAsStreamWithSort();
 
             nodeListEntries
