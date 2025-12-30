@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_history_diff.exception.DuplicateEntryException;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 
@@ -103,12 +102,8 @@ public class NodelistDiffProcessor {
             for (NodeEntry currentNode : currentNodeMap.values()) {
                 String key = getNodeKey(currentNode);
                 if (!previousNodeMap.containsKey(key)) {
-                    try {
-                        historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.ADDED, null));
-                    } catch (DuplicateEntryException e) {
-                        log.info(e.getMessage());
-                    }
                 }
             }
 
@@ -116,12 +111,8 @@ public class NodelistDiffProcessor {
             for (NodeEntry previousNode : previousNodeMap.values()) {
                 String key = getNodeKey(previousNode);
                 if (!currentNodeMap.containsKey(key)) {
-                    try {
-                        historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.REMOVED, null));
-                    } catch (DuplicateEntryException e) {
-                        log.info(e.getMessage());
-                    }
                 }
             }
 
@@ -130,12 +121,8 @@ public class NodelistDiffProcessor {
                 String key = getNodeKey(currentNode);
                 NodeEntry previousNode = previousNodeMap.get(key);
                 if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                    try {
-                        historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.MODIFIED, previousNode));
-                    } catch (DuplicateEntryException e) {
-                        log.info(e.getMessage());
-                    }
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -184,13 +171,6 @@ public class NodelistDiffProcessor {
     private NodeHistoryEntry createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     String nodelistName, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
-        if (nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
-               node.getZone(), node.getNetwork(), node.getNode(), nodelistYear, nodelistName)) {
-            throw new DuplicateEntryException("Existing node entry found for " + node.getZone() +
-                    ":" + node.getNetwork() + "/" + node.getNode() + ", nodelistYear: " + nodelistYear +
-                    ", nodelistName: " + nodelistName);
-        }
-
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
         historyEntry.setZone(node.getZone());
