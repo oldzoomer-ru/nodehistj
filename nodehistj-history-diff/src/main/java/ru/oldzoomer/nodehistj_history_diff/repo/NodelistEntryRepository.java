@@ -19,4 +19,6 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
             ORDER BY nodelist_year DESC, nodelist_name DESC
             """)
     Stream<NodelistEntry> findAllAsStreamWithSort();
+
+    boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 }

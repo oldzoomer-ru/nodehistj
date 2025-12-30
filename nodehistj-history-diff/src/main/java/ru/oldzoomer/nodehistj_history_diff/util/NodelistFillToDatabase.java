@@ -1,25 +1,24 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import ru.oldzoomer.minio.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
-import ru.oldzoomer.nodelistj.Nodelist;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodelistj.Nodelist;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -84,7 +83,7 @@ public class NodelistFillToDatabase {
 
             try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2));
+                nodelistEntryRepository.save(updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2)));
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
             }
@@ -101,9 +100,14 @@ public class NodelistFillToDatabase {
      * @param nodelist The parsed nodelist object containing node entries.
      * @param year The year of the nodelist.
      * @param name The name of the nodelist file.
+     * @return nodelist entry
      */
-    private void updateNodelist(Nodelist nodelist, Integer year, String name) {
+    private NodelistEntry updateNodelist(Nodelist nodelist, Integer year, String name) {
         log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
+
+        if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+            throw new IllegalStateException(String.format("Nodelist {} from {} year is exist", name, year));
+        }
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
         nodelistEntryNew.setNodelistYear(year);
@@ -113,23 +117,6 @@ public class NodelistFillToDatabase {
             nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
         }
 
-        try {
-            saveNodelistEntry(nodelistEntryNew);
-            log.info("Update nodelist from {} year and name \"{}\" is finished", year, name);
-        } catch (DuplicateKeyException e) {
-            log.info("Duplicate entry of nodelist {}/{}!",
-                    nodelistEntryNew.getNodelistYear(), nodelistEntryNew.getNodelistName());
-            log.debug("Exception: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Saves a nodelist entry to the database.
-     *
-     * @param historyEntry the nodelist entry to save
-     */
-    @Transactional(propagation = Propagation.NESTED)
-    private void saveNodelistEntry(NodelistEntry historyEntry) {
-        nodelistEntryRepository.save(historyEntry);
+        return nodelistEntryNew;
     }
 }
