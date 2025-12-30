@@ -42,7 +42,7 @@ public class NodelistDiffProcessor {
      * Compares consecutive nodelist versions in reverse order (newest to oldest)
      * to ensure correct comparison direction.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public void processNodelistDiffs() {
         try {
             log.info("Processing nodelist diffs...");
@@ -55,10 +55,13 @@ public class NodelistDiffProcessor {
 
             Stream<NodelistEntry> nodeListEntries = nodelistEntryRepository.findAllAsStreamWithSort();
 
-            nodeListEntries
+            List<NodeHistoryEntry> diffs = nodeListEntries
                 .gather(Gatherers.windowSliding(2))
                 .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
-                .forEach(x -> nodeHistoryEntryRepository.saveAll(x));
+                .flatMap(list -> list.stream())
+                .toList();
+
+            nodeHistoryEntryRepository.saveAll(diffs);
 
             log.info("Nodelist diff processing completed");
 
@@ -98,8 +101,12 @@ public class NodelistDiffProcessor {
             for (NodeEntry currentNode : currentNodeMap.values()) {
                 String key = getNodeKey(currentNode);
                 if (!previousNodeMap.containsKey(key)) {
-                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    try {
+                        historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.ADDED, null));
+                    } catch (IllegalStateException e) {
+                        log.info(e.getMessage());
+                    }
                 }
             }
 
@@ -107,8 +114,12 @@ public class NodelistDiffProcessor {
             for (NodeEntry previousNode : previousNodeMap.values()) {
                 String key = getNodeKey(previousNode);
                 if (!currentNodeMap.containsKey(key)) {
-                    historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
+                    try {
+                        historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.REMOVED, null));
+                    } catch (IllegalStateException e) {
+                        log.info(e.getMessage());
+                    }
                 }
             }
 
@@ -117,8 +128,12 @@ public class NodelistDiffProcessor {
                 String key = getNodeKey(currentNode);
                 NodeEntry previousNode = previousNodeMap.get(key);
                 if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    try {
+                        historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.MODIFIED, previousNode));
+                    } catch (IllegalStateException e) {
+                        log.info(e.getMessage());
+                    }
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -167,6 +182,13 @@ public class NodelistDiffProcessor {
     private NodeHistoryEntry createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     String nodelistName, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
+        if (nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
+               node.getZone(), node.getNetwork(), node.getNode(), nodelistYear, nodelistName)) {
+            throw new IllegalStateException("Existing node entry found for " + node.getZone() +
+                    ":" + node.getNetwork() + "/" + node.getNode() + ", nodelistYear: " + nodelistYear +
+                    ", nodelistName: " + nodelistName);
+        }
+
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
         historyEntry.setZone(node.getZone());

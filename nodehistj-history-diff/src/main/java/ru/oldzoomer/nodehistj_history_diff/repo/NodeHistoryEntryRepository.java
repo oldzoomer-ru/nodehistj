@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 
 /**
@@ -43,4 +44,17 @@ public interface NodeHistoryEntryRepository
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
     Slice<NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
+
+    /**
+     * Check if there is a node history entry for a specific network and node.
+     *
+     * @param zone the zone of the node
+     * @param network the network number
+     * @param node the node number
+     * @param nodelist_year the year of the nodelist
+     * @param nodelist_name the name of the nodelist
+     * @return exists or not
+     */
+    boolean existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(Integer zone, Integer network, Integer node,
+            Integer nodelistYear, String nodelistName);
 }
