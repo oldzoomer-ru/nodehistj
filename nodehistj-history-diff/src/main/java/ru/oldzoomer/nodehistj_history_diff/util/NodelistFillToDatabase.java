@@ -1,6 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_history_diff.exception.DuplicateEntryException;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
@@ -71,7 +73,7 @@ public class NodelistFillToDatabase {
                             "globalHistory", "dailyHistory", "dateRangeHistory", "typeHistory",
                             "changeSummary", "activeNodes"}, allEntries = true)
     @Transactional
-    public void updateNodelist(List<String> modifiedObjects) {
+    public void updateNodelist(List<String> modifiedObjects) throws IOException {
         log.info("Update nodelists is started");
 
         for (String object : modifiedObjects) {
@@ -85,8 +87,11 @@ public class NodelistFillToDatabase {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                 nodelistEntryRepository.save(
                     updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2)));
+            } catch (DuplicateEntryException e) {
+                log.info(e.getMessage());
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
+                throw e;
             }
         }
 
@@ -107,7 +112,7 @@ public class NodelistFillToDatabase {
         log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
 
         if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
-            throw new IllegalStateException(String.format("Nodelist {} from {} year is exist", name, year));
+            throw new DuplicateEntryException(String.format("Nodelist {} from {} year is exist", name, year));
         }
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();

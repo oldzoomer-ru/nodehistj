@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_history_diff.exception.DuplicateEntryException;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 
@@ -65,6 +66,7 @@ public class NodelistDiffProcessor {
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
+            throw e;
         }
     }
 
@@ -102,7 +104,7 @@ public class NodelistDiffProcessor {
                     try {
                         historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.ADDED, null));
-                    } catch (IllegalStateException e) {
+                    } catch (DuplicateEntryException e) {
                         log.info(e.getMessage());
                     }
                 }
@@ -115,7 +117,7 @@ public class NodelistDiffProcessor {
                     try {
                         historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.REMOVED, null));
-                    } catch (IllegalStateException e) {
+                    } catch (DuplicateEntryException e) {
                         log.info(e.getMessage());
                     }
                 }
@@ -129,7 +131,7 @@ public class NodelistDiffProcessor {
                     try {
                         historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
                             NodeHistoryEntry.ChangeType.MODIFIED, previousNode));
-                    } catch (IllegalStateException e) {
+                    } catch (DuplicateEntryException e) {
                         log.info(e.getMessage());
                     }
                 }
@@ -182,7 +184,7 @@ public class NodelistDiffProcessor {
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         if (nodeHistoryEntryRepository.existsByZoneAndNetworkAndNodeAndNodelistYearAndNodelistName(
                node.getZone(), node.getNetwork(), node.getNode(), nodelistYear, nodelistName)) {
-            throw new IllegalStateException("Existing node entry found for " + node.getZone() +
+            throw new DuplicateEntryException("Existing node entry found for " + node.getZone() +
                     ":" + node.getNetwork() + "/" + node.getNode() + ", nodelistYear: " + nodelistYear +
                     ", nodelistName: " + nodelistName);
         }
