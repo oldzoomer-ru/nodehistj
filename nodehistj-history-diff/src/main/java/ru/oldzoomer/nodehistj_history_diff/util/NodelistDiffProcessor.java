@@ -55,13 +55,11 @@ public class NodelistDiffProcessor {
 
             Stream<NodelistEntry> nodeListEntries = nodelistEntryRepository.findAllAsStreamWithSort();
 
-            List<NodeHistoryEntry> diffs = nodeListEntries
+            nodeListEntries
                 .gather(Gatherers.windowSliding(2))
                 .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
                 .flatMap(list -> list.stream())
-                .toList();
-
-            nodeHistoryEntryRepository.saveAll(diffs);
+                .forEach(nodeHistoryEntryRepository::save);
 
             log.info("Nodelist diff processing completed");
 
