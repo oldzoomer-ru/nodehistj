@@ -1,12 +1,15 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.kafka;
 
+import java.time.Duration;
+import java.util.List;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 import ru.oldzoomer.nodehistj_historic_nodelists.util.NodelistFillToDatabase;
-
-import java.util.List;
 
 /**
  * Component that listens to Kafka topics and processes messages.
@@ -24,8 +27,15 @@ public class KafkaListeners {
      * @param message the list of nodelist file paths that were downloaded
      */
     @KafkaListener(topics = "download_nodelists_is_finished_topic", concurrency = "1")
-    public void downloadNodelistsIsFinishedListener(List<String> message) {
+    public void downloadNodelistsIsFinishedListener(List<String> message, Acknowledgment ack) {
         log.debug("Received message from download_nodelists_is_finished_topic");
-        nodelistFillToDatabase.updateNodelist(message);
+        try {
+            nodelistFillToDatabase.updateNodelist(message);
+            log.info("Nodelist update completed successfully");
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("Error updating nodelist", e);
+            ack.nack(Duration.ofMinutes(1));
+        }
     }
 }
