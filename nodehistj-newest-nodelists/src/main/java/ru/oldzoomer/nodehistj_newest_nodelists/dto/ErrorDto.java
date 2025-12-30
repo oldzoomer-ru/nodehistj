@@ -1,9 +1,10 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-
 import java.time.Instant;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
 
 /**
  * Unified error response DTO.
@@ -40,15 +41,5 @@ public class ErrorDto {
     public ErrorDto(String message, String code) {
         this.message = message;
         this.code = code;
-    }
-
-    /**
-     * Constructs a new ErrorDto with the specified message and a default code.
-     *
-     * @param message the error message
-     */
-    public ErrorDto(String message) {
-        this.message = message;
-        this.code = "GENERIC_ERROR";
     }
 }
