@@ -9,39 +9,23 @@
 
 ## Quick Start
 
-1. **Clone the repository**
+**Basic variant**
 
-   ```bash
-   git clone https://github.com/oldzoomer-ru/nodehistj.git
-   cd nodehistj
-   ```
+```bash
+docker compose -f compose.yml up -d
+```
 
-2. **Create a `.env` file with minimal settings**
+**For development (with MinIO)**
 
-   ```ini
-   MINIO_USER=admin
-   MINIO_PASSWORD=password
-   ```
+```bash
+docker compose -f compose-dev.yml up -d
+```
 
-3. **Run the services (pick one variant)**
+**With Traefik (for production)**
 
-   **Basic variant**
-
-   ```bash
-   docker compose -f compose.yml up -d
-   ```
-
-   **For development (with MinIO)**
-
-   ```bash
-   docker compose -f compose-dev.yml up -d
-   ```
-
-   **With Traefik (for production)**
-
-   ```bash
-   docker compose -f compose-traefik.yml up -d
-   ```
+```bash
+docker compose -f compose-traefik.yml up -d
+```
 
 ## Main Environment Variables
 
@@ -59,4 +43,4 @@
 
 - Stop services: `docker compose -f compose.yml down`
 - View logs: `docker compose -f compose.yml logs -f`
-- Rebuild images: `docker compose -f compose.yml build
+- Rebuild images: `docker compose -f compose.yml build`
