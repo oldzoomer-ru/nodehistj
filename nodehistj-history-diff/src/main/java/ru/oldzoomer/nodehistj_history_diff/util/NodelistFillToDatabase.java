@@ -109,10 +109,10 @@ public class NodelistFillToDatabase {
      * @return nodelist entry
      */
     private NodelistEntry updateNodelist(Nodelist nodelist, Integer year, String name) {
-        log.info("Update nodelist from {} year and name \"{}\" is started", year, name);
+        log.info("Update nodelist from {} year and name {} is started", year, name);
 
         if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
-            throw new DuplicateEntryException(String.format("Nodelist {} from {} year is exist", name, year));
+            throw new DuplicateEntryException(String.format("Nodelist %s from %s year is exist", name, year));
         }
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
