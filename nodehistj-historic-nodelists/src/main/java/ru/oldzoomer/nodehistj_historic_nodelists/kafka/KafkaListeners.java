@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.kafka;
 
-import java.time.Duration;
 import java.util.List;
 
 import org.springframework.kafka.annotation.KafkaListener;
@@ -35,7 +34,7 @@ public class KafkaListeners {
             ack.acknowledge();
         } catch (Exception e) {
             log.error("Error updating nodelist", e);
-            ack.nack(Duration.ofMinutes(1));
+            ack.acknowledge();
         }
     }
 }
