@@ -26,7 +26,7 @@ spring:
         spring.json.trusted.packages: "*"
       enable-auto-commit: false
     listener:
-      ack-mode: MANUAL
+      ack-mode: MANUAL_IMMEDIATE
 server:
   servlet:
     context-path: /newest
