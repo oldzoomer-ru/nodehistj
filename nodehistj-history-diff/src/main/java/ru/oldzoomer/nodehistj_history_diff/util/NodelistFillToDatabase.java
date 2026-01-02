@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +72,7 @@ public class NodelistFillToDatabase {
                             "globalHistory", "dailyHistory", "dateRangeHistory", "typeHistory",
                             "changeSummary", "activeNodes"}, allEntries = true)
     @Transactional
-    public void updateNodelist(List<String> modifiedObjects) throws IOException {
+    public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
         for (String object : modifiedObjects) {
@@ -91,7 +90,6 @@ public class NodelistFillToDatabase {
                 log.info(e.getMessage());
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
-                throw e;
             }
         }
 
