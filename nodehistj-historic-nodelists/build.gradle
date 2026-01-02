@@ -14,7 +14,7 @@ dependencies {
     implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
