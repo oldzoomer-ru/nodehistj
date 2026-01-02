@@ -24,21 +24,23 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'checkstyle'
-    
     if (project.path.startsWith(':lib')) {
         apply plugin: 'java-library'
+    } else {
+        apply plugin: 'java'
+    }
 
-        bootJar {
-            enabled = false
-        }
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'checkstyle'
 
-        jar {
-            enabled = true
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:4.0.1"
         }
+    }
+
+    if (!project.path.startsWith(':lib')) {
+        apply plugin: 'org.springframework.boot'
     }
 
     java {
