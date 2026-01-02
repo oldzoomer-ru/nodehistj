@@ -70,6 +70,14 @@ subprojects {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
+    checkstyle {
+        sourceSets = [sourceSets.main]
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs.add("-parameters")
+    }
+
     test {
         useJUnitPlatform()
     }
