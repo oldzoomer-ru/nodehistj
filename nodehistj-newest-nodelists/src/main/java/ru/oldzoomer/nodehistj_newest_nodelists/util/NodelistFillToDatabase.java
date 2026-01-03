@@ -92,6 +92,7 @@ public class NodelistFillToDatabase {
 
         if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
             log.info("Nodelist {} from {} year is exist", name, year);
+            return;
         }
 
         try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
