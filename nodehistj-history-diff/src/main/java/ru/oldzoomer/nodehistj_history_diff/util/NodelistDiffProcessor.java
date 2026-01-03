@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Gatherers;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,13 +54,11 @@ public class NodelistDiffProcessor {
 
             nodeHistoryEntryRepository.deleteAll();
 
-            Stream<NodelistEntry> nodeListEntries = nodelistEntryRepository.findAllAsStreamWithSort();
-
-            nodeListEntries
-                .gather(Gatherers.windowSliding(2))
-                .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
-                .flatMap(list -> list.stream())
-                .forEach(nodeHistoryEntryRepository::save);
+            nodelistEntryRepository.findAllAsStreamWithSort()
+                                    .gather(Gatherers.windowSliding(2))
+                                    .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
+                                    .flatMap(list -> list.stream())
+                                    .forEach(nodeHistoryEntryRepository::save);
 
             log.info("Nodelist diff processing completed");
 
