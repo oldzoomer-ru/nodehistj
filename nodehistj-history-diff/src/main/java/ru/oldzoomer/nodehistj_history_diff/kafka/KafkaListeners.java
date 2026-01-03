@@ -34,9 +34,9 @@ public class KafkaListeners {
             nodelistFillToDatabase.updateNodelist(message);
             nodelistDiffProcessor.processNodelistDiffs();
             log.info("Nodelist update completed successfully");
-            ack.acknowledge();
         } catch (Exception e) {
             log.error("Error updating nodelist", e);
+        } finally {
             ack.acknowledge();
         }
     }

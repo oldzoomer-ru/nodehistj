@@ -17,7 +17,6 @@ import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_historic_nodelists.exception.DuplicateEntryException;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
@@ -68,7 +67,7 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = {"historicNodelistRequests"}, allEntries = true)
+    @CacheEvict(value = "historicNodelistRequests", allEntries = true)
     @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
@@ -80,12 +79,16 @@ public class NodelistFillToDatabase {
                 continue;
             }
 
+            int year = Integer.parseInt(matcher.group(1));
+            String name = matcher.group(2);
+
+            if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+                log.info("Nodelist {} from {} year is exist", name, year);
+            }
+
             try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                nodelistEntryRepository.save(
-                    updateNodelist(nodelist, Integer.valueOf(matcher.group(1)), matcher.group(2)));
-            } catch (DuplicateEntryException e) {
-                log.info(e.getMessage());
+                nodelistEntryRepository.save(updateNodelist(nodelist, year, name));
             } catch (Exception e) {
                 log.error("Failed to add nodelist to database", e);
             }
@@ -106,10 +109,6 @@ public class NodelistFillToDatabase {
      */
     private NodelistEntry updateNodelist(Nodelist nodelist, Integer year, String name) {
         log.info("Update nodelist from {} year and name {} is started", year, name);
-
-        if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
-            throw new DuplicateEntryException(String.format("Nodelist %s from %s year is exist", name, year));
-        }
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
         nodelistEntryNew.setNodelistYear(year);

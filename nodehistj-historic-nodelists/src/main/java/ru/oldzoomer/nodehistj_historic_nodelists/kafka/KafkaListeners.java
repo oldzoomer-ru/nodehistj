@@ -28,7 +28,12 @@ public class KafkaListeners {
     @KafkaListener(topics = "download_nodelists_is_finished_topic", concurrency = "1")
     public void downloadNodelistsIsFinishedListener(List<String> message, Acknowledgment ack) {
         log.debug("Received message from download_nodelists_is_finished_topic");
-        nodelistFillToDatabase.updateNodelist(message);
-        ack.acknowledge();
+        try {
+            nodelistFillToDatabase.updateNodelist(message);
+        } catch (Exception e) {
+            log.error(e);
+        } finally {
+            ack.acknowledge();
+        }
     }
 }
