@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -29,7 +29,7 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
  */
 @RequiredArgsConstructor
 @Component
-@Slf4j
+@Log4j2
 public class NodelistDiffProcessor {
     // Precompiled pattern for nodelist date parsing to avoid recompilation per call
     private static final Pattern NODELIST_DATE_PATTERN = Pattern.compile("nodelist\\.(\\d{3})");

@@ -1,17 +1,18 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 @Transactional(readOnly = true)
 public class NodelistServiceImpl implements NodelistService {
     private final NodelistEntryRepository nodelistEntryRepository;

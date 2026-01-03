@@ -7,7 +7,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistDiffProcessor;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
 
@@ -16,7 +16,7 @@ import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
  * Handles messages from the download_nodelists_is_finished_topic topic.
  */
 @Component
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class KafkaListeners {
     private final NodelistFillToDatabase nodelistFillToDatabase;

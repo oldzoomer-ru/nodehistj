@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -28,7 +28,7 @@ import ru.oldzoomer.nodelistj.Nodelist;
  */
 @RequiredArgsConstructor
 @Component
-@Slf4j
+@Log4j2
 public class NodelistFillToDatabase {
     private final MinioUtils minioUtils;
     private final NodelistEntryRepository nodelistEntryRepository;
@@ -68,9 +68,7 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = {"nodeHistory", "networkHistory", "zoneHistory",
-                            "globalHistory", "dailyHistory", "dateRangeHistory", "typeHistory",
-                            "changeSummary", "activeNodes"}, allEntries = true)
+    @CacheEvict(value = {"historicNodelistRequests"}, allEntries = true)
     @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
@@ -85,7 +83,7 @@ public class NodelistFillToDatabase {
             try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                 nodelistEntryRepository.save(
-                    updateNodelist(nodelist, Integer.parseInt(matcher.group(1)), matcher.group(2)));
+                    updateNodelist(nodelist, Integer.valueOf(matcher.group(1)), matcher.group(2)));
             } catch (DuplicateEntryException e) {
                 log.info(e.getMessage());
             } catch (Exception e) {

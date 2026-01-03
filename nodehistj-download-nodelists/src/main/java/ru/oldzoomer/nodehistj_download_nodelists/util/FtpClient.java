@@ -10,7 +10,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Utility class for handling FTP operations.
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * Uses Apache Commons Net library for FTP operations.
  */
 @Component
-@Slf4j
+@Log4j2
 public class FtpClient {
 
     @Value("${ftp.host}")

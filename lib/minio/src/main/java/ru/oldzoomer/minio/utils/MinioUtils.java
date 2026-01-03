@@ -1,14 +1,29 @@
 package ru.oldzoomer.minio.utils;
 
-import io.minio.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Utility class for interacting with MinIO object storage.
@@ -16,7 +31,7 @@ import java.io.InputStream;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class MinioUtils implements DisposableBean {
 
     private final MinioClient minioClient;
@@ -35,7 +50,9 @@ public class MinioUtils implements DisposableBean {
                     .bucket(bucketName)
                     .object(object)
                     .build());
-        } catch (Exception e) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException |
+                    InvalidResponseException | ServerException | XmlParserException | IOException |
+                    IllegalArgumentException | InvalidKeyException | NoSuchAlgorithmException e) {
             log.error("Error getting object {}/{}", bucketName, object, e);
             throw new RuntimeException(e);
         }
@@ -54,7 +71,9 @@ public class MinioUtils implements DisposableBean {
                 minioClient.makeBucket(
                         MakeBucketArgs.builder().bucket(bucketName).build());
             }
-        } catch (Exception e) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException |
+                    InvalidResponseException | ServerException | XmlParserException | IOException |
+                    IllegalArgumentException | InvalidKeyException | NoSuchAlgorithmException e) {
             log.error("Error creating bucket {}", bucketName, e);
             throw new RuntimeException(e);
         }
@@ -74,7 +93,9 @@ public class MinioUtils implements DisposableBean {
                     .object(object)
                     .build());
             return true;
-        } catch (Exception e) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException |
+                    InvalidResponseException | ServerException | XmlParserException | IOException |
+                    IllegalArgumentException | InvalidKeyException | NoSuchAlgorithmException e) {
             return false;
         }
     }
@@ -94,7 +115,9 @@ public class MinioUtils implements DisposableBean {
                     .object(objectName)
                     .stream(new ByteArrayInputStream(stream.toByteArray()), stream.size(), -1)
                     .build());
-        } catch (Exception e) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException |
+                    InvalidResponseException | ServerException | XmlParserException | IOException |
+                    IllegalArgumentException | InvalidKeyException | NoSuchAlgorithmException e) {
             log.error("Error putting object {}/{}", bucketName, objectName, e);
             throw new RuntimeException(e);
         }

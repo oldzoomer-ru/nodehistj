@@ -1,18 +1,19 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Set;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
-
-import java.util.Set;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -38,7 +39,7 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@Slf4j
+@Log4j2
 public class HistoricNodelistController {
     private final HistoricNodelistService historicNodelistService;
 

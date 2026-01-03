@@ -1,22 +1,23 @@
 package ru.oldzoomer.nodehistj_download_nodelists.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import ru.oldzoomer.minio.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 /**
  * Service for downloading and updating nodelist files from FTP server.
@@ -38,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 @EnableScheduling
-@Slf4j
+@Log4j2
 @Profile("!test")
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
@@ -78,7 +79,7 @@ public class UpdateNodelists {
             }
 
             sendMessageToKafka();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to update nodelists", e);
             throw new NodelistUpdateException("Nodelist update failed", e);
         } finally {

@@ -1,16 +1,17 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
-import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.NoSuchElementException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import ru.oldzoomer.nodehistj_newest_nodelists.dto.ErrorDto;
 
-import java.util.NoSuchElementException;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.log4j.Log4j2;
+import ru.oldzoomer.nodehistj_newest_nodelists.dto.ErrorDto;
 
 /**
  * Global exception handler for REST controllers.
@@ -18,7 +19,7 @@ import java.util.NoSuchElementException;
  * It handles various types of exceptions and returns appropriate error responses.
  */
 @RestControllerAdvice
-@Slf4j
+@Log4j2
 public class ExceptionResolver {
 
     /**
