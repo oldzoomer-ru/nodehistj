@@ -1,10 +1,13 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
+import org.springframework.data.domain.Page;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.mapper.NodeHistoryEntryMapper;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
@@ -43,7 +46,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of node history entries
      */
     @Override
-    public Slice<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
+    public Page<NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network, Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetworkAndNode(zone, network, node, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -58,7 +61,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of network history entries
      */
     @Override
-    public Slice<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
+    public Page<NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetwork(zone, network, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -72,7 +75,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of zone history entries
      */
     @Override
-    public Slice<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
+    public Page<NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZone(zone, pageable)
                 .map(nodeHistoryEntryMapper::toDto);
@@ -85,7 +88,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of all history entries
      */
     @Override
-    public Slice<NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
+    public Page<NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findAll(pageable)
                 .map(nodeHistoryEntryMapper::toDto);

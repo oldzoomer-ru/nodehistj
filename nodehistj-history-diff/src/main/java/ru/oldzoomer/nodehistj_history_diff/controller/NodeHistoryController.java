@@ -1,8 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff.controller;
 
-import java.util.List;
-
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,7 +38,7 @@ public class NodeHistoryController {
      */
     @GetMapping
     @Cacheable(value = "nodelistHistory", unless = "#result == null || #result.isEmpty()")
-    public List<NodeHistoryEntryDto> getHistory(
+    public Page<NodeHistoryEntryDto> getHistory(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node,
@@ -49,13 +48,13 @@ public class NodeHistoryController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("changeDate")));
 
         if (node != null && network != null && zone != null) {
-            return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
+            return nodeHistoryService.getNodeHistory(zone, network, node, pageable);
         } else if (network != null && zone != null) {
-            return nodeHistoryService.getNetworkHistory(zone, network, pageable).toList();
+            return nodeHistoryService.getNetworkHistory(zone, network, pageable);
         } else if (zone != null) {
-            return nodeHistoryService.getZoneHistory(zone, pageable).toList();
+            return nodeHistoryService.getZoneHistory(zone, pageable);
         } else {
-            return nodeHistoryService.getAllHistory(pageable).toList();
+            return nodeHistoryService.getAllHistory(pageable);
         }
     }
 }

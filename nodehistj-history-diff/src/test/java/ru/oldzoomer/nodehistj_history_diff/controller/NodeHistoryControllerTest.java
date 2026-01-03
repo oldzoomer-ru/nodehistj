@@ -18,23 +18,23 @@ class NodeHistoryControllerTest extends BaseIntegrationTest {
     void testGetChangesByNode() throws Exception {
         mockMvc.perform(get("/history?zone=1&network=1&node=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nodeName").value("Test Node"))
-                .andExpect(jsonPath("$[0].changeType").value("ADDED"));
+                .andExpect(jsonPath("$.content[0].nodeName").value("Test Node"))
+                .andExpect(jsonPath("$.content[0].changeType").value("ADDED"));
     }
 
     @Test
     void testGetChangesByNetwork() throws Exception {
         mockMvc.perform(get("/history?zone=1&network=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nodeName").exists())
-                .andExpect(jsonPath("$[0].changeType").exists());
+                .andExpect(jsonPath("$.content[0].nodeName").exists())
+                .andExpect(jsonPath("$.content[0].changeType").exists());
     }
 
     @Test
     void testGetChangesByZone() throws Exception {
         mockMvc.perform(get("/history?zone=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nodeName").exists())
-                .andExpect(jsonPath("$[0].changeType").exists());
+                .andExpect(jsonPath("$.content[0].nodeName").exists())
+                .andExpect(jsonPath("$.content[0].changeType").exists());
     }
 }
