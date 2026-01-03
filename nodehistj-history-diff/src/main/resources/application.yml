@@ -24,6 +24,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        max.poll.interval.ms: ${KAFKA_MAX_TASK_RUN_TIME:1800000}
       enable-auto-commit: false
     listener:
       ack-mode: MANUAL_IMMEDIATE
