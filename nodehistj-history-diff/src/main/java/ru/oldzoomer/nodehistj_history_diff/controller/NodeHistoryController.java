@@ -38,7 +38,7 @@ public class NodeHistoryController {
      *   GET /history                          -> all history
      */
     @GetMapping
-    @Cacheable(value = "nodelistHistory", key = "#zone + '_' + #network + '_' + #node + '_' + #page + '_' + #size")
+    @Cacheable(value = "nodelistHistory", unless = "#result == null || #result.isEmpty()")
     public List<NodeHistoryEntryDto> getHistory(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
@@ -48,7 +48,6 @@ public class NodeHistoryController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("changeDate")));
 
-        // Логика выбора метода сервиса
         if (node != null && network != null && zone != null) {
             return nodeHistoryService.getNodeHistory(zone, network, node, pageable).toList();
         } else if (network != null && zone != null) {

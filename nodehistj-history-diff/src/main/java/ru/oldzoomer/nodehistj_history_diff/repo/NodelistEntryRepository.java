@@ -12,6 +12,11 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
  * Provides methods to find NodelistEntry entities based on various criteria.
  */
 public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, Long> {
+    /**
+     * Finds all NodelistEntry entities in the database, ordered by nodelist_year and nodelist_name.
+     * 
+     * @return Stream of NodelistEntry entities
+     */
     @Query("""
             SELECT * FROM nodelist_entry nl
             JOIN node_entry n
@@ -20,5 +25,11 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
             """)
     Stream<NodelistEntry> findAllAsStreamWithSort();
 
+
+    /**
+     * Checks if a NodelistEntry with the given nodelist_year and nodelist_name exists.
+     * 
+     * @return true if the NodelistEntry exists, false otherwise
+     */
     boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 }

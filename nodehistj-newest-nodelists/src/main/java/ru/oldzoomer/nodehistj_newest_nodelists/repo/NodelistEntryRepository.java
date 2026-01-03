@@ -11,9 +11,15 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, Long> {
     /**
      * Find first NodelistEntry entity.
+     * 
      * @return a NodelistEntry entity matching the criteria
      */
     NodelistEntry findFirstBy();
 
+    /**
+     * Checks if a NodelistEntry with the given nodelist_year and nodelist_name exists.
+     * 
+     * @return true if the NodelistEntry exists, false otherwise
+     */
     boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
 }

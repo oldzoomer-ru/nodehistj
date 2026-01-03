@@ -70,7 +70,7 @@ public class NodelistController {
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping("/nodelist")
-    @Cacheable("nodelistRequests")
+    @Cacheable(value = "nodelistRequests", unless = "#result == null || #result.isEmpty()")
     public Set<NodeEntryDto> getNodelistEntry(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,

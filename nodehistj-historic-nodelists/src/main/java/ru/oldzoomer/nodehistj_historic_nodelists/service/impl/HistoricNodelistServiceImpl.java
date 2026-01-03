@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
-import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
@@ -50,10 +49,12 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public Set<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         String nodelistName = buildNodelistName(dayOfYear);
-        Set<NodeEntry> nodeEntry = nodelistEntryRepository
+        return nodelistEntryRepository
                 .findFirstByNodelistYearAndNodelistName(year, nodelistName)
-                .getNodeEntries();
-        return nodeEntryMapper.toDto(nodeEntry);
+                .getNodeEntries()
+                .stream()
+                .map(nodeEntryMapper::toDto)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -68,13 +69,13 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         String nodelistName = buildNodelistName(dayOfYear);
-        Set<NodeEntry> nodeEntry = nodelistEntryRepository
+        return nodelistEntryRepository
                 .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
-                .collect(Collectors.toSet());
-        return nodeEntryMapper.toDto(nodeEntry);
+                .map(nodeEntryMapper::toDto)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -91,14 +92,14 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
         String nodelistName = buildNodelistName(dayOfYear);
-        Set<NodeEntry> nodeEntry = nodelistEntryRepository
+        return nodelistEntryRepository
                 .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))
-                .collect(Collectors.toSet());
-        return nodeEntryMapper.toDto(nodeEntry);
+                .map(nodeEntryMapper::toDto)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -116,15 +117,15 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
         String nodelistName = buildNodelistName(dayOfYear);
-        NodeEntry nodeEntry = nodelistEntryRepository
+        return nodelistEntryRepository
                 .findFirstByNodelistYearAndNodelistName(year, nodelistName)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
                 .filter(x -> x.getNetwork().equals(network))
                 .filter(x -> x.getNode().equals(node))
+                .map(nodeEntryMapper::toDto)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No nodes found"));
-        return nodeEntryMapper.toDto(nodeEntry);
+                .orElseThrow();
     }
 }
