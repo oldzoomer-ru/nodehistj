@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.service.impl;
 
+import java.time.Year;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,19 +26,6 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeEntryMapper nodeEntryMapper;
 
-    // Pattern used to generate nodelist names from day of year
-    private static final String NODENAME_PATTERN = "nodelist.%03d";
-
-    /**
-     * Builds the nodelist name from a given day of the year.
-     *
-     * @param dayOfYear the day of the year (1-366)
-     * @return formatted nodelist name
-     */
-    private String buildNodelistName(int dayOfYear) {
-        return String.format(NODENAME_PATTERN, dayOfYear);
-    }
-
     /**
      * Gets all nodelist entries for a specific year and day of year.
      *
@@ -46,11 +34,10 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries
      */
     @Override
-    public Set<NodeEntryDto> getNodelistEntries(int year, int dayOfYear) {
+    public Set<NodeEntryDto> getNodelistEntries(Year year, Integer dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
-        String nodelistName = buildNodelistName(dayOfYear);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .map(nodeEntryMapper::toDto)
@@ -66,11 +53,10 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
-    public Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone) {
+    public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
-        String nodelistName = buildNodelistName(dayOfYear);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -88,12 +74,11 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
-    public Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network) {
+    public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
-        String nodelistName = buildNodelistName(dayOfYear);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -113,12 +98,11 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
     @Override
-    public NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node) {
+    public NodeEntryDto getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network, Integer node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        String nodelistName = buildNodelistName(dayOfYear);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndNodelistName(year, nodelistName)
+                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))

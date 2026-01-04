@@ -1,15 +1,16 @@
 package ru.oldzoomer.nodehistj_history_diff.mcp;
 
-import lombok.RequiredArgsConstructor;
-import org.springaicommunity.mcp.annotation.McpTool;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
-import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springaicommunity.mcp.annotation.McpTool;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
+import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class NodeHistoryMcpRepository {
     }
 
     @McpTool(description = "Get zone history by their zone")
-    public List<NodeHistoryEntryDto> getZoneHistory(int zone) {
+    public List<NodeHistoryEntryDto> getZoneHistory(Integer zone) {
         return nodeHistoryService.getZoneHistory(zone, Pageable.unpaged()).toList();
     }
 }

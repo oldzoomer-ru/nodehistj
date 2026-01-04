@@ -48,7 +48,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
-    public Set<NodeEntryDto> getNodelistEntry(int zone) {
+    public Set<NodeEntryDto> getNodelistEntry(Integer zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
         return nodelistEntryRepository
                 .findFirstBy()
@@ -67,7 +67,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
-    public Set<NodeEntryDto> getNodelistEntry(int zone, int network) {
+    public Set<NodeEntryDto> getNodelistEntry(Integer zone, Integer network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
         return nodelistEntryRepository
                 .findFirstBy()
@@ -88,7 +88,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
     @Override
-    public NodeEntryDto getNodelistEntry(int zone, int network, int node) {
+    public NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
         return nodelistEntryRepository
                 .findFirstBy()

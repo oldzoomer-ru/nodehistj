@@ -1,6 +1,8 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
-import com.redis.testcontainers.RedisContainer;
+import java.time.Year;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,11 +17,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
+
+import com.redis.testcontainers.RedisContainer;
+
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -70,8 +73,8 @@ public abstract class BaseIntegrationTest {
         nodelistEntryRepository.deleteAll();
 
         NodelistEntry nodelistEntry = new NodelistEntry();
-        nodelistEntry.setNodelistYear(2023);
-        nodelistEntry.setNodelistName("nodelist.001");
+        nodelistEntry.setNodelistYear(Year.of(2023));
+        nodelistEntry.setDayOfYear(1);
 
         NodeEntry nodeEntry = new NodeEntry();
         nodeEntry.setZone(1);

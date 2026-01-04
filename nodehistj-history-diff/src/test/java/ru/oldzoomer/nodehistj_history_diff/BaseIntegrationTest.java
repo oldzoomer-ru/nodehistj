@@ -1,6 +1,9 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
-import com.redis.testcontainers.RedisContainer;
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +19,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
+
+import com.redis.testcontainers.RedisContainer;
+
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -72,8 +75,8 @@ public abstract class BaseIntegrationTest {
         addedEntry.setNetwork(1);
         addedEntry.setNode(1);
         addedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
-        addedEntry.setNodelistYear(2023);
-        addedEntry.setNodelistName("nodelist.001");
+        addedEntry.setNodelistYear(Year.of(2023));
+        addedEntry.setDayOfYear(1);
         addedEntry.setChangeType(NodeHistoryEntry.ChangeType.ADDED);
         addedEntry.setNodeName("Test Node");
         addedEntry.setLocation("Test Location");
@@ -102,8 +105,8 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setNetwork(1);
         modifiedEntry.setNode(2);
         modifiedEntry.setChangeDate(LocalDate.of(2023, 1, 2));
-        modifiedEntry.setNodelistYear(2023);
-        modifiedEntry.setNodelistName("nodelist.002");
+        modifiedEntry.setNodelistYear(Year.of(2023));
+        modifiedEntry.setDayOfYear(2);
         modifiedEntry.setChangeType(NodeHistoryEntry.ChangeType.MODIFIED);
         modifiedEntry.setNodeName("Modified Node");
         modifiedEntry.setLocation("New Location");

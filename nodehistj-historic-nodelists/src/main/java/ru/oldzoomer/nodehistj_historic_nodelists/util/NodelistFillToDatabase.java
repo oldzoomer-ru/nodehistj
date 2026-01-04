@@ -2,6 +2,7 @@ package ru.oldzoomer.nodehistj_historic_nodelists.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,7 +38,7 @@ public class NodelistFillToDatabase {
     private String minioBucket;
 
     // Precompiled pattern to extract year and name from MinIO object path
-    private static final Pattern OBJECT_PATH_PATTERN = Pattern.compile(".*/(\\d{4})/(nodelist\\.(\\d{3}))");
+    private static final Pattern OBJECT_PATH_PATTERN = Pattern.compile(".*/(\\d{4})/nodelist\\.(\\d{3})");
 
     /**
      * Converts nodelist entry from common format to database entity
@@ -79,10 +80,10 @@ public class NodelistFillToDatabase {
                 continue;
             }
 
-            int year = Integer.parseInt(matcher.group(1));
-            String name = matcher.group(2);
+            Year year = Year.parse(matcher.group(1));
+            Integer name = Integer.valueOf(matcher.group(2));
 
-            if (nodelistEntryRepository.existsByNodelistYearAndNodelistName(year, name)) {
+            if (nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year, name)) {
                 log.info("Nodelist {} from {} year is exist", name, year);
                 continue;
             }
@@ -108,12 +109,12 @@ public class NodelistFillToDatabase {
      * @param name The name of the nodelist file.
      * @return nodelist entry
      */
-    private NodelistEntry updateNodelist(Nodelist nodelist, Integer year, String name) {
-        log.info("Update nodelist from {} year and name {} is started", year, name);
+    private NodelistEntry updateNodelist(Nodelist nodelist, Year year, Integer dayOfYear) {
+        log.info("Update nodelist from {} year and name {} is started", year, dayOfYear);
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
         nodelistEntryNew.setNodelistYear(year);
-        nodelistEntryNew.setNodelistName(name);
+        nodelistEntryNew.setDayOfYear(dayOfYear);
 
         for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
             nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));

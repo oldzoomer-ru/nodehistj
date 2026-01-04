@@ -1,17 +1,19 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 import ru.oldzoomer.nodelistj.enums.Keywords;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Entity class representing a node history entry in the database.
@@ -25,6 +27,7 @@ import java.util.List;
 public class NodeHistoryEntry implements Serializable {
     @Id
     @Column("id")
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     @Column("zone")
@@ -40,10 +43,10 @@ public class NodeHistoryEntry implements Serializable {
     private LocalDate changeDate;
 
     @Column("nodelist_year")
-    private Integer nodelistYear;
+    private Year nodelistYear;
 
-    @Column("nodelist_name")
-    private String nodelistName;
+    @Column("day_of_year")
+    private Integer dayOfYear;
 
     @Column("change_type")
     private ChangeType changeType;

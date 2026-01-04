@@ -1,13 +1,13 @@
 package ru.oldzoomer.nodehistj_history_diff.dto;
 
+import java.io.Serializable;
+import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodelistj.enums.Keywords;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * DTO for {@link NodeHistoryEntry}.
@@ -17,8 +17,6 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class NodeHistoryEntryDto implements Serializable {
-    private Long id;
-
     private NodeHistoryEntry.ChangeType changeType;
     private Keywords keywords;
     private String nodeName;

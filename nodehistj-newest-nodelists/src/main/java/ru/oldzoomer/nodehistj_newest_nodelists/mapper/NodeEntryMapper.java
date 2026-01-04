@@ -12,8 +12,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
  * Uses Spring component model and ignores unmapped target properties.
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = NodelistEntryMapper.class)
+        componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NodeEntryMapper {
     /**
      * Converts a single NodeEntry entity to a NodeEntryDto object.

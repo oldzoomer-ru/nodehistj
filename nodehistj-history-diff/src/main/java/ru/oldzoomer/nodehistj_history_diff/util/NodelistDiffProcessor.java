@@ -1,12 +1,11 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Gatherers;
 
@@ -30,9 +29,6 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 @Component
 @Log4j2
 public class NodelistDiffProcessor {
-    // Precompiled pattern for nodelist date parsing to avoid recompilation per call
-    private static final Pattern NODELIST_DATE_PATTERN = Pattern.compile("nodelist\\.(\\d{3})");
-
     private final NodelistEntryRepository nodelistEntryRepository;
     private final NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
@@ -56,7 +52,7 @@ public class NodelistDiffProcessor {
 
             nodelistEntryRepository.findAllAsStreamWithSort()
                                     .gather(Gatherers.windowSliding(2))
-                                    .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
+                                    .map(window -> processDiffBetweenNodelists(window.get(1), window.get(0)))
                                     .flatMap(list -> list.stream())
                                     .forEach(nodeHistoryEntryRepository::save);
 
@@ -75,12 +71,12 @@ public class NodelistDiffProcessor {
      * @param newNodelist the current nodelist version
      */
     private List<NodeHistoryEntry> processDiffBetweenNodelists(NodelistEntry oldNodelist, NodelistEntry newNodelist) {
-        Integer prevYear = oldNodelist.getNodelistYear();
-        String prevName = oldNodelist.getNodelistName();
-        Integer currYear = newNodelist.getNodelistYear();
-        String currName = newNodelist.getNodelistName();
+        Year prevYear = oldNodelist.getNodelistYear();
+        Integer prevDay = oldNodelist.getDayOfYear();
+        Year currYear = newNodelist.getNodelistYear();
+        Integer currDay = newNodelist.getDayOfYear();
 
-        log.info("Processing diff between {}/{} and {}/{}", prevYear, prevName, currYear, currName);
+        log.info("Processing diff between {}/{} and {}/{}", prevYear, prevDay, currYear, currDay);
 
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = oldNodelist.getNodeEntries()
@@ -93,13 +89,13 @@ public class NodelistDiffProcessor {
         List<NodeHistoryEntry> historyEntries = new ArrayList<>();
 
         try {
-            LocalDate changeDate = parseNodelistDate(currYear, currName);
+            LocalDate changeDate = currYear.atDay(currDay);
 
             // Find added nodes
             for (NodeEntry currentNode : currentNodeMap.values()) {
                 String key = getNodeKey(currentNode);
                 if (!previousNodeMap.containsKey(key)) {
-                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(currentNode, currYear, currDay, changeDate,
                             NodeHistoryEntry.ChangeType.ADDED, null));
                 }
             }
@@ -108,7 +104,7 @@ public class NodelistDiffProcessor {
             for (NodeEntry previousNode : previousNodeMap.values()) {
                 String key = getNodeKey(previousNode);
                 if (!currentNodeMap.containsKey(key)) {
-                    historyEntries.add(createHistoryEntry(previousNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(previousNode, currYear, currDay, changeDate,
                             NodeHistoryEntry.ChangeType.REMOVED, null));
                 }
             }
@@ -118,12 +114,12 @@ public class NodelistDiffProcessor {
                 String key = getNodeKey(currentNode);
                 NodeEntry previousNode = previousNodeMap.get(key);
                 if (previousNode != null && !nodesEqual(previousNode, currentNode)) {
-                    historyEntries.add(createHistoryEntry(currentNode, currYear, currName, changeDate,
+                    historyEntries.add(createHistoryEntry(currentNode, currYear, currDay, changeDate,
                             NodeHistoryEntry.ChangeType.MODIFIED, previousNode));
                 }
             }
         } catch (IllegalArgumentException e) {
-            log.info("Nodelist is skipped: {}/{}", currYear, currName);
+            log.info("Nodelist is skipped: {}/{}", currYear, currDay);
         }
 
         return historyEntries;
@@ -165,8 +161,8 @@ public class NodelistDiffProcessor {
      * @param previousNode the previous node state (for MODIFIED changes)
      * @return node history diff entry
      */
-    private NodeHistoryEntry createHistoryEntry(NodeEntry node, Integer nodelistYear,
-                                    String nodelistName, LocalDate changeDate,
+    private NodeHistoryEntry createHistoryEntry(NodeEntry node, Year nodelistYear,
+                                    Integer dayOfYear, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
 
@@ -175,7 +171,7 @@ public class NodelistDiffProcessor {
         historyEntry.setNode(node.getNode());
         historyEntry.setChangeDate(changeDate);
         historyEntry.setNodelistYear(nodelistYear);
-        historyEntry.setNodelistName(nodelistName);
+        historyEntry.setDayOfYear(dayOfYear);
         historyEntry.setChangeType(changeType);
 
         // Current values
@@ -199,21 +195,5 @@ public class NodelistDiffProcessor {
         }
 
         return historyEntry;
-    }
-
-    /**
-     * Parses the date from a nodelist name.
-     *
-     * @param year the year of the nodelist
-     * @param nodelistName the name of the nodelist
-     * @return the parsed LocalDate representing the nodelist date
-     */
-    private LocalDate parseNodelistDate(Integer year, String nodelistName) {
-        Matcher matcher = NODELIST_DATE_PATTERN.matcher(nodelistName);
-        if (matcher.matches()) {
-            int dayOfYear = Integer.parseInt(matcher.group(1));
-            return LocalDate.ofYearDay(year, dayOfYear);
-        }
-        throw new IllegalArgumentException(String.format("Incorrect name of nodelist: %s", nodelistName));
     }
 }

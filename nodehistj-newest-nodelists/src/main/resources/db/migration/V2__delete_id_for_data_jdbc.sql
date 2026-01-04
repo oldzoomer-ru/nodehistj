@@ -1,1 +1,0 @@
-ALTER TABLE node_entry DROP COLUMN id;

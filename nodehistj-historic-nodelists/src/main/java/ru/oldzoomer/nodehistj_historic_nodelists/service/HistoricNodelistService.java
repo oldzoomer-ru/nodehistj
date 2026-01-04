@@ -1,8 +1,9 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.service;
 
-import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
-
+import java.time.Year;
 import java.util.Set;
+
+import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 
 /**
  * Historic nodelist service layer interface.
@@ -16,7 +17,7 @@ public interface HistoricNodelistService {
      * @param dayOfYear the day of year of the nodelist
      * @return a set of NodeEntryDto objects representing the nodelist entries
      */
-    Set<NodeEntryDto> getNodelistEntries(int year, int dayOfYear);
+    Set<NodeEntryDto> getNodelistEntries(Year year, Integer dayOfYear);
 
     /**
      * Gets nodelist entries for a specific zone within a specific year and day of year.
@@ -26,7 +27,7 @@ public interface HistoricNodelistService {
      * @param zone the zone of the nodelist entries
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
-    Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone);
+    Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone);
 
     /**
      * Gets nodelist entries for a specific network within a specific zone, year, and day of year.
@@ -37,7 +38,7 @@ public interface HistoricNodelistService {
      * @param network the network of the nodelist entries
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
-    Set<NodeEntryDto> getNodelistEntry(int year, int dayOfYear, int zone, int network);
+    Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network);
 
     /**
      * Gets a specific nodelist entry for a node within a specific network, zone, year, and day of year.
@@ -49,5 +50,5 @@ public interface HistoricNodelistService {
      * @param node the node address of the nodelist entry
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
-    NodeEntryDto getNodelistEntry(int year, int dayOfYear, int zone, int network, int node);
+    NodeEntryDto getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network, Integer node);
 }

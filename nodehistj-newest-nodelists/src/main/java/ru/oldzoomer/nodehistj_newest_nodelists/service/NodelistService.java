@@ -1,8 +1,8 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.service;
 
-import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
-
 import java.util.Set;
+
+import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 
 /**
  * Nodelist service layer interface.
@@ -22,7 +22,7 @@ public interface NodelistService {
      * @param zone the zone of the nodelist entries
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
-    Set<NodeEntryDto> getNodelistEntry(int zone);
+    Set<NodeEntryDto> getNodelistEntry(Integer zone);
 
     /**
      * Gets nodelist entries for a specific network within a specific zone.
@@ -31,7 +31,7 @@ public interface NodelistService {
      * @param network the network of the nodelist entries
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
-    Set<NodeEntryDto> getNodelistEntry(int zone, int network);
+    Set<NodeEntryDto> getNodelistEntry(Integer zone, Integer network);
 
     /**
      * Gets a specific nodelist entry for a node within a specific network and zone.
@@ -41,5 +41,5 @@ public interface NodelistService {
      * @param node the node address of the nodelist entry
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
-    NodeEntryDto getNodelistEntry(int zone, int network, int node);
+    NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node);
 }

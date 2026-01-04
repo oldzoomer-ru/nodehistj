@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
+import java.time.Year;
 import java.util.stream.Stream;
 
 import org.springframework.data.jdbc.repository.query.Query;
@@ -21,7 +22,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
             SELECT * FROM nodelist_entry nl
             JOIN node_entry n
             ON nl.id = n.nodelist_entry_id
-            ORDER BY nodelist_year DESC, nodelist_name DESC
+            ORDER BY nodelist_year DESC, day_of_year DESC
             """)
     Stream<NodelistEntry> findAllAsStreamWithSort();
 
@@ -31,5 +32,5 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      * 
      * @return true if the NodelistEntry exists, false otherwise
      */
-    boolean existsByNodelistYearAndNodelistName(Integer nodelistYear, String nodelistName);
+    boolean existsByNodelistYearAndDayOfYear(Year nodelistYear, Integer dayOfYear);
 }

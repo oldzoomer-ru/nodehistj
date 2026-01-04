@@ -1,16 +1,17 @@
 package ru.oldzoomer.nodehistj_history_diff.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 import ru.oldzoomer.nodelistj.enums.Keywords;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Entity class representing a node entry in the database.
@@ -19,12 +20,12 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of = "nodelistEntryId")
+@EqualsAndHashCode(of = {"zone", "network", "node"})
 @Table("node_entry")
 public class NodeEntry {
     @Id
-    @Column("nodelist_entry_id")
-    private Long nodelistEntryId;
+    @Column("node_id")
+    private Long id;
 
     @Column("zone")
     private Integer zone;
