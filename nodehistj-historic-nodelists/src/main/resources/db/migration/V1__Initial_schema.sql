@@ -4,7 +4,7 @@
 -- Таблица nodelist_entry
 CREATE TABLE nodelist_entry (
     id BIGSERIAL PRIMARY KEY,
-    nodelist_year DATE NOT NULL,
+    nodelist_year SMALLINT NOT NULL CHECK (nodelist_year BETWEEN 1984 AND 2038),
     day_of_year SMALLINT NOT NULL CHECK (day_of_year BETWEEN 1 AND 366)
 );
 

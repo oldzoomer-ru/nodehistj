@@ -83,7 +83,7 @@ public class NodelistFillToDatabase {
             Year year = Year.parse(matcher.group(1));
             Integer name = Integer.valueOf(matcher.group(2));
 
-            if (nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year, name)) {
+            if (nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year.getValue(), name)) {
                 log.info("Nodelist {} from {} year is exist", name, year);
                 continue;
             }
@@ -113,7 +113,7 @@ public class NodelistFillToDatabase {
         log.info("Update nodelist from {} year and name {} is started", year, dayOfYear);
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
-        nodelistEntryNew.setNodelistYear(year);
+        nodelistEntryNew.setNodelistYear(year.getValue());
         nodelistEntryNew.setDayOfYear(dayOfYear);
 
         for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {

@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
-import java.time.Year;
 import java.util.stream.Stream;
 
 import org.springframework.data.jdbc.repository.query.Query;
@@ -32,5 +31,5 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      * 
      * @return true if the NodelistEntry exists, false otherwise
      */
-    boolean existsByNodelistYearAndDayOfYear(Year nodelistYear, Integer dayOfYear);
+    boolean existsByNodelistYearAndDayOfYear(Integer nodelistYear, Integer dayOfYear);
 }

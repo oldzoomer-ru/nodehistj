@@ -2,7 +2,6 @@ package ru.oldzoomer.nodehistj_history_diff.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -43,7 +42,7 @@ public class NodeHistoryEntry implements Serializable {
     private LocalDate changeDate;
 
     @Column("nodelist_year")
-    private Year nodelistYear;
+    private Integer nodelistYear;
 
     @Column("day_of_year")
     private Integer dayOfYear;

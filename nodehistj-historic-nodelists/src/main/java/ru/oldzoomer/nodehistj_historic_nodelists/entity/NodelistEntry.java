@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.entity;
 
-import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public class NodelistEntry {
     private Long id;
 
     @Column("nodelist_year")
-    private Year nodelistYear;
+    private Integer nodelistYear;
 
     @Column("day_of_year")
     private Integer dayOfYear;

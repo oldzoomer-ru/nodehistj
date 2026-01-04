@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +70,9 @@ public class NodelistDiffProcessor {
      * @param newNodelist the current nodelist version
      */
     private List<NodeHistoryEntry> processDiffBetweenNodelists(NodelistEntry oldNodelist, NodelistEntry newNodelist) {
-        Year prevYear = oldNodelist.getNodelistYear();
+        Integer prevYear = oldNodelist.getNodelistYear();
         Integer prevDay = oldNodelist.getDayOfYear();
-        Year currYear = newNodelist.getNodelistYear();
+        Integer currYear = newNodelist.getNodelistYear();
         Integer currDay = newNodelist.getDayOfYear();
 
         log.info("Processing diff between {}/{} and {}/{}", prevYear, prevDay, currYear, currDay);
@@ -89,7 +88,7 @@ public class NodelistDiffProcessor {
         List<NodeHistoryEntry> historyEntries = new ArrayList<>();
 
         try {
-            LocalDate changeDate = currYear.atDay(currDay);
+            LocalDate changeDate = LocalDate.ofYearDay(currYear, currDay);
 
             // Find added nodes
             for (NodeEntry currentNode : currentNodeMap.values()) {
@@ -161,7 +160,7 @@ public class NodelistDiffProcessor {
      * @param previousNode the previous node state (for MODIFIED changes)
      * @return node history diff entry
      */
-    private NodeHistoryEntry createHistoryEntry(NodeEntry node, Year nodelistYear,
+    private NodeHistoryEntry createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     Integer dayOfYear, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();

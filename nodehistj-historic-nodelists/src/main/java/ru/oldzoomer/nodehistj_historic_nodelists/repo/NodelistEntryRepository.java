@@ -1,7 +1,5 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.repo;
 
-import java.time.Year;
-
 import org.springframework.data.repository.CrudRepository;
 
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -17,7 +15,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      * @param dayOfYear the name of the nodelist
      * @return a NodelistEntry entity matching the criteria
      */
-    NodelistEntry findFirstByNodelistYearAndDayOfYear(Year nodelistYear, Integer dayOfYear);
+    NodelistEntry findFirstByNodelistYearAndDayOfYear(Integer nodelistYear, Integer dayOfYear);
 
-    boolean existsByNodelistYearAndDayOfYear(Year nodelistYear, Integer dayOfYear);
+    boolean existsByNodelistYearAndDayOfYear(Integer nodelistYear, Integer dayOfYear);
 }

@@ -37,7 +37,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public Set<NodeEntryDto> getNodelistEntries(Year year, Integer dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
+                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .map(nodeEntryMapper::toDto)
@@ -56,7 +56,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
+                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -78,7 +78,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
+                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))
@@ -102,7 +102,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
         return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year, dayOfYear)
+                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
                 .getNodeEntries()
                 .stream()
                 .filter(x -> x.getZone().equals(zone))

@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +74,7 @@ public abstract class BaseIntegrationTest {
         addedEntry.setNetwork(1);
         addedEntry.setNode(1);
         addedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
-        addedEntry.setNodelistYear(Year.of(2023));
+        addedEntry.setNodelistYear(2023);
         addedEntry.setDayOfYear(1);
         addedEntry.setChangeType(NodeHistoryEntry.ChangeType.ADDED);
         addedEntry.setNodeName("Test Node");
@@ -105,7 +104,7 @@ public abstract class BaseIntegrationTest {
         modifiedEntry.setNetwork(1);
         modifiedEntry.setNode(2);
         modifiedEntry.setChangeDate(LocalDate.of(2023, 1, 2));
-        modifiedEntry.setNodelistYear(Year.of(2023));
+        modifiedEntry.setNodelistYear(2023);
         modifiedEntry.setDayOfYear(2);
         modifiedEntry.setChangeType(NodeHistoryEntry.ChangeType.MODIFIED);
         modifiedEntry.setNodeName("Modified Node");
