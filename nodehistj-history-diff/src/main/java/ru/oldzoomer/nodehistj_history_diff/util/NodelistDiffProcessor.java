@@ -51,7 +51,7 @@ public class NodelistDiffProcessor {
 
             nodelistEntryRepository.findAllAsStreamWithSort()
                                     .gather(Gatherers.windowSliding(2))
-                                    .map(window -> processDiffBetweenNodelists(window.get(1), window.get(0)))
+                                    .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
                                     .flatMap(list -> list.stream())
                                     .forEach(nodeHistoryEntryRepository::save);
 
@@ -59,7 +59,6 @@ public class NodelistDiffProcessor {
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
-            throw e;
         }
     }
 

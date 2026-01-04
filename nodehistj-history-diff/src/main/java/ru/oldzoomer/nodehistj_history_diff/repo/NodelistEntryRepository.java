@@ -21,7 +21,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
             SELECT * FROM nodelist_entry nl
             JOIN node_entry n
             ON nl.id = n.nodelist_entry_id
-            ORDER BY nodelist_year DESC, day_of_year DESC
+            ORDER BY nl.nodelist_year DESC, nl.day_of_year DESC
             """)
     Stream<NodelistEntry> findAllAsStreamWithSort();
 
