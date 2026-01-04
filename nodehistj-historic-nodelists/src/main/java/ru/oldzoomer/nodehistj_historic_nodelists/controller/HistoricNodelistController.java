@@ -75,7 +75,7 @@ public class HistoricNodelistController {
     @GetMapping("/historicNodelist")
     @Cacheable(value = "historicNodelistRequests", unless = "#result == null || #result.isEmpty()")
     public Set<NodeEntryDto> getNodelistEntry(
-            @RequestParam @Min(1984) Year year,
+            @RequestParam Year year,
             @RequestParam @Min(1) @Max(366) Integer dayOfYear,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
