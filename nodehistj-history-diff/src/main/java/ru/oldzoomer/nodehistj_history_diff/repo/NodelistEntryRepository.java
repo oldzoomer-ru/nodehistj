@@ -19,7 +19,7 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
      */
     @Query("""
             SELECT * FROM nodelist_entry
-            ORDER BY nodelist_year DESC, day_of_year DESC
+            ORDER BY nodelist_year ASC, day_of_year ASC
             """)
     Stream<NodelistEntry> findAllAsStreamWithSort();
 
