@@ -1,6 +1,7 @@
 package ru.oldzoomer.nodehistj_history_diff.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.EqualsAndHashCode;
@@ -17,7 +18,13 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
 @Setter
 @EqualsAndHashCode
 public class NodeHistoryEntryDto implements Serializable {
-    private NodeHistoryEntry.ChangeType changeType;
+    private Integer zone;
+    private Integer network;
+    private Integer node;
+    private LocalDate changeDate;
+    private Integer nodelistYear;
+    private Integer dayOfYear;
+    private ChangeType changeType;
     private Keywords keywords;
     private String nodeName;
     private String location;
@@ -34,4 +41,11 @@ public class NodeHistoryEntryDto implements Serializable {
     private String prevPhone;
     private Integer prevBaudRate;
     private List<String> prevFlags;
+
+    /**
+     * Enum representing the type of change made to a node.
+     */
+    public enum ChangeType {
+        ADDED, REMOVED, MODIFIED
+    }
 }
