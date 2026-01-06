@@ -64,13 +64,13 @@ public class UpdateNodelists {
 
     /**
      * Main method for updating nodelist files.
-     * Runs on schedule (default every 24 hours).
+     * Runs on schedule (at 03:00).
      * Downloads files for current and previous years (starting from
      * downloadFromYear).
      *
      * @throws NodelistUpdateException if update error occurs
      */
-    @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
+    @Scheduled(cron = "0 0 3 * * *") // 03:00
     public void updateNodelists() {
         log.info("Starting nodelist update process");
         try {
