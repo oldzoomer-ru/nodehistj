@@ -19,6 +19,8 @@ public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, L
     /**
      * Checks if a NodelistEntry with the given nodelist_year and nodelist_name exists.
      * 
+     * @param nodelistYear   the year of the nodelist to check for existence
+     * @param dayOfYear      the day of the year in the nodelist to check for existence
      * @return true if the NodelistEntry exists, false otherwise
      */
     boolean existsByNodelistYearAndDayOfYear(Integer nodelistYear, Integer dayOfYear);

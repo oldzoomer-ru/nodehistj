@@ -89,11 +89,20 @@ public class HistoricNodelistController {
             throw new IllegalArgumentException("Cannot specify node without network");
         }
 
-        return zone == null ? historicNodelistService.getNodelistEntries(year, dayOfYear)
-                : network == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone)
-                : node == null ? historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network)
-                : historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node) != null
-                ? Set.of(historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node))
-                : Set.of();
+        return getFilteredNodeEntries(year, dayOfYear, zone, network, node);
+    }
+    
+    private Set<NodeEntryDto> getFilteredNodeEntries(Year year, Integer dayOfYear, Integer zone,
+                                                    Integer network, Integer node) {
+        if (zone == null) {
+            return historicNodelistService.getNodelistEntries(year, dayOfYear);
+        } else if (network == null) {
+            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone);
+        } else if (node == null) {
+            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network);
+        } else {
+            NodeEntryDto result = historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node);
+            return result != null ? Set.of(result) : Set.of();
+        }
     }
 }

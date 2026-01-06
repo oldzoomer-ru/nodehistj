@@ -37,17 +37,14 @@ public class KafkaListeners {
             }
             nodelistFillToDatabase.updateNodelist(message);
             log.info("Successfully processed {} files from Kafka message", message.size());
+            // Acknowledge only after successful processing
+            ack.acknowledge();
+            log.debug("Acknowledged Kafka message processing");
         } catch (Exception e) {
             log.error("Error processing Kafka message with {} files",
                     message != null ? message.size() : 0, e);
             // Don't acknowledge to let Kafka retry the message
             throw new RuntimeException("Failed to process Kafka message", e);
-        } finally {
-            // Only acknowledge if we successfully processed the message
-            if (message != null && !message.isEmpty()) {
-                ack.acknowledge();
-                log.debug("Acknowledged Kafka message processing");
-            }
         }
     }
 }

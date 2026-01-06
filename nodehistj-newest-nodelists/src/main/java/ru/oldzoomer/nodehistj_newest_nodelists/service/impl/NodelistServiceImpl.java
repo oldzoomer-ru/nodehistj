@@ -77,9 +77,12 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        return getFilteredNodeEntries(zone, network, node).stream()
-                .findFirst()
-                .orElseThrow();
+        var result = getFilteredNodeEntries(zone, network, node);
+        if (result.isEmpty()) {
+            log.warn("No nodelist entry found for zone: {}, network: {}, node: {}", zone, network, node);
+            throw new IllegalArgumentException("Nodelist entry not found for specified criteria");
+        }
+        return result.stream().findFirst().orElseThrow();
     }
 
     /**

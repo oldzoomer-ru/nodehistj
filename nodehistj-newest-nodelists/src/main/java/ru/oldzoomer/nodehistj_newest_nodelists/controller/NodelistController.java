@@ -84,11 +84,19 @@ public class NodelistController {
         log.debug("Processing nodelist request - zone: {}, network: {}, node: {}",
             zone, network, node);
 
-        return zone == null ? nodelistService.getNodelistEntries()
-                : network == null ? nodelistService.getNodelistEntry(zone)
-                : node == null ? nodelistService.getNodelistEntry(zone, network)
-                : nodelistService.getNodelistEntry(zone, network, node) != null
-                ? Set.of(nodelistService.getNodelistEntry(zone, network, node))
-                : Set.of();
+        return getFilteredNodeEntries(zone, network, node);
+    }
+    
+    private Set<NodeEntryDto> getFilteredNodeEntries(Integer zone, Integer network, Integer node) {
+        if (zone == null) {
+            return nodelistService.getNodelistEntries();
+        } else if (network == null) {
+            return nodelistService.getNodelistEntry(zone);
+        } else if (node == null) {
+            return nodelistService.getNodelistEntry(zone, network);
+        } else {
+            NodeEntryDto result = nodelistService.getNodelistEntry(zone, network, node);
+            return result != null ? Set.of(result) : Set.of();
+        }
     }
 }

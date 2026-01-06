@@ -88,9 +88,13 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public NodeEntryDto getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network, Integer node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        return getFilteredNodeEntries(year, dayOfYear, zone, network, node).stream()
-                .findFirst()
-                .orElseThrow();
+        var result = getFilteredNodeEntries(year, dayOfYear, zone, network, node);
+        if (result.isEmpty()) {
+            log.warn("No nodelist entry found for year: {}, day: {}, zone: {}, network: {}, node: {}",
+                    year, dayOfYear, zone, network, node);
+            throw new IllegalArgumentException("Nodelist entry not found for specified criteria");
+        }
+        return result.stream().findFirst().orElseThrow();
     }
 
     /**
@@ -105,6 +109,11 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      */
     private Set<NodeEntryDto> getFilteredNodeEntries(Year year, Integer dayOfYear, Integer zone,
                                                         Integer network, Integer node) {
+        if (!nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)) {
+            log.warn("No nodelist entry found for year: {}, day: {}", year, dayOfYear);
+            return Set.of();
+        }
+        
         var nodelistEntry = nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear);
         if (nodelistEntry == null) {
             log.warn("No nodelist entry found for year: {}, day: {}", year, dayOfYear);
