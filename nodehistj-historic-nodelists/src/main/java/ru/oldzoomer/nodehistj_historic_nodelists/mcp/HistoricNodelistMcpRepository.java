@@ -6,13 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springaicommunity.mcp.annotation.McpTool;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class HistoricNodelistMcpRepository {
     private final HistoricNodelistService historicNodelistService;

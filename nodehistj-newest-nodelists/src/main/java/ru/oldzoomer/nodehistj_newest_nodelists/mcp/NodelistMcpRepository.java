@@ -1,16 +1,17 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.mcp;
 
-import lombok.RequiredArgsConstructor;
-import org.springaicommunity.mcp.annotation.McpTool;
-import org.springframework.stereotype.Service;
-import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
-import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
-
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Service
+import org.springaicommunity.mcp.annotation.McpTool;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
+import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
+
+@Component
 @RequiredArgsConstructor
 public class NodelistMcpRepository {
     private final NodelistService nodelistService;

@@ -6,13 +6,13 @@ import java.util.regex.Pattern;
 
 import org.springaicommunity.mcp.annotation.McpTool;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import ru.oldzoomer.nodehistj_history_diff.dto.NodeHistoryEntryDto;
 import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class NodeHistoryMcpRepository {
     private final NodeHistoryService nodeHistoryService;
