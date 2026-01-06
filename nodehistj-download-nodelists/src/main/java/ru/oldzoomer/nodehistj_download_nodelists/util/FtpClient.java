@@ -46,22 +46,28 @@ public class FtpClient {
      * @throws IOException if connection fails
      */
     public void open() throws IOException {
+        log.debug("Opening FTP connection to {}:{}", server, port);
         ftp = new FTPClient();
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
         try {
             ftp.connect(server, port);
+            log.debug("Connected to FTP server");
+            
             if (!ftp.login(user, password)) {
-                throw new IOException("FTP login failed");
+                throw new IOException("FTP login failed for user: " + user);
             }
+            log.debug("Logged in to FTP server successfully");
 
             if (!FTPReply.isPositiveCompletion(ftp.getReplyCode())) {
-                throw new IOException("FTP server refused connection");
+                throw new IOException("FTP server refused connection, reply code: " + ftp.getReplyCode());
             }
 
             ftp.enterLocalPassiveMode();
             ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+            log.debug("FTP connection configured successfully");
         } catch (IOException e) {
+            log.error("Failed to open FTP connection", e);
             close();
             throw e;
         }
@@ -74,7 +80,15 @@ public class FtpClient {
      * @throws IOException if operation fails
      */
     public String[] listFiles(String path) throws IOException {
-        return ftp.listNames(path);
+        log.debug("Listing files in FTP directory: {}", path);
+        try {
+            String[] files = ftp.listNames(path);
+            log.debug("Found {} files in directory: {}", files != null ? files.length : 0, path);
+            return files;
+        } catch (IOException e) {
+            log.error("Failed to list files in FTP directory: {}", path, e);
+            throw e;
+        }
     }
 
     /**
@@ -84,9 +98,19 @@ public class FtpClient {
      * @throws IOException if download fails
      */
     public ByteArrayOutputStream downloadFile(String source) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ftp.retrieveFile(source, out);
-        return out;
+        log.debug("Downloading file from FTP: {}", source);
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            boolean success = ftp.retrieveFile(source, out);
+            if (!success) {
+                throw new IOException("Failed to download file from FTP: " + source);
+            }
+            log.debug("Successfully downloaded file from FTP: {}", source);
+            return out;
+        } catch (IOException e) {
+            log.error("Failed to download file from FTP: {}", source, e);
+            throw e;
+        }
     }
 
     /**

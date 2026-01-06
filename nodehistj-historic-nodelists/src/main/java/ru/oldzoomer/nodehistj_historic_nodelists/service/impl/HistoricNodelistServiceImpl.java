@@ -17,6 +17,11 @@ import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService
 /**
  * Implementation of service for working with historic Fidonet nodelists.
  * Provides methods for retrieving nodelist entries based on various criteria.
+ * <p>
+ * This service is designed to work with historical nodelist data stored in the database,
+ * allowing retrieval of node entries by year, day of year, zone, network and node.
+ * The service handles complex filtering operations while maintaining performance
+ * through optimized database queries.
  */
 @Service
 @RequiredArgsConstructor
@@ -36,12 +41,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntries(Year year, Integer dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
-        return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
-                .getNodeEntries()
-                .stream()
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(year, dayOfYear, null, null, null);
     }
 
     /**
@@ -55,13 +55,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
-        return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(year, dayOfYear, zone, null, null);
     }
 
     /**
@@ -77,14 +71,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
-        return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .filter(x -> x.getNetwork().equals(network))
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(year, dayOfYear, zone, network, null);
     }
 
     /**
@@ -101,15 +88,43 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
     public NodeEntryDto getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network, Integer node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
-        return nodelistEntryRepository
-                .findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .filter(x -> x.getNetwork().equals(network))
-                .filter(x -> x.getNode().equals(node))
-                .map(nodeEntryMapper::toDto)
+        return getFilteredNodeEntries(year, dayOfYear, zone, network, node).stream()
                 .findFirst()
                 .orElseThrow();
+    }
+
+    /**
+     * Helper method to filter node entries based on provided criteria.
+     *
+     * @param year the year of the nodelist
+     * @param dayOfYear the day of year of the nodelist
+     * @param zone the zone to filter by (optional)
+     * @param network the network to filter by (optional)
+     * @param node the node to filter by (optional)
+     * @return a set of NodeEntryDto objects matching the criteria
+     */
+    private Set<NodeEntryDto> getFilteredNodeEntries(Year year, Integer dayOfYear, Integer zone,
+                                                        Integer network, Integer node) {
+        var nodelistEntry = nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear);
+        if (nodelistEntry == null) {
+            log.warn("No nodelist entry found for year: {}, day: {}", year, dayOfYear);
+            return Set.of();
+        }
+        
+        var nodeEntries = nodelistEntry.getNodeEntries().stream();
+        
+        if (zone != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getZone().equals(zone));
+        }
+        if (network != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getNetwork().equals(network));
+        }
+        if (node != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getNode().equals(node));
+        }
+        
+        return nodeEntries
+                .map(nodeEntryMapper::toDto)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

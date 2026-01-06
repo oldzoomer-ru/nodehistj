@@ -35,6 +35,9 @@ import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateExcepti
  * ensure that the nodelist files are always up-to-date. It processes files
  * for the current year and previous years starting from the configured
  * downloadFromYear.
+ * <p>
+ * This service is designed to be run in a non-test profile only, as indicated
+ * by the @Profile("!test") annotation.
  */
 @RequiredArgsConstructor
 @Component
@@ -69,24 +72,36 @@ public class UpdateNodelists {
      */
     @Scheduled(fixedRateString = "${ftp.download.interval:86400000}") // 24h by default
     public void updateNodelists() {
+        log.info("Starting nodelist update process");
         try {
             validateInputs();
             minioUtils.createBucket(bucket);
             ftpClient.open();
 
+            int processedYears = 0;
+            int totalFiles = 0;
             for (int year = currentYear; year >= downloadFromYear; year--) {
-                processYearFiles(year);
+                int filesInYear = processYearFiles(year);
+                totalFiles += filesInYear;
+                processedYears++;
             }
 
+            log.info("Processed {} years, found {} new files", processedYears, totalFiles);
             sendMessageToKafka();
         } catch (IOException e) {
-            log.error("Failed to update nodelists", e);
-            throw new NodelistUpdateException("Nodelist update failed", e);
+            log.error("Failed to update nodelists due to IO error", e);
+            throw new NodelistUpdateException("Nodelist update failed due to IO error", e);
+        } catch (Exception e) {
+            log.error("Unexpected error during nodelist update", e);
+            throw new NodelistUpdateException("Nodelist update failed with unexpected error", e);
         } finally {
             try {
                 ftpClient.close();
+                log.debug("FTP connection closed successfully");
             } catch (IOException e) {
                 log.warn("Failed to close FTP connection", e);
+            } catch (Exception e) {
+                log.error("Unexpected error while closing FTP connection", e);
             }
         }
     }
@@ -97,7 +112,7 @@ public class UpdateNodelists {
      * @param year year to process
      * @throws IOException if FTP operation fails
      */
-    private void processYearFiles(int year) throws IOException {
+    private int processYearFiles(int year) throws IOException {
         String yearPath = ftpPath + year + "/";
         List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
                 .filter(file -> file.matches(".*/nodelist\\.\\d{3}"))
@@ -107,6 +122,7 @@ public class UpdateNodelists {
         log.info("Found {} new files for year {}", newFiles.size(), year);
 
         newFiles.forEach(this::processFile);
+        return newFiles.size();
     }
 
     /**
@@ -117,10 +133,12 @@ public class UpdateNodelists {
     private void processFile(String filePath) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
             String objectName = normalizeObjectName(filePath);
+            log.debug("Uploading file to MinIO: {}", objectName);
             minioUtils.putObject(bucket, objectName, byteArrayOutputStream);
             downloadedFiles.add(objectName);
+            log.info("Successfully processed file: {}", objectName);
         } catch (Exception e) {
-            log.error("Error of upload nodelist to Minio, or download nodelist from FTP", e);
+            log.error("Error processing file {} - upload to MinIO or download from FTP", filePath, e);
             // continue processing other files
         }
     }
@@ -128,7 +146,13 @@ public class UpdateNodelists {
     private void sendMessageToKafka() {
         log.info("Sending {} new files information to Kafka", downloadedFiles.size());
 
-        // Корректная отправка с явным логированием результата и ошибок.
+        // Only send non-empty messages to Kafka
+        if (downloadedFiles == null || downloadedFiles.isEmpty()) {
+            log.debug("No new files to send to Kafka, skipping message sending");
+            return;
+        }
+
+        // Proper sending with explicit logging of result and errors
         kafkaTemplate.send("download_nodelists_is_finished_topic", downloadedFiles)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
@@ -171,15 +195,29 @@ public class UpdateNodelists {
      * @throws IllegalArgumentException if parameters are not set
      */
     private void validateInputs() {
+        log.debug("Validating input parameters");
         if (ftpPath == null || ftpPath.isEmpty()) {
-            throw new IllegalArgumentException("FTP path cannot be empty");
+            throw new IllegalArgumentException("FTP path cannot be empty or null");
         }
         if (bucket == null || bucket.isEmpty()) {
-            throw new IllegalArgumentException("Minio bucket cannot be empty");
+            throw new IllegalArgumentException("Minio bucket cannot be empty or null");
         }
 
         if (downloadFromYear > currentYear) {
-            throw new IllegalArgumentException("Download from year cannot be greater than current year");
+            throw new IllegalArgumentException("Download from year (" + downloadFromYear +
+                ") cannot be greater than current year (" + currentYear + ")");
         }
+        
+        if (downloadFromYear < 1980) {
+            throw new IllegalArgumentException("Download from year (" + downloadFromYear +
+                ") cannot be less than 1980");
+        }
+        
+        if (downloadFromYear < 0) {
+            throw new IllegalArgumentException("Download from year (" + downloadFromYear +
+                ") cannot be negative");
+        }
+        
+        log.debug("Input parameters validated successfully");
     }
 }

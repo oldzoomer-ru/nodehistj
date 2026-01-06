@@ -16,6 +16,11 @@ import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
  * Provides methods for retrieving nodelist entries based on various criteria.
+ * <p>
+ * This service is designed to work with the newest nodelist data, allowing
+ * retrieval of node entries by zone, network and node. The service handles
+ * complex filtering operations while maintaining performance through optimized
+ * database queries.
  */
 @Service
 @RequiredArgsConstructor
@@ -33,12 +38,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
-        return nodelistEntryRepository
-                .findFirstBy()
-                .getNodeEntries()
-                .stream()
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(null, null, null);
     }
 
     /**
@@ -50,13 +50,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(Integer zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
-        return nodelistEntryRepository
-                .findFirstBy()
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(zone, null, null);
     }
 
     /**
@@ -69,14 +63,7 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public Set<NodeEntryDto> getNodelistEntry(Integer zone, Integer network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
-        return nodelistEntryRepository
-                .findFirstBy()
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .filter(x -> x.getNetwork().equals(network))
-                .map(nodeEntryMapper::toDto)
-                .collect(Collectors.toUnmodifiableSet());
+        return getFilteredNodeEntries(zone, network, null);
     }
 
     /**
@@ -90,15 +77,40 @@ public class NodelistServiceImpl implements NodelistService {
     @Override
     public NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
-        return nodelistEntryRepository
-                .findFirstBy()
-                .getNodeEntries()
-                .stream()
-                .filter(x -> x.getZone().equals(zone))
-                .filter(x -> x.getNetwork().equals(network))
-                .filter(x -> x.getNode().equals(node))
-                .map(nodeEntryMapper::toDto)
+        return getFilteredNodeEntries(zone, network, node).stream()
                 .findFirst()
                 .orElseThrow();
+    }
+
+    /**
+     * Helper method to filter node entries based on provided criteria.
+     *
+     * @param zone the zone to filter by (optional)
+     * @param network the network to filter by (optional)
+     * @param node the node to filter by (optional)
+     * @return a set of NodeEntryDto objects matching the criteria
+     */
+    private Set<NodeEntryDto> getFilteredNodeEntries(Integer zone, Integer network, Integer node) {
+        var nodelistEntry = nodelistEntryRepository.findFirstBy();
+        if (nodelistEntry == null) {
+            log.warn("No nodelist entry found");
+            return Set.of();
+        }
+        
+        var nodeEntries = nodelistEntry.getNodeEntries().stream();
+        
+        if (zone != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getZone().equals(zone));
+        }
+        if (network != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getNetwork().equals(network));
+        }
+        if (node != null) {
+            nodeEntries = nodeEntries.filter(x -> x.getNode().equals(node));
+        }
+        
+        return nodeEntries
+                .map(nodeEntryMapper::toDto)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

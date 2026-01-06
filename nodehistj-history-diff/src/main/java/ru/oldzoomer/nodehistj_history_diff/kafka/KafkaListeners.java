@@ -29,15 +29,28 @@ public class KafkaListeners {
      */
     @KafkaListener(topics = "download_nodelists_is_finished_topic", concurrency = "1")
     public void downloadNodelistsIsFinishedListener(List<String> message, Acknowledgment ack) {
-        log.debug("Received message from download_nodelists_is_finished_topic");
+        log.debug("Received message from download_nodelists_is_finished_topic with {} files",
+                message != null ? message.size() : 0);
         try {
+            if (message == null || message.isEmpty()) {
+                log.warn("Received empty or null message from Kafka topic");
+                ack.acknowledge();
+                return;
+            }
             nodelistFillToDatabase.updateNodelist(message);
             nodelistDiffProcessor.processNodelistDiffs();
-            log.info("Nodelist update completed successfully");
+            log.info("Nodelist update completed successfully with {} files", message.size());
         } catch (Exception e) {
-            log.error("Error updating nodelist", e);
+            log.error("Error processing Kafka message with {} files",
+                    message != null ? message.size() : 0, e);
+            // Don't acknowledge to let Kafka retry the message
+            throw new RuntimeException("Failed to process Kafka message", e);
         } finally {
-            ack.acknowledge();
+            // Only acknowledge if we successfully processed the message
+            if (message != null && !message.isEmpty()) {
+                ack.acknowledge();
+                log.debug("Acknowledged Kafka message processing");
+            }
         }
     }
 }
