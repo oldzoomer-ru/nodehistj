@@ -7,16 +7,6 @@ package ru.oldzoomer.nodehistj_download_nodelists.exception;
  */
 public class NodelistUpdateException extends RuntimeException {
     /**
-     * Constructs a new NodelistUpdateException with the specified detail message.
-     *
-     * @param message the detail message (which is saved for later retrieval
-     *               by the {@link #getMessage()} method)
-     */
-    public NodelistUpdateException(String message) {
-        super(message);
-    }
-
-    /**
      * Constructs a new NodelistUpdateException with the specified detail message and cause.
      *
      * @param message the detail message (which is saved for later retrieval
