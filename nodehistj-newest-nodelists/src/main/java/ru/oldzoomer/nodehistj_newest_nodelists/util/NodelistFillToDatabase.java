@@ -98,6 +98,7 @@ public class NodelistFillToDatabase {
 
         try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
             Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+            nodelistEntryRepository.deleteAll(); // for disk space economy
             nodelistEntryRepository.save(updateNodelist(nodelist, year, dayOfYear));
         } catch (Exception e) {
             log.error("Failed to add nodelist to database", e);

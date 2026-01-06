@@ -47,7 +47,7 @@ public class NodelistDiffProcessor {
                 return;
             }
 
-            nodeHistoryEntryRepository.deleteAll();
+            nodeHistoryEntryRepository.deleteAll(); // for correct diffing order
 
             nodelistEntryRepository.findAllAsStreamWithSort()
                                     .gather(Gatherers.windowSliding(2))
