@@ -76,6 +76,7 @@ public class UpdateNodelists {
         try {
             validateInputs();
             minioUtils.createBucket(bucket);
+
             ftpClient.open();
 
             int processedYears = 0;
@@ -99,9 +100,8 @@ public class UpdateNodelists {
                 ftpClient.close();
                 log.debug("FTP connection closed successfully");
             } catch (IOException e) {
-                log.warn("Failed to close FTP connection", e);
-            } catch (Exception e) {
-                log.error("Unexpected error while closing FTP connection", e);
+                log.error("Failed to close FTP connection due to IO error", e);
+                throw new NodelistUpdateException("Nodelist update failed due to IO error", e);
             }
         }
     }
@@ -114,7 +114,13 @@ public class UpdateNodelists {
      */
     private int processYearFiles(int year) throws IOException {
         String yearPath = ftpPath + year + "/";
-        List<String> newFiles = Arrays.stream(ftpClient.listFiles(yearPath))
+        String[] files = ftpClient.listFiles(yearPath);
+        if (files == null || files.length == 0) {
+            log.warn("No files found for year {}", year);
+            return 0;
+        }
+
+        List<String> newFiles = Arrays.stream(files)
                 .filter(file -> file.matches(".*/nodelist\\.\\d{3}"))
                 .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
                 .toList();
@@ -137,8 +143,11 @@ public class UpdateNodelists {
             minioUtils.putObject(bucket, objectName, byteArrayOutputStream);
             downloadedFiles.add(objectName);
             log.info("Successfully processed file: {}", objectName);
+        } catch (IOException e) {
+            log.error("IO error processing file {} - upload to MinIO or download from FTP", filePath, e);
+            // continue processing other files
         } catch (Exception e) {
-            log.error("Error processing file {} - upload to MinIO or download from FTP", filePath, e);
+            log.error("Unexpected error processing file {} - upload to MinIO or download from FTP", filePath, e);
             // continue processing other files
         }
     }
@@ -162,12 +171,12 @@ public class UpdateNodelists {
                                 "download_nodelists_is_finished_topic",
                                 ex);
                     } else if (result != null) {
-                        var md = result.getRecordMetadata();
+                        var recordMetadata = result.getRecordMetadata();
                         log.info(
                                 "Kafka send OK: topic={}, partition={}, offset={}",
-                                md.topic(),
-                                md.partition(),
-                                md.offset());
+                                recordMetadata.topic(),
+                                recordMetadata.partition(),
+                                recordMetadata.offset());
                     } else {
                         log.warn(
                                 "Kafka send finished without exception but without metadata (topic={})",
@@ -205,19 +214,19 @@ public class UpdateNodelists {
 
         if (downloadFromYear > currentYear) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                ") cannot be greater than current year (" + currentYear + ")");
+                    ") cannot be greater than current year (" + currentYear + ")");
         }
-        
+
         if (downloadFromYear < 1980) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                ") cannot be less than 1980");
+                    ") cannot be less than 1980");
         }
-        
+
         if (downloadFromYear < 0) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                ") cannot be negative");
+                    ") cannot be negative");
         }
-        
+
         log.debug("Input parameters validated successfully");
     }
 }

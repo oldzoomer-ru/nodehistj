@@ -2,9 +2,7 @@ package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Component
 @Log4j2
-public class FtpClient {
+public class FtpClient implements AutoCloseable {
 
     @Value("${ftp.host}")
     private String server;
@@ -40,16 +38,18 @@ public class FtpClient {
     private String password;
 
     private FTPClient ftp;
-
+    
     /**
      * Opens connection to FTP server
      * @throws IOException if connection fails
      */
     public void open() throws IOException {
         log.debug("Opening FTP connection to {}:{}", server, port);
+        if (ftp != null) {
+            // Close existing connection if present
+            close();
+        }
         ftp = new FTPClient();
-        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
-
         try {
             ftp.connect(server, port);
             log.debug("Connected to FTP server");
@@ -67,8 +67,8 @@ public class FtpClient {
             ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
             log.debug("FTP connection configured successfully");
         } catch (IOException e) {
-            log.error("Failed to open FTP connection", e);
-            close();
+            log.error("Failed to open FTP connection to {}:{}", server, port, e);
+            close(); // Ensure cleanup on failure
             throw e;
         }
     }
@@ -83,7 +83,11 @@ public class FtpClient {
         log.debug("Listing files in FTP directory: {}", path);
         try {
             String[] files = ftp.listNames(path);
-            log.debug("Found {} files in directory: {}", files != null ? files.length : 0, path);
+            if (files == null) {
+                log.warn("No files found in directory: {}", path);
+                return new String[0];
+            }
+            log.debug("Found {} files in directory: {}", files.length, path);
             return files;
         } catch (IOException e) {
             log.error("Failed to list files in FTP directory: {}", path, e);
@@ -117,9 +121,18 @@ public class FtpClient {
      * Closes connection to FTP server
      * @throws IOException if closing fails
      */
+    @Override
     public void close() throws IOException {
         if (ftp != null) {
-            ftp.disconnect();
+            try {
+                ftp.disconnect();
+                log.debug("FTP connection disconnected successfully");
+            } catch (IOException e) {
+                log.warn("Error while disconnecting from FTP server", e);
+                throw e;
+            } finally {
+                ftp = null;
+            }
         }
     }
 }
