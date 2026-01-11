@@ -45,27 +45,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
-  traefik:
-    container_name: traefik
-    image: traefik:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - nodehistj
-    command: |
-      --providers.docker=true
-      --entrypoints.web.address=:80
-      --entrypoints.web.http.redirections.entryPoint.to=websecure
-      --entrypoints.web.http.redirections.entryPoint.scheme=https
-      --entrypoints.websecure.address=:443
-      --certificatesresolvers.myresolver.acme.tlschallenge=true
-      --certificatesresolvers.myresolver.acme.email=${TRAEFIK_EMAIL}
-      --certificatesresolvers.myresolver.acme.storage=/acme/acme.json
-    volumes:
-      - acme:/acme
-      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   # Сервис загрузки файлов nodelist с FTP
   # Основные зависимости: MinIO, Kafka
@@ -107,6 +86,7 @@ services:
         - github_token
     networks:
       - nodehistj
+      - traefik
     expose:
       - "8080"
     restart: unless-stopped
@@ -148,6 +128,7 @@ services:
         - github_token
     networks:
       - nodehistj
+      - traefik
     expose:
       - 8080
     restart: unless-stopped
@@ -189,6 +170,7 @@ services:
         - github_token
     networks:
       - nodehistj
+      - traefik
     expose:
       - 8080
     restart: unless-stopped
@@ -224,8 +206,9 @@ secrets:
 networks:
   nodehistj:
     driver: bridge
+  traefik:
+    external: true
 
 volumes:
   postgres_storage:
   redpanda_data:
-  acme:
