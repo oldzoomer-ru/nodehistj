@@ -64,13 +64,13 @@ public class UpdateNodelists {
 
     /**
      * Main method for updating nodelist files.
-     * Runs on schedule (at 03:00).
+     * Runs on schedule (at 03:00 UTC every day).
      * Downloads files for current and previous years (starting from
      * downloadFromYear).
      *
      * @throws NodelistUpdateException if update error occurs
      */
-    @Scheduled(cron = "0 0 3 * * *") // 03:00
+    @Scheduled(cron = "0 0 3 * * *", zone = "UTC") // 03:00 UTC
     public void updateNodelists() {
         log.info("Starting nodelist update process");
         try {
