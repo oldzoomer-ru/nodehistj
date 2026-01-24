@@ -1,23 +1,19 @@
 package ru.oldzoomer.nodehistj_history_diff.util;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Gatherers;
-
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Gatherers;
 
 /**
  * Component for processing differences between nodelist versions.
@@ -51,8 +47,8 @@ public class NodelistDiffProcessor {
 
             nodelistEntryRepository.findAllAsStreamWithSort()
                                     .gather(Gatherers.windowSliding(2))
-                                    .map(window -> processDiffBetweenNodelists(window.get(0), window.get(1)))
-                                    .flatMap(list -> list.stream())
+                    .map(window -> processDiffBetweenNodelists(window.getFirst(), window.get(1)))
+                    .flatMap(Collection::stream)
                                     .forEach(nodeHistoryEntryRepository::save);
 
             log.info("Nodelist diff processing completed");
@@ -116,7 +112,7 @@ public class NodelistDiffProcessor {
                             NodeHistoryEntry.ChangeType.MODIFIED, previousNode));
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             log.info("Nodelist is skipped: {}/{}", currYear, currDay);
         }
 

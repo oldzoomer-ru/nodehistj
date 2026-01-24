@@ -1,14 +1,14 @@
 package ru.oldzoomer.nodehistj_download_nodelists.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.log4j.Log4j2;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Utility class for handling FTP operations.
@@ -64,7 +64,7 @@ public class FtpClient implements AutoCloseable {
             }
 
             ftp.enterLocalPassiveMode();
-            ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
             log.debug("FTP connection configured successfully");
         } catch (IOException e) {
             log.error("Failed to open FTP connection to {}:{}", server, port, e);

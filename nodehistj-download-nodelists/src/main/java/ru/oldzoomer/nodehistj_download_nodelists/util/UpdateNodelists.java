@@ -1,23 +1,22 @@
 package ru.oldzoomer.nodehistj_download_nodelists.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.Year;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.minio.utils.MinioUtils;
 import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Service for downloading and updating nodelist files from FTP server.
@@ -101,7 +100,6 @@ public class UpdateNodelists {
                 log.debug("FTP connection closed successfully");
             } catch (IOException e) {
                 log.error("Failed to close FTP connection due to IO error", e);
-                throw new NodelistUpdateException("Nodelist update failed due to IO error", e);
             }
         }
     }
@@ -156,33 +154,13 @@ public class UpdateNodelists {
         log.info("Sending {} new files information to Kafka", downloadedFiles.size());
 
         // Only send non-empty messages to Kafka
-        if (downloadedFiles == null || downloadedFiles.isEmpty()) {
+        if (downloadedFiles.isEmpty()) {
             log.debug("No new files to send to Kafka, skipping message sending");
             return;
         }
 
         // Proper sending with explicit logging of result and errors
-        kafkaTemplate.send("download_nodelists_is_finished_topic", downloadedFiles)
-                .whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        log.error(
-                                "Failed to send message to Kafka. Size: {}. Topic: {}",
-                                downloadedFiles.size(),
-                                "download_nodelists_is_finished_topic",
-                                ex);
-                    } else if (result != null) {
-                        var recordMetadata = result.getRecordMetadata();
-                        log.info(
-                                "Kafka send OK: topic={}, partition={}, offset={}",
-                                recordMetadata.topic(),
-                                recordMetadata.partition(),
-                                recordMetadata.offset());
-                    } else {
-                        log.warn(
-                                "Kafka send finished without exception but without metadata (topic={})",
-                                "download_nodelists_is_finished_topic");
-                    }
-                });
+        kafkaTemplate.send("download_nodelists_is_finished_topic", downloadedFiles);
     }
 
     /**
@@ -220,11 +198,6 @@ public class UpdateNodelists {
         if (downloadFromYear < 1980) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
                     ") cannot be less than 1980");
-        }
-
-        if (downloadFromYear < 0) {
-            throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                    ") cannot be negative");
         }
 
         log.debug("Input parameters validated successfully");

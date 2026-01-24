@@ -1,5 +1,17 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.util;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
+import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
+import ru.oldzoomer.nodelistj.Nodelist;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Year;
@@ -8,19 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import ru.oldzoomer.minio.utils.MinioUtils;
-import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
-import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
-import ru.oldzoomer.nodelistj.Nodelist;
 
 /**
  * Component for processing and storing historical nodelists in the database.
@@ -80,13 +79,15 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is started");
 
         String object = modifiedObjects.stream()
-                                        .filter(x -> OBJECT_PATH_PATTERN.matcher(x).matches())
-                                        .sorted(Comparator.reverseOrder())
-                                        .findFirst()
-                                        .orElseThrow();
+                .filter(x -> OBJECT_PATH_PATTERN.matcher(x).matches())
+                .max(Comparator.naturalOrder())
+                .orElseThrow();
 
         Matcher matcher = OBJECT_PATH_PATTERN.matcher(object);
-        matcher.matches();
+        if (!matcher.matches()) {
+            log.warn("Object {} is not a nodelist", object);
+            return;
+        }
 
         Year year = Year.parse(matcher.group(1));
         Integer dayOfYear = Integer.valueOf(matcher.group(2));
@@ -114,7 +115,6 @@ public class NodelistFillToDatabase {
      *
      * @param nodelist The parsed nodelist object containing node entries.
      * @param year The year of the nodelist.
-     * @param name The name of the nodelist file.
      * @return nodelist entry
      */
     private NodelistEntry updateNodelist(Nodelist nodelist, Year year, Integer dayOfYear) {

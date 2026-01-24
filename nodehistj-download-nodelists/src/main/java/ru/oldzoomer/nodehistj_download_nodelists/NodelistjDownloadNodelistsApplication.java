@@ -19,7 +19,7 @@ public class NodelistjDownloadNodelistsApplication {
      *
      * @param args Command line arguments
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(NodelistjDownloadNodelistsApplication.class, args);
     }
 

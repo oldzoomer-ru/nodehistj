@@ -1,14 +1,13 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.kafka;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.nodehistj_newest_nodelists.util.NodelistFillToDatabase;
+
+import java.util.List;
 
 /**
  * Component that listens to Kafka topics and processes messages.
@@ -44,7 +43,7 @@ public class KafkaListeners {
             log.error("Error processing Kafka message with {} files",
                     message != null ? message.size() : 0, e);
             // Don't acknowledge to let Kafka retry the message
-            throw new RuntimeException("Failed to process Kafka message", e);
+            throw new IllegalStateException("Failed to process Kafka message", e);
         }
     }
 }
