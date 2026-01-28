@@ -57,10 +57,6 @@ public class UpdateNodelists {
     @Value("${app.minio.bucket}")
     private String bucket;
 
-    private final int currentYear = Year.now().getValue();
-
-    private final List<String> downloadedFiles = new ArrayList<>();
-
     /**
      * Main method for updating nodelist files.
      * Runs on schedule (at 03:00 UTC every day).
@@ -80,14 +76,17 @@ public class UpdateNodelists {
 
             int processedYears = 0;
             int totalFiles = 0;
+            List<String> downloadedFiles = new ArrayList<>(); // Local list for this execution
+            int currentYear = Year.now().getValue(); // Local current year for this execution
+
             for (int year = currentYear; year >= downloadFromYear; year--) {
-                int filesInYear = processYearFiles(year);
+                int filesInYear = processYearFiles(year, downloadedFiles);
                 totalFiles += filesInYear;
                 processedYears++;
             }
 
             log.info("Processed {} years, found {} new files", processedYears, totalFiles);
-            sendMessageToKafka();
+            sendMessageToKafka(downloadedFiles);
         } catch (IOException e) {
             log.error("Failed to update nodelists due to IO error", e);
             throw new NodelistUpdateException("Nodelist update failed due to IO error", e);
@@ -108,9 +107,10 @@ public class UpdateNodelists {
      * Processes nodelist files for specified year
      *
      * @param year year to process
+     * @param downloadedFiles list to collect newly processed files
      * @throws IOException if FTP operation fails
      */
-    private int processYearFiles(int year) throws IOException {
+    private int processYearFiles(int year, List<String> downloadedFiles) throws IOException {
         String yearPath = ftpPath + year + "/";
         String[] files = ftpClient.listFiles(yearPath);
         if (files == null || files.length == 0) {
@@ -125,7 +125,7 @@ public class UpdateNodelists {
 
         log.info("Found {} new files for year {}", newFiles.size(), year);
 
-        newFiles.forEach(this::processFile);
+        newFiles.forEach(file -> processFile(file, downloadedFiles));
         return newFiles.size();
     }
 
@@ -133,8 +133,9 @@ public class UpdateNodelists {
      * Processes single nodelist file: downloads from FTP and saves to MinIO
      *
      * @param filePath full path to file on FTP server
+     * @param downloadedFiles list to collect newly processed files
      */
-    private void processFile(String filePath) {
+    private void processFile(String filePath, List<String> downloadedFiles) {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
             String objectName = normalizeObjectName(filePath);
             log.debug("Uploading file to MinIO: {}", objectName);
@@ -150,7 +151,7 @@ public class UpdateNodelists {
         }
     }
 
-    private void sendMessageToKafka() {
+    private void sendMessageToKafka(List<String> downloadedFiles) {
         log.info("Sending {} new files information to Kafka", downloadedFiles.size());
 
         // Only send non-empty messages to Kafka
@@ -190,9 +191,9 @@ public class UpdateNodelists {
             throw new IllegalArgumentException("Minio bucket cannot be empty or null");
         }
 
-        if (downloadFromYear > currentYear) {
+        if (downloadFromYear > Year.now().getValue()) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                    ") cannot be greater than current year (" + currentYear + ")");
+                    ") cannot be greater than current year (" + Year.now().getValue() + ")");
         }
 
         if (downloadFromYear < 1980) {
