@@ -75,10 +75,10 @@ public class NodelistDiffProcessor {
         // Create maps for easier lookup
         Map<String, NodeEntry> previousNodeMap = oldNodelist.getNodeEntries()
                 .stream()
-                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
+                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, _) -> a));
         Map<String, NodeEntry> currentNodeMap = newNodelist.getNodeEntries()
                 .stream()
-                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, b) -> a));
+                .collect(Collectors.toMap(this::getNodeKey, node -> node, (a, _) -> a));
 
         List<NodeHistoryEntry> historyEntries = new ArrayList<>();
 
