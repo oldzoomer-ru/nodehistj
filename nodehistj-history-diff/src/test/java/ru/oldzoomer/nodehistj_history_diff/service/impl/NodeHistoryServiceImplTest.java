@@ -1,5 +1,6 @@
 package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +48,7 @@ class NodeHistoryServiceImplTest {
         // Given
         Pageable pageable = Pageable.ofSize(10);
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
-        Page<NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
+        Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZoneAndNetworkAndNode(TEST_ZONE, TEST_NETWORK, TEST_NODE, pageable))
                 .thenReturn(page);
@@ -56,7 +57,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
-        Page<NodeHistoryEntryDto> result = nodeHistoryService.getNodeHistory(TEST_ZONE, TEST_NETWORK, TEST_NODE, pageable);
+        Page<@NonNull NodeHistoryEntryDto> result = nodeHistoryService.getNodeHistory(TEST_ZONE, TEST_NETWORK, TEST_NODE, pageable);
 
         // Then
         assertNotNull(result);
@@ -69,7 +70,7 @@ class NodeHistoryServiceImplTest {
         // Given
         Pageable pageable = Pageable.ofSize(10);
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
-        Page<NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
+        Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZoneAndNetwork(TEST_ZONE, TEST_NETWORK, pageable))
                 .thenReturn(page);
@@ -78,7 +79,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
-        Page<NodeHistoryEntryDto> result = nodeHistoryService.getNetworkHistory(TEST_ZONE, TEST_NETWORK, pageable);
+        Page<@NonNull NodeHistoryEntryDto> result = nodeHistoryService.getNetworkHistory(TEST_ZONE, TEST_NETWORK, pageable);
 
         // Then
         assertNotNull(result);
@@ -91,7 +92,7 @@ class NodeHistoryServiceImplTest {
         // Given
         Pageable pageable = Pageable.ofSize(10);
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
-        Page<NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
+        Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZone(TEST_ZONE, pageable))
                 .thenReturn(page);
@@ -100,7 +101,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
-        Page<NodeHistoryEntryDto> result = nodeHistoryService.getZoneHistory(TEST_ZONE, pageable);
+        Page<@NonNull NodeHistoryEntryDto> result = nodeHistoryService.getZoneHistory(TEST_ZONE, pageable);
 
         // Then
         assertNotNull(result);
@@ -113,7 +114,7 @@ class NodeHistoryServiceImplTest {
         // Given
         Pageable pageable = Pageable.ofSize(10);
         NodeHistoryEntry historyEntry = new NodeHistoryEntry();
-        Page<NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
+        Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findAll(pageable))
                 .thenReturn(page);
@@ -122,7 +123,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
-        Page<NodeHistoryEntryDto> result = nodeHistoryService.getAllHistory(pageable);
+        Page<@NonNull NodeHistoryEntryDto> result = nodeHistoryService.getAllHistory(pageable);
 
         // Then
         assertNotNull(result);
