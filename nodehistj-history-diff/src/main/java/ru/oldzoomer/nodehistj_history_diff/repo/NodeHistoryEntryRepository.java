@@ -1,10 +1,10 @@
 package ru.oldzoomer.nodehistj_history_diff.repo;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
 
 /**
@@ -12,7 +12,8 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
  * Provides methods to find NodeHistoryEntry entities based on various criteria.
  */
 public interface NodeHistoryEntryRepository
-        extends PagingAndSortingRepository<NodeHistoryEntry, Long>, CrudRepository<NodeHistoryEntry, Long> {
+        extends PagingAndSortingRepository<@NonNull NodeHistoryEntry, @NonNull Long>,
+        CrudRepository<@NonNull NodeHistoryEntry, @NonNull Long> {
 
     /**
      * Gets history for a specific node.
@@ -23,7 +24,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetworkAndNode(
+    Page<@NonNull NodeHistoryEntry> findByZoneAndNetworkAndNode(
             Integer zone, Integer network, Integer node, Pageable pageable);
 
     /**
@@ -34,7 +35,7 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZoneAndNetwork(Integer zone, Integer network, Pageable pageable);
+    Page<@NonNull NodeHistoryEntry> findByZoneAndNetwork(Integer zone, Integer network, Pageable pageable);
 
     /**
      * Gets history for a specific zone.
@@ -43,5 +44,5 @@ public interface NodeHistoryEntryRepository
      * @param pageable the pagination information
      * @return a page of NodeHistoryEntry entities matching the criteria
      */
-    Page<NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
+    Page<@NonNull NodeHistoryEntry> findByZone(Integer zone, Pageable pageable);
 }

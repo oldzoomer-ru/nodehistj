@@ -1,14 +1,14 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.repo;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.repository.CrudRepository;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 
 /**
  * Repository interface for NodelistEntry entities.
  * Provides methods to find NodelistEntry entities based on various criteria.
  */
-public interface NodelistEntryRepository extends CrudRepository<NodelistEntry, Long> {
+public interface NodelistEntryRepository extends CrudRepository<@NonNull NodelistEntry, @NonNull Long> {
     /**
      * Find NodelistEntry entity for a given nodelist year and day of year.
      * @param nodelistYear the year of the nodelist

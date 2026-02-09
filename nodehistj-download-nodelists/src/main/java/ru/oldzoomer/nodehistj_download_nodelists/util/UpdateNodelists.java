@@ -2,6 +2,7 @@ package ru.oldzoomer.nodehistj_download_nodelists.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -46,7 +47,7 @@ import java.util.List;
 public class UpdateNodelists {
     private final MinioUtils minioUtils;
     private final FtpClient ftpClient;
-    private final KafkaTemplate<String, List<String>> kafkaTemplate;
+    private final KafkaTemplate<@NonNull String, @NonNull List<String>> kafkaTemplate;
 
     @Value("${ftp.path}")
     private String ftpPath;
