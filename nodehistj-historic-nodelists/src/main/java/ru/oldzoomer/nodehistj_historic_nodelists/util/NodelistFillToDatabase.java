@@ -13,6 +13,7 @@ import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Year;
 import java.util.Arrays;
@@ -75,25 +76,17 @@ public class NodelistFillToDatabase {
         log.info("Update nodelists is started");
 
         for (String object : modifiedObjects) {
-            Matcher matcher = OBJECT_PATH_PATTERN.matcher(object);
-            if (!matcher.matches()) {
-                log.debug("Object {} is not a nodelist", object);
-                continue;
-            }
+            try {
+                NodelistFile nodelistFile = getAndCheckMetadata(object);
 
-            Year year = Year.parse(matcher.group(1));
-            Integer name = Integer.valueOf(matcher.group(2));
-
-            if (nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year.getValue(), name)) {
-                log.info("Nodelist {} from {} year is exist", name, year);
-                continue;
-            }
-
-            try (InputStream inputStream = s3Utils.getObject(minioBucket, object)) {
-                Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
-                nodelistEntryRepository.save(updateNodelist(nodelist, year, name));
-            } catch (Exception e) {
-                log.error("Failed to add nodelist to database", e);
+                try (InputStream inputStream = s3Utils.getObject(minioBucket, object)) {
+                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    nodelistEntryRepository.save(updateNodelist(nodelist, nodelistFile.year, nodelistFile.dayOfYear));
+                }
+            } catch (IllegalArgumentException e) {
+                log.warn(e.getMessage());
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
             }
         }
 
@@ -109,7 +102,7 @@ public class NodelistFillToDatabase {
      * @param year The year of the nodelist.
      * @return nodelist entry
      */
-    private NodelistEntry updateNodelist(Nodelist nodelist, Year year, Integer dayOfYear) {
+    private NodelistEntry updateNodelist(Nodelist nodelist, Year year, int dayOfYear) {
         log.info("Update nodelist from {} year and name {} is started", year, dayOfYear);
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();
@@ -121,5 +114,38 @@ public class NodelistFillToDatabase {
         }
 
         return nodelistEntryNew;
+    }
+
+    /**
+     * Checks if given S3 object correct and exists.
+     *
+     * @param object The S3 object to check.
+     * @return The S3 object metadata if it exists and is correct, otherwise throws an exception.
+     */
+    private NodelistFile getAndCheckMetadata(String object) {
+        log.debug("Checking S3 object {}", object);
+
+        Matcher matcher = OBJECT_PATH_PATTERN.matcher(object);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException(String.format("Object %s is not nodelist", object));
+        }
+
+        Year year = Year.parse(matcher.group(1));
+        int dayOfYear = Integer.parseInt(matcher.group(2));
+
+        if (nodelistEntryRepository.existsByNodelistYearAndDayOfYear(year.getValue(), dayOfYear)) {
+            throw new IllegalArgumentException(String.format("Nodelist %d from %s year is exist", dayOfYear, year));
+        }
+
+        return new NodelistFile(year, dayOfYear);
+    }
+
+    /**
+     * Nodelist file metadata.
+     *
+     * @param year      The year of the nodelist file.
+     * @param dayOfYear Day number in the year of the nodelist file.
+     */
+    private record NodelistFile(Year year, int dayOfYear) {
     }
 }
