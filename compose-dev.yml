@@ -14,8 +14,8 @@ services:
       retries: 5
     restart: unless-stopped
     environment:
-      - S3_ROOT_USER=${S3_USER:-user}
-      - S3_ROOT_PASSWORD=${S3_PASSWORD:-password}
+      - MINIO_ROOT_USER=${S3_USER:-user}
+      - MINIO_ROOT_PASSWORD=${S3_PASSWORD:-password}
   redis:
     image: redis:alpine
     networks:
