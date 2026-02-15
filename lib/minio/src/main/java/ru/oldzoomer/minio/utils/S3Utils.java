@@ -38,11 +38,10 @@ public class S3Utils implements DisposableBean {
      * @param bucketName the name of the bucket to create
      */
     public void createBucket(String bucketName) {
-        if (!s3Client.headBucket(
-                        HeadBucketRequest.builder().bucket(bucketName).build())
-                .sdkHttpResponse().isSuccessful()) {
-            s3Client.createBucket(
-                    CreateBucketRequest.builder().bucket(bucketName).build());
+        try {
+            s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+        } catch (NoSuchBucketException _) {
+            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
         }
     }
 
@@ -54,10 +53,12 @@ public class S3Utils implements DisposableBean {
      * @return true if the object exists, false otherwise
      */
     public boolean isObjectExist(String bucketName, String object) {
-        return s3Client.headObject(
-                        HeadObjectRequest.builder()
-                                .bucket(bucketName).key(object).build())
-                .sdkHttpResponse().isSuccessful();
+        try {
+            s3Client.headObject(HeadObjectRequest.builder().bucket(bucketName).key(object).build());
+            return true;
+        } catch (NoSuchBucketException | NoSuchKeyException _) {
+            return false;
+        }
     }
 
     /**
