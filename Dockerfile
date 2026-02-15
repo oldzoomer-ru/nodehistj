@@ -80,7 +80,7 @@ RUN --mount=type=secret,id=github_username \
 #
 # Java image for the application to run in.
 #
-FROM gcr.io/distroless/java25-debian13
+FROM gcr.io/distroless/java25-debian13:nonroot
 
 #
 # Build arguments
