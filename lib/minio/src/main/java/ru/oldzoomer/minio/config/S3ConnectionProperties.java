@@ -31,4 +31,9 @@ public class S3ConnectionProperties {
      * The secret key for the S3 server.
      */
     private final String secretKey;
+
+    /**
+     * Enable path-style URL
+     */
+    private final boolean pathStyleUrl;
 }
