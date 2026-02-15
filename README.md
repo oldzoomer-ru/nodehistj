@@ -63,13 +63,13 @@ docker compose -f compose-traefik.yml up -d
 
 **Parameters:**
 
-| Parameter   | Type   | Required | Description                              |
-|-------------|--------|----------|------------------------------------------|
-| `year`      | Year   | Yes      | Year of nodelist (e.g., 2024)            |
-| `dayOfYear` | Integer| Yes      | Day of year (1-366)                      |
-| `zone`      | Integer| No       | Zone identifier (1-32767)                |
-| `network`   | Integer| No       | Network identifier (1-32767)             |
-| `node`      | Integer| No       | Node identifier (0-32767)                |
+| Parameter   | Type    | Required | Description                   |
+|-------------|---------|----------|-------------------------------|
+| `year`      | Year    | Yes      | Year of nodelist (e.g., 2024) |
+| `dayOfYear` | Integer | Yes      | Day of year (1-366)           |
+| `zone`      | Integer | No       | Zone identifier (1-32767)     |
+| `network`   | Integer | No       | Network identifier (1-32767)  |
+| `node`      | Integer | No       | Node identifier (0-32767)     |
 
 **Method Signature:**
 
@@ -81,7 +81,9 @@ public Set<NodeEntryDto> getNodelistEntry(
     @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
     @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
     @RequestParam(required = false) @Min(0) @Max(32767) Integer node
-)
+) {
+    // Implement logic to fetch and return the nodelist entries based on the provided parameters
+}
 ```
 
 **Request Examples:**
@@ -134,11 +136,11 @@ GET /historic/historicNodelist?year=2024&dayOfYear=180&zone=2&network=10&node=5
 
 **Parameters:**
 
-| Parameter   | Type   | Required | Description                              |
-|-------------|--------|----------|------------------------------------------|
-| `zone`      | Integer| No       | Zone identifier (1-32767)                |
-| `network`   | Integer| No       | Network identifier (1-32767)             |
-| `node`      | Integer| No       | Node identifier (0-32767)                |
+| Parameter | Type    | Required | Description                  |
+|-----------|---------|----------|------------------------------|
+| `zone`    | Integer | No       | Zone identifier (1-32767)    |
+| `network` | Integer | No       | Network identifier (1-32767) |
+| `node`    | Integer | No       | Node identifier (0-32767)    |
 
 **Method Signature:**
 
@@ -148,7 +150,9 @@ public Set<NodeEntryDto> getNodelistEntry(
     @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
     @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
     @RequestParam(required = false) @Min(0) @Max(32767) Integer node
-)
+) {
+    // Implementation to retrieve nodelist entries based on parameters
+}
 ```
 
 **Request Examples:**
@@ -201,13 +205,13 @@ GET /newest/nodelist?zone=2&network=10&node=5
 
 **Parameters:**
 
-| Parameter   | Type   | Required | Description                              |
-|-------------|--------|----------|------------------------------------------|
-| `zone`      | Integer| No       | Zone identifier (1-32767)                |
-| `network`   | Integer| No       | Network identifier (1-32767)             |
-| `node`      | Integer| No       | Node identifier (0-32767)                |
-| `page`      | Integer| No       | Page number (default: 0)                 |
-| `size`      | Integer| No       | Page size (default: 20)                  |
+| Parameter | Type    | Required | Description                  |
+|-----------|---------|----------|------------------------------|
+| `zone`    | Integer | No       | Zone identifier (1-32767)    |
+| `network` | Integer | No       | Network identifier (1-32767) |
+| `node`    | Integer | No       | Node identifier (0-32767)    |
+| `page`    | Integer | No       | Page number (default: 0)     |
+| `size`    | Integer | No       | Page size (default: 20)      |
 
 **Method Signature:**
 
@@ -219,7 +223,9 @@ public Page<NodeHistoryEntryDto> getHistory(
     @RequestParam(required = false) @Min(0) @Max(32767) Integer node,
     @RequestParam(defaultValue = "0") int page,
     @RequestParam(defaultValue = "20") int size
-)
+) {
+    // ...
+}
 ```
 
 **Request Examples:**
