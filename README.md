@@ -389,7 +389,7 @@ Cache TTL is set to 12 hours for all services.
 ### Prerequisites
 
 - Docker and Docker Compose
-- Java 17+
+- Java 25+
 - Gradle
 
 ### Building the Project
@@ -415,7 +415,3 @@ docker compose -f compose-dev.yml up -d
 ./gradlew :nodehistj-newest-nodelists:bootRun
 ./gradlew :nodehistj-history-diff:bootRun
 ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
