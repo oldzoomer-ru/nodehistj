@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.minio.utils.S3Utils;
 import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 import java.io.ByteArrayOutputStream;
@@ -43,9 +42,8 @@ import java.util.List;
 @Component
 @EnableScheduling
 @Log4j2
-@Profile("!test")
 public class UpdateNodelists {
-    private final MinioUtils minioUtils;
+    private final S3Utils s3Utils;
     private final FtpClient ftpClient;
     private final KafkaTemplate<@NonNull String, @NonNull List<String>> kafkaTemplate;
 
@@ -55,7 +53,7 @@ public class UpdateNodelists {
     @Value("${ftp.download-from-year}")
     private int downloadFromYear;
 
-    @Value("${app.minio.bucket}")
+    @Value("${s3.bucket}")
     private String bucket;
 
     /**
@@ -71,7 +69,7 @@ public class UpdateNodelists {
         log.info("Starting nodelist update process");
         try {
             validateInputs();
-            minioUtils.createBucket(bucket);
+            s3Utils.createBucket(bucket);
 
             ftpClient.open();
 
@@ -112,7 +110,7 @@ public class UpdateNodelists {
      * @throws IOException if FTP operation fails
      */
     private int processYearFiles(int year, List<String> downloadedFiles) throws IOException {
-        String yearPath = ftpPath + year + "/";
+        String yearPath = ftpPath + year;
         String[] files = ftpClient.listFiles(yearPath);
         if (files == null || files.length == 0) {
             log.warn("No files found for year {}", year);
@@ -121,7 +119,7 @@ public class UpdateNodelists {
 
         List<String> newFiles = Arrays.stream(files)
                 .filter(file -> file.matches(".*/nodelist\\.\\d{3}"))
-                .filter(file -> !minioUtils.isObjectExist(bucket, normalizeObjectName(file)))
+                .filter(file -> !s3Utils.isObjectExist(bucket, normalizeObjectName(file)))
                 .toList();
 
         log.info("Found {} new files for year {}", newFiles.size(), year);
@@ -140,7 +138,7 @@ public class UpdateNodelists {
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
             String objectName = normalizeObjectName(filePath);
             log.debug("Uploading file to MinIO: {}", objectName);
-            minioUtils.putObject(bucket, objectName, byteArrayOutputStream);
+            s3Utils.putObject(bucket, objectName, byteArrayOutputStream.toByteArray());
             downloadedFiles.add(objectName);
             log.info("Successfully processed file: {}", objectName);
         } catch (IOException e) {
@@ -161,7 +159,6 @@ public class UpdateNodelists {
             return;
         }
 
-        // Proper sending with explicit logging of result and errors
         kafkaTemplate.send("download_nodelists_is_finished_topic", downloadedFiles);
     }
 

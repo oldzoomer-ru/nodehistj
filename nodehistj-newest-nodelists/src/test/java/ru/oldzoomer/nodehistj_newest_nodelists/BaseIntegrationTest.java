@@ -1,7 +1,6 @@
 package ru.oldzoomer.nodehistj_newest_nodelists;
 
-import java.util.List;
-
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,12 +15,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
-
-import com.redis.testcontainers.RedisContainer;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
+
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -59,9 +57,9 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("minio.url", minioContainer::getS3URL);
-        registry.add("minio.accessKey", minioContainer::getUserName);
-        registry.add("minio.secretKey", minioContainer::getPassword);
+        registry.add("s3.url", minioContainer::getS3URL);
+        registry.add("s3.accessKey", minioContainer::getUserName);
+        registry.add("s3.secretKey", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
         registry.add("spring.data.redis.host", redisContainer::getRedisHost);
         registry.add("spring.data.redis.port", redisContainer::getRedisPort);

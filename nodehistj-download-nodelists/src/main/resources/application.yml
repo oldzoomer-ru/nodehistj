@@ -17,13 +17,12 @@ ftp:
   password: ${FTP_PASSWORD:anonymous@}
   path: ${FTP_PATH:/nodehist/}
   download-from-year: ${FTP_DOWNLOAD_FROM_YEAR:1984}
-minio:
+s3:
   url: ${MINIO_URL:http://localhost:9000/}
   access-key: ${MINIO_USER}
   secret-key: ${MINIO_PASSWORD}
-app:
-  minio:
-    bucket: ${MINIO_BUCKET:nodehistj}
+  bucket: ${MINIO_BUCKET:nodehistj}
+  region: ${MINIO_REGION:us-east-1}
 logging:
   level:
     ru:

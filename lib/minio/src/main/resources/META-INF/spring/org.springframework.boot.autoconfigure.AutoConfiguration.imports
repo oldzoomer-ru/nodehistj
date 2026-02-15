@@ -1,2 +1,2 @@
-ru.oldzoomer.minio.config.MinioConfig
-ru.oldzoomer.minio.utils.MinioUtils
+ru.oldzoomer.minio.config.S3Config
+ru.oldzoomer.minio.utils.S3Utils
