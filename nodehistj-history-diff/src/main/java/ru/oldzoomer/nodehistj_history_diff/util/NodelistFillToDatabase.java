@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.oldzoomer.minio.utils.MinioUtils;
+import ru.oldzoomer.minio.utils.S3Utils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
@@ -29,11 +29,13 @@ import java.util.regex.Pattern;
 @Component
 @Log4j2
 public class NodelistFillToDatabase {
-    private final MinioUtils minioUtils;
+    private final S3Utils s3Utils;
     private final NodelistEntryRepository nodelistEntryRepository;
 
-    /** MinIO bucket name where nodelists are stored */
-    @Value("${app.minio.bucket}")
+    /**
+     * S3 bucket name where nodelists are stored
+     */
+    @Value("${s3.bucket}")
     private String minioBucket;
 
     // Precompiled pattern to extract year and name from MinIO object path
@@ -87,7 +89,7 @@ public class NodelistFillToDatabase {
                 continue;
             }
 
-            try (InputStream inputStream = minioUtils.getObject(minioBucket, object)) {
+            try (InputStream inputStream = s3Utils.getObject(minioBucket, object)) {
                 Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
                 nodelistEntryRepository.save(updateNodelist(nodelist, year, dayOfYear));
             } catch (Exception e) {

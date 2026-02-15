@@ -28,9 +28,9 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("minio.url", minioContainer::getS3URL);
-        registry.add("minio.user", minioContainer::getUserName);
-        registry.add("minio.password", minioContainer::getPassword);
+        registry.add("s3.url", minioContainer::getS3URL);
+        registry.add("s3.user", minioContainer::getUserName);
+        registry.add("s3.password", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
     }
 
