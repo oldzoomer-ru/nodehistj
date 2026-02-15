@@ -41,15 +41,15 @@ docker compose -f compose-traefik.yml up -d
 
 ## Main Environment Variables
 
-| Variable                 | Description                                     | Required              | Default         |
-|--------------------------|-------------------------------------------------|-----------------------|-----------------|
-| `MINIO_USER`             | MinIO user                                      | Yes                   | –               |
-| `MINIO_PASSWORD`         | MinIO password                                  | Yes                   | –               |
-| `POSTGRES_PASSWORD`      | PostgreSQL password                             | Yes                   | –               |
-| `KAFKA_BOOTSTRAP_SERVER` | Kafka address                                   | No                    | `redpanda:9092` |
-| `REDIS_HOST`             | Redis address                                   | No                    | `redis`         |
-| `FTP_DOWNLOAD_FROM_YEAR` | Start year for downloads                        | No                    | `1984`          |
-| `DOMAIN`                 | Traefik domain (only for `compose-traefik.yml`) | Yes (only for Traefik)| –               |
+| Variable                 | Description                                     | Required               | Default         |
+|--------------------------|-------------------------------------------------|------------------------|-----------------|
+| `S3_USER`                | MinIO user                                      | Yes                    | –               |
+| `S3_PASSWORD`            | MinIO password                                  | Yes                    | –               |
+| `POSTGRES_PASSWORD`      | PostgreSQL password                             | Yes                    | –               |
+| `KAFKA_BOOTSTRAP_SERVER` | Kafka address                                   | No                     | `redpanda:9092` |
+| `REDIS_HOST`             | Redis address                                   | No                     | `redis`         |
+| `FTP_DOWNLOAD_FROM_YEAR` | Start year for downloads                        | No                     | `1984`          |
+| `DOMAIN`                 | Traefik domain (only for `compose-traefik.yml`) | Yes (only for Traefik) | –               |
 
 ## API Endpoints
 

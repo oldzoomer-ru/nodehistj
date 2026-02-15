@@ -32,11 +32,12 @@ server:
   servlet:
     context-path: /diff
 s3:
-  url: ${MINIO_URL:http://localhost:9000/}
-  access-key: ${MINIO_USER}
-  secret-key: ${MINIO_PASSWORD}
-  bucket: ${MINIO_BUCKET:nodehistj}
-  region: ${MINIO_REGION:us-east-1}
+  url: ${S3_URL:http://localhost:9000/}
+  access-key: ${S3_USER}
+  secret-key: ${S3_PASSWORD}
+  bucket: ${S3_BUCKET:nodehistj}
+  region: ${S3_REGION:us-east-1}
+  path-style-url: ${S3_PATH_STYLE_URL:true}
 logging:
   level:
     ru:
