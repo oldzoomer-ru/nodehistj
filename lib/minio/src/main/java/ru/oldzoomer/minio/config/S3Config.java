@@ -28,6 +28,7 @@ public class S3Config {
     S3Client s3Client(S3ConnectionProperties s3ConnectionProperties) {
         return S3Client.builder()
                 .endpointOverride(URI.create(s3ConnectionProperties.getUrl()))
+                .forcePathStyle(s3ConnectionProperties.isPathStyleUrl())
                 .region(Region.of(s3ConnectionProperties.getRegion()))
                 .httpClientBuilder(ApacheHttpClient.builder())
                 .credentialsProvider(StaticCredentialsProvider.create(
