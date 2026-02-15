@@ -1,6 +1,10 @@
 package ru.oldzoomer.nodehistj_download_nodelists;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test for verifying application context loading.
@@ -17,6 +21,9 @@ import org.junit.jupiter.api.Test;
  * are run.
  */
 class ContextLoadTest extends BaseIntegrationTest {
+    @Autowired
+    private ApplicationContext context;
+
     /**
      * Tests that the application context loads successfully.
      * <p>
@@ -32,5 +39,6 @@ class ContextLoadTest extends BaseIntegrationTest {
     @Test
     void contextLoads() {
         // This test verifies that the Spring application context loads successfully
+        assertThat(context).isNotNull();
     }
 }
