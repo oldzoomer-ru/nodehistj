@@ -1,19 +1,18 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 
-import java.util.Set;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
+
+import java.util.Set;
 
 /**
  * Controller for working with current Fidonet nodelists (FTS-0005 standard).
@@ -39,7 +38,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@Log4j2
+@RequestMapping("/nodelist")
 public class NodelistController {
     private final NodelistService nodelistService;
 
@@ -69,34 +68,22 @@ public class NodelistController {
      * @throws jakarta.validation.ConstraintViolationException if validation fails (400)
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
-    @GetMapping("/nodelist")
+    @GetMapping
     @Cacheable(value = "nodelistRequests", unless = "#result == null || #result.isEmpty()")
     public Set<NodeEntryDto> getNodelistEntry(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
 
-        if (zone != null && network == null && node != null) {
-            log.warn("Invalid request: node specified without network");
-            throw new IllegalArgumentException("Cannot specify node without network");
-        }
-
-        log.debug("Processing nodelist request - zone: {}, network: {}, node: {}",
-            zone, network, node);
-
-        return getFilteredNodeEntries(zone, network, node);
-    }
-    
-    private Set<NodeEntryDto> getFilteredNodeEntries(Integer zone, Integer network, Integer node) {
-        if (zone == null) {
-            return nodelistService.getNodelistEntries();
-        } else if (network == null) {
-            return nodelistService.getNodelistEntry(zone);
-        } else if (node == null) {
-            return nodelistService.getNodelistEntry(zone, network);
-        } else {
+        if (node != null && network != null && zone != null) {
             NodeEntryDto result = nodelistService.getNodelistEntry(zone, network, node);
             return result != null ? Set.of(result) : Set.of();
+        } else if (network != null && zone != null) {
+            return nodelistService.getNodelistEntry(zone, network);
+        } else if (zone != null) {
+            return nodelistService.getNodelistEntry(zone);
+        } else {
+            return nodelistService.getNodelistEntries();
         }
     }
 }

@@ -1,20 +1,19 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.controller;
 
-import java.time.Year;
-import java.util.Set;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
+
+import java.time.Year;
+import java.util.Set;
 
 /**
  * Controller for working with historical Fidonet nodelists (FTS-0005 standard).
@@ -40,7 +39,7 @@ import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService
 @RestController
 @RequiredArgsConstructor
 @Validated
-@Log4j2
+@RequestMapping("/historicNodelist")
 public class HistoricNodelistController {
     private final HistoricNodelistService historicNodelistService;
 
@@ -72,7 +71,7 @@ public class HistoricNodelistController {
      * @throws jakarta.validation.ConstraintViolationException if validation fails (400)
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
-    @GetMapping("/historicNodelist")
+    @GetMapping
     @Cacheable(value = "historicNodelistRequests", unless = "#result == null || #result.isEmpty()")
     public Set<NodeEntryDto> getNodelistEntry(
             @RequestParam Year year,
@@ -81,28 +80,15 @@ public class HistoricNodelistController {
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
 
-        log.debug("Processing historic nodelist request - year: {}, day: {}, zone: {}, network: {}, node: {}",
-            year, dayOfYear, zone, network, node);
-
-        if (zone != null && network == null && node != null) {
-            log.warn("Invalid request: node specified without network");
-            throw new IllegalArgumentException("Cannot specify node without network");
-        }
-
-        return getFilteredNodeEntries(year, dayOfYear, zone, network, node);
-    }
-    
-    private Set<NodeEntryDto> getFilteredNodeEntries(Year year, Integer dayOfYear, Integer zone,
-                                                    Integer network, Integer node) {
-        if (zone == null) {
-            return historicNodelistService.getNodelistEntries(year, dayOfYear);
-        } else if (network == null) {
-            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone);
-        } else if (node == null) {
-            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network);
-        } else {
+        if (node != null && network != null && zone != null) {
             NodeEntryDto result = historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network, node);
             return result != null ? Set.of(result) : Set.of();
+        } else if (network != null && zone != null) {
+            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone, network);
+        } else if (zone != null) {
+            return historicNodelistService.getNodelistEntry(year, dayOfYear, zone);
+        } else {
+            return historicNodelistService.getNodelistEntries(year, dayOfYear);
         }
     }
 }

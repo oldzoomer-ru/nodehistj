@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ import ru.oldzoomer.nodehistj_history_diff.service.NodeHistoryService;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/history")
 public class NodeHistoryController {
 
