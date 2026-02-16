@@ -135,8 +135,10 @@ public class UpdateNodelists {
      * @param downloadedFiles list to collect newly processed files
      */
     private void processFile(String filePath, List<String> downloadedFiles) {
+        String objectName = normalizeObjectName(filePath);
+        log.info("Starting processing file: {}", objectName);
+
         try (ByteArrayOutputStream byteArrayOutputStream = ftpClient.downloadFile(filePath)) {
-            String objectName = normalizeObjectName(filePath);
             log.debug("Uploading file to MinIO: {}", objectName);
             s3Utils.putObject(bucket, objectName, byteArrayOutputStream.toByteArray());
             downloadedFiles.add(objectName);
