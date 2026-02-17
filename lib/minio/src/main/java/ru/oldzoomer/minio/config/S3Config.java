@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -28,6 +29,7 @@ public class S3Config {
     S3Client s3Client(S3ConnectionProperties s3ConnectionProperties) {
         return S3Client.builder()
                 .endpointOverride(URI.create(s3ConnectionProperties.getUrl()))
+                .requestChecksumCalculation(RequestChecksumCalculation.WHEN_REQUIRED)
                 .forcePathStyle(s3ConnectionProperties.isPathStyleUrl())
                 .region(Region.of(s3ConnectionProperties.getRegion()))
                 .httpClientBuilder(ApacheHttpClient.builder())
