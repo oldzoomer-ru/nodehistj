@@ -63,10 +63,7 @@ services:
     restart: unless-stopped
     environment:
       - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
-      - S3_URL=${S3_URL}
-      - S3_USER=${S3_USER}
-      - S3_PASSWORD=${S3_PASSWORD}
-      - S3_BUCKET=${S3_BUCKET}
+    env_file: .env
     depends_on:
       redpanda:
         condition: service_healthy
@@ -93,13 +90,10 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
       - REDIS_HOST=redis
-      - S3_URL=${S3_URL}
-      - S3_USER=${S3_USER}
-      - S3_PASSWORD=${S3_PASSWORD}
-      - S3_BUCKET=${S3_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    env_file: .env
     labels:
       - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && PathPrefix(`/historic`)"
       - "traefik.http.routers.historic.entrypoints=websecure"
@@ -135,13 +129,10 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
       - REDIS_HOST=redis
-      - S3_URL=${S3_URL}
-      - S3_USER=${S3_USER}
-      - S3_PASSWORD=${S3_PASSWORD}
-      - S3_BUCKET=${S3_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    env_file: .env
     labels:
       - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && PathPrefix(`/newest`)"
       - "traefik.http.routers.newest.entrypoints=websecure"
@@ -177,13 +168,10 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
       - REDIS_HOST=redis
-      - S3_URL=${S3_URL}
-      - S3_USER=${S3_USER}
-      - S3_PASSWORD=${S3_PASSWORD}
-      - S3_BUCKET=${S3_BUCKET}
       - POSTGRES_HOST=postgres:5432
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    env_file: .env
     labels:
       - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/diff`)"
       - "traefik.http.routers.history-diff.entrypoints=websecure"
