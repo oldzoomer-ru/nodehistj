@@ -1,5 +1,5 @@
 dependencies {
-    implementation platform("software.amazon.awssdk:bom:2.41.33")
+    implementation platform("software.amazon.awssdk:bom:2.41.34")
     implementation "software.amazon.awssdk:s3"
     implementation "software.amazon.awssdk:apache-client"
 }
