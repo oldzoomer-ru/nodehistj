@@ -1,6 +1,6 @@
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation platform("org.springframework.ai:spring-ai-bom:1.1.2")
+    implementation platform("org.springframework.ai:spring-ai-bom:1.1.4")
     implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation project(':lib:minio')
