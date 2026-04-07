@@ -28,6 +28,7 @@ import java.util.List;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
+    @SuppressWarnings("resource")
     @Container
     public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:alpine")
             .withDatabaseName("testdb")
@@ -35,16 +36,19 @@ public abstract class BaseIntegrationTest {
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
+    @SuppressWarnings("resource")
     @Container
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
+    @SuppressWarnings("resource")
     @Container
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
+    @SuppressWarnings("resource")
     @Container
     public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
