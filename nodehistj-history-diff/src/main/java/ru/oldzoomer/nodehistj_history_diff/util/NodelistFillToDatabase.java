@@ -12,7 +12,6 @@ import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_history_diff.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodelistj.Nodelist;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Year;
@@ -80,7 +79,7 @@ public class NodelistFillToDatabase {
                 NodelistFile nodelistFile = getAndCheckMetadata(object);
 
                 try (InputStream inputStream = s3Utils.getObject(minioBucket, object)) {
-                    Nodelist nodelist = new Nodelist(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    Nodelist nodelist = new Nodelist(inputStream);
                     nodelistEntryRepository.save(updateNodelist(nodelist, nodelistFile.year, nodelistFile.dayOfYear));
                 }
             } catch (IllegalArgumentException e) {
