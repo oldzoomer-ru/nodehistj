@@ -10,6 +10,9 @@ spring:
       download-nodelists-is-finished-topic:
         partitions: ${KAFKA_TOPIC_DOWNLOAD_NODELISTS_IS_FINISHED_TOPIC_PARTITIONS:5}
         replicas: ${KAFKA_TOPIC_DOWNLOAD_NODELISTS_IS_FINISHED_TOPIC_REPLICAS:1}
+  threads:
+    virtual:
+      enabled: true
 ftp:
   host: ${FTP_HOST:wfido.ru}
   port: ${FTP_PORT:21}
