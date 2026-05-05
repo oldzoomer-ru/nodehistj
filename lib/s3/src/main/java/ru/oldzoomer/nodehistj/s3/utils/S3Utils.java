@@ -1,4 +1,4 @@
-package ru.oldzoomer.minio.utils;
+package ru.oldzoomer.nodehistj.s3.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,8 +11,8 @@ import software.amazon.awssdk.services.s3.model.*;
 import java.io.InputStream;
 
 /**
- * Utility class for interacting with MinIO object storage.
- * Provides methods for retrieving, creating, checking, and uploading objects to MinIO.
+ * Utility class for interacting with S3 object storage.
+ * Provides methods for retrieving, creating, checking, and uploading objects to S3.
  */
 @Component
 @RequiredArgsConstructor

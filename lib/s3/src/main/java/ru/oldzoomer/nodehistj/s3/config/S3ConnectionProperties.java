@@ -1,4 +1,4 @@
-package ru.oldzoomer.minio.config;
+package ru.oldzoomer.nodehistj.s3.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

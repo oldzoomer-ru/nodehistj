@@ -8,7 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.oldzoomer.minio.utils.S3Utils;
+import ru.oldzoomer.nodehistj.s3.utils.S3Utils;
 import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateException;
 
 import java.io.ByteArrayOutputStream;

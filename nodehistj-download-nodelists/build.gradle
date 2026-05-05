@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':lib:minio')
+    implementation project(':lib:s3')
     implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation 'org.springframework.boot:spring-boot-jackson2'
     implementation 'commons-net:commons-net:3.13.0'
