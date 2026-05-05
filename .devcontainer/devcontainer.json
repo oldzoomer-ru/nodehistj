@@ -15,7 +15,7 @@
 		},
 		"ghcr.io/devcontainers/features/java:1": {
 			"installGradle": true,
-			"version": "21",
+			"version": "25",
 			"gradleVersion": "latest"
 		}
 	}
