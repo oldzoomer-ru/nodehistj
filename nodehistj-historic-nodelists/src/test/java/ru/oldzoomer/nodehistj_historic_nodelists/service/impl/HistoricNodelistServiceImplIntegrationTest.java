@@ -31,16 +31,16 @@ class HistoricNodelistServiceImplIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, result.size());
 
         NodeEntryDto entry = result.iterator().next();
-        assertEquals(1, entry.getZone());
-        assertEquals(1, entry.getNetwork());
-        assertEquals(1, entry.getNode());
-        assertEquals("Test Node", entry.getNodeName());
-        assertEquals("Test Location", entry.getLocation());
-        assertEquals("Test SysOp", entry.getSysOpName());
-        assertEquals("1234567890", entry.getPhone());
-        assertEquals(1200, entry.getBaudRate());
-        assertNotNull(entry.getFlags());
-        assertEquals(2, entry.getFlags().size());
+        assertEquals(1, entry.zone());
+        assertEquals(1, entry.network());
+        assertEquals(1, entry.node());
+        assertEquals("Test Node", entry.nodeName());
+        assertEquals("Test Location", entry.location());
+        assertEquals("Test SysOp", entry.sysOpName());
+        assertEquals("1234567890", entry.phone());
+        assertEquals(1200, entry.baudRate());
+        assertNotNull(entry.flags());
+        assertEquals(2, entry.flags().size());
     }
 
     /**
@@ -55,7 +55,7 @@ class HistoricNodelistServiceImplIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, result.size());
 
         NodeEntryDto entry = result.iterator().next();
-        assertEquals(1, entry.getZone());
+        assertEquals(1, entry.zone());
     }
 
     /**
@@ -70,8 +70,8 @@ class HistoricNodelistServiceImplIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, result.size());
 
         NodeEntryDto entry = result.iterator().next();
-        assertEquals(1, entry.getZone());
-        assertEquals(1, entry.getNetwork());
+        assertEquals(1, entry.zone());
+        assertEquals(1, entry.network());
     }
 
     /**
@@ -82,16 +82,16 @@ class HistoricNodelistServiceImplIntegrationTest extends BaseIntegrationTest {
         NodeEntryDto result = historicNodelistService.getNodelistEntry(Year.of(2023), 1, 1, 1, 1);
 
         assertNotNull(result);
-        assertEquals(1, result.getZone());
-        assertEquals(1, result.getNetwork());
-        assertEquals(1, result.getNode());
-        assertEquals("Test Node", result.getNodeName());
-        assertEquals("Test Location", result.getLocation());
-        assertEquals("Test SysOp", result.getSysOpName());
-        assertEquals("1234567890", result.getPhone());
-        assertEquals(1200, result.getBaudRate());
-        assertNotNull(result.getFlags());
-        assertEquals(2, result.getFlags().size());
+        assertEquals(1, result.zone());
+        assertEquals(1, result.network());
+        assertEquals(1, result.node());
+        assertEquals("Test Node", result.nodeName());
+        assertEquals("Test Location", result.location());
+        assertEquals("Test SysOp", result.sysOpName());
+        assertEquals("1234567890", result.phone());
+        assertEquals(1200, result.baudRate());
+        assertNotNull(result.flags());
+        assertEquals(2, result.flags().size());
     }
 
     /**

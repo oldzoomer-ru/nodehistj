@@ -52,7 +52,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -92,7 +92,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -117,7 +117,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -142,7 +142,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When

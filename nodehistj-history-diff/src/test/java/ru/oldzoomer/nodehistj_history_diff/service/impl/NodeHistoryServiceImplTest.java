@@ -53,7 +53,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryRepository.findByZoneAndNetworkAndNode(TEST_ZONE, TEST_NETWORK, TEST_NODE, pageable))
                 .thenReturn(page);
 
-        NodeHistoryEntryDto dto = new NodeHistoryEntryDto();
+        NodeHistoryEntryDto dto = new NodeHistoryEntryDto(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
@@ -75,7 +75,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryRepository.findByZoneAndNetwork(TEST_ZONE, TEST_NETWORK, pageable))
                 .thenReturn(page);
 
-        NodeHistoryEntryDto dto = new NodeHistoryEntryDto();
+        NodeHistoryEntryDto dto = new NodeHistoryEntryDto(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
@@ -97,7 +97,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryRepository.findByZone(TEST_ZONE, pageable))
                 .thenReturn(page);
 
-        NodeHistoryEntryDto dto = new NodeHistoryEntryDto();
+        NodeHistoryEntryDto dto = new NodeHistoryEntryDto(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When
@@ -119,7 +119,7 @@ class NodeHistoryServiceImplTest {
         when(nodeHistoryEntryRepository.findAll(pageable))
                 .thenReturn(page);
 
-        NodeHistoryEntryDto dto = new NodeHistoryEntryDto();
+        NodeHistoryEntryDto dto = new NodeHistoryEntryDto(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         when(nodeHistoryEntryMapper.toDto(any(NodeHistoryEntry.class))).thenReturn(dto);
 
         // When

@@ -58,7 +58,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -103,7 +103,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -131,7 +131,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -159,7 +159,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto();
+        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
