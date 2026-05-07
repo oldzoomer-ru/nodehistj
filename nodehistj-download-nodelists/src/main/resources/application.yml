@@ -13,6 +13,8 @@ spring:
   threads:
     virtual:
       enabled: true
+  main:
+    keep-alive: true
 ftp:
   host: ${FTP_HOST:wfido.ru}
   port: ${FTP_PORT:21}

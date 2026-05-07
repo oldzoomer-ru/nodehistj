@@ -17,6 +17,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service for downloading and updating nodelist files from FTP server.
@@ -58,13 +59,12 @@ public class UpdateNodelists {
 
     /**
      * Main method for updating nodelist files.
-     * Runs on schedule (at 03:00 UTC every day).
      * Downloads files for current and previous years (starting from
      * downloadFromYear).
      *
      * @throws NodelistUpdateException if update error occurs
      */
-    @Scheduled(cron = "0 0 3 * * *", zone = "UTC") // 03:00 UTC
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void updateNodelists() {
         log.info("Starting nodelist update process");
         try {
