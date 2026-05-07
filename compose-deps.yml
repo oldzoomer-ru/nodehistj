@@ -43,9 +43,12 @@ services:
       - "9092:9092"
       - "29092:29092"
     command:
-      - redpanda start
-        --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-        --advertise-kafka-addr PLAINTEXT://localhost:29092,OUTSIDE://localhost:9092
+      - redpanda
+      - start
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://localhost:29092,OUTSIDE://localhost:9092
     volumes:
       - redpanda_dev_data:/var/lib/redpanda/data
     healthcheck:
@@ -56,7 +59,7 @@ services:
       retries: 3
 
   postgres:
-    image: postgres:alpine
+    image: postgres:18-alpine
     networks:
       - nodehistj
     ports:
@@ -66,7 +69,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
+      - postgres_storage:/var/lib/postgresql
       - ./pgsql:/docker-entrypoint-initdb.d/
     healthcheck:
       test: pg_isready -U postgres || exit 1
