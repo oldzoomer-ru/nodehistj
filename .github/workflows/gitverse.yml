@@ -18,4 +18,5 @@ jobs:
       - name: Push to GitVerse
         run: |
           GITVERSE_URL="https://${{ secrets.GITVERSE_USER }}:${{ secrets.GITVERSE_TOKEN }}@gitverse.ru/oldzoomer/nodehistj.git"
+          git for-each-ref --format="delete %(refname)" refs/pull | git update-ref --stdin
           git push --prune --mirror "$GITVERSE_URL"
