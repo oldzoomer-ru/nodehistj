@@ -18,5 +18,5 @@ jobs:
       - name: Push to GitVerse
         run: |
           GITVERSE_URL="https://${{ secrets.GITVERSE_USER }}:${{ secrets.GITVERSE_TOKEN }}@gitverse.ru/oldzoomer/nodehistj.git"
-          git push --prune "$GITVERSE_URL" "refs/remotes/origin/*:refs/heads/*"
-          git push --prune "$GITVERSE_URL" "refs/tags/*:refs/tags/*"
+          git push --force --prune "$GITVERSE_URL" "refs/remotes/origin/*:refs/heads/*"
+          git push --force --prune "$GITVERSE_URL" "refs/tags/*:refs/tags/*"
