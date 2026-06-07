@@ -2,7 +2,7 @@
 
 ## Overview
 
-NodehistJ is a comprehensive system for managing and accessing FidoNet nodelist data, including historical records, current nodelists, and node history differences. The system provides RESTful APIs to query and retrieve node information across different time periods and contexts.
+NodehistJ is a system for managing and accessing FidoNet nodelist data, including historical records, current nodelists, and node history differences. The system provides RESTful APIs to query and retrieve node information across different time periods and contexts.
 
 ## Architecture
 
