@@ -9,6 +9,10 @@ on:
       - '*'
   delete:
 
+concurrency: 
+  group: gitverse
+  cancel-in-progress: false
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
