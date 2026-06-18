@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,13 +38,12 @@ public class NodeHistoryController {
      *   GET /history                          -> all history
      */
     @GetMapping
-    @Cacheable(value = "nodelistHistory", unless = "#result == null || #result.isEmpty()")
     public Page<@NonNull NodeHistoryEntryDto> getHistory(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
             @RequestParam(required = false) @Min(0) @Max(32767) Integer node,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(1000) int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("changeDate")));
 

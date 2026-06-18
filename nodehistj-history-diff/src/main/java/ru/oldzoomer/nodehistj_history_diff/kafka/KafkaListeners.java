@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistDiffProcessor;
 import ru.oldzoomer.nodehistj_history_diff.util.NodelistFillToDatabase;
 
@@ -27,6 +28,7 @@ public class KafkaListeners {
      * @param message the list of nodelist file paths that were downloaded
      */
     @KafkaListener(topics = "download_nodelists_is_finished_topic", concurrency = "1")
+    @Transactional(rollbackFor = Exception.class)
     public void downloadNodelistsIsFinishedListener(List<String> message, Acknowledgment ack) {
         log.debug("Received message from download_nodelists_is_finished_topic with {} files",
                 message != null ? message.size() : 0);
@@ -45,7 +47,6 @@ public class KafkaListeners {
         } catch (Exception e) {
             log.error("Error processing Kafka message with {} files",
                     message != null ? message.size() : 0, e);
-            // Don't acknowledge to let Kafka retry the message
             throw new IllegalStateException("Failed to process Kafka message", e);
         }
     }

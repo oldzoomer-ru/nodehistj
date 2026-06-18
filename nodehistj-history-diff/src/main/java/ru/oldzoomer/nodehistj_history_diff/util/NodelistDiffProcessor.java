@@ -55,6 +55,7 @@ public class NodelistDiffProcessor {
 
         } catch (Exception e) {
             log.error("Error processing nodelist diffs", e);
+            throw new RuntimeException("Failed to process nodelist diffs", e);
         }
     }
 

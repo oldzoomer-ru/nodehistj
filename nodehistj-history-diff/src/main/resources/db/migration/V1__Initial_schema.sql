@@ -14,7 +14,7 @@ CREATE INDEX idx_nodelist_year_name_desc ON nodelist_entry (nodelist_year DESC, 
 -- Таблица node_entry
 CREATE TABLE node_entry (
     node_id BIGSERIAL PRIMARY KEY,
-    nodelist_entry_id BIGSERIAL NOT NULL REFERENCES nodelist_entry(id) ON DELETE CASCADE,
+    nodelist_entry_id BIGINT NOT NULL REFERENCES nodelist_entry(id) ON DELETE CASCADE,
     zone INT,
     network INT,
     node INT,

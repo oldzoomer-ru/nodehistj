@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj.s3.utils.S3Utils;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_history_diff.entity.NodelistEntry;
@@ -70,7 +69,6 @@ public class NodelistFillToDatabase {
      * @param modifiedObjects list of MinIO object paths that were modified
      */
     @CacheEvict(value = "nodelistHistory", allEntries = true)
-    @Transactional
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
@@ -101,7 +99,7 @@ public class NodelistFillToDatabase {
      * @param year The year of the nodelist.
      * @return nodelist entry
      */
-    private NodelistEntry updateNodelist(Nodelist nodelist, Year year, Integer dayOfYear) {
+    private NodelistEntry updateNodelist(Nodelist nodelist, Year year, int dayOfYear) {
         log.info("Update nodelist from {} year and name {} is started", year, dayOfYear);
 
         NodelistEntry nodelistEntryNew = new NodelistEntry();

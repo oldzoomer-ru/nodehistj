@@ -5,9 +5,13 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_history_diff}
     username: ${POSTGRES_USER:user}
     password: ${POSTGRES_PASSWORD:password}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 5000
   cache:
     redis:
-      time-to-live: 12h
+      time-to-live: 6h
       cache-null-values: false
       key-prefix: 'diff:'
       use-key-prefix: true
@@ -15,6 +19,11 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
     consumer:
@@ -23,8 +32,9 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "java.util,ru.oldzoomer.**"
         max.poll.interval.ms: ${KAFKA_MAX_TASK_RUN_TIME:1800000}
+        max.poll.records: 100
       enable-auto-commit: false
     listener:
       ack-mode: MANUAL_IMMEDIATE
@@ -32,6 +42,7 @@ spring:
     virtual:
       enabled: true
 server:
+  shutdown: graceful
   servlet:
     context-path: /diff
 s3:
@@ -41,6 +52,7 @@ s3:
   bucket: ${S3_BUCKET:nodehistj}
   region: ${S3_REGION:us-east-1}
   path-style-url: ${S3_PATH_STYLE_URL:true}
+  connection-timeout: 5s
 logging:
   level:
     ru:

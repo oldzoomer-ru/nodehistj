@@ -2,6 +2,7 @@ package ru.oldzoomer.nodehistj_history_diff.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of node history entries
      */
     @Override
+    @Cacheable(value = "nodelistHistory", sync = true)
     public Page<@NonNull NodeHistoryEntryDto> getNodeHistory(Integer zone, Integer network,
                                                              Integer node, Pageable pageable) {
         return nodeHistoryEntryRepository
@@ -60,6 +62,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of network history entries
      */
     @Override
+    @Cacheable(value = "nodelistHistory", sync = true)
     public Page<@NonNull NodeHistoryEntryDto> getNetworkHistory(Integer zone, Integer network, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZoneAndNetwork(zone, network, pageable)
@@ -74,6 +77,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of zone history entries
      */
     @Override
+    @Cacheable(value = "nodelistHistory", sync = true)
     public Page<@NonNull NodeHistoryEntryDto> getZoneHistory(Integer zone, Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findByZone(zone, pageable)
@@ -87,6 +91,7 @@ public class NodeHistoryServiceImpl implements NodeHistoryService {
      * @return a page of all history entries
      */
     @Override
+    @Cacheable(value = "nodelistHistory", sync = true)
     public Page<@NonNull NodeHistoryEntryDto> getAllHistory(Pageable pageable) {
         return nodeHistoryEntryRepository
                 .findAll(pageable)
