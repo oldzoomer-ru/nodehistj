@@ -46,6 +46,7 @@ RUN ./gradlew --no-daemon --version
 
 COPY settings.gradle build.gradle $APP_HOME/
 COPY lib/s3/build.gradle $APP_HOME/lib/s3/
+COPY lib/test-common/build.gradle $APP_HOME/lib/test-common/
 COPY nodehistj-download-nodelists/build.gradle $APP_HOME/nodehistj-download-nodelists/
 COPY nodehistj-historic-nodelists/build.gradle $APP_HOME/nodehistj-historic-nodelists/
 COPY nodehistj-history-diff/build.gradle $APP_HOME/nodehistj-history-diff/
