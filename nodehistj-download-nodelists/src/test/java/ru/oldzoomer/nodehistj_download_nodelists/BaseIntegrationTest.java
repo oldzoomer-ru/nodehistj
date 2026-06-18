@@ -1,44 +1,20 @@
 package ru.oldzoomer.nodehistj_download_nodelists;
 
-import org.junit.jupiter.api.AfterAll;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MinIOContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.redpanda.RedpandaContainer;
+import ru.oldzoomer.nodehistj.test.BaseContainerTest;
 
 @SpringBootTest
-@Testcontainers
-public abstract class BaseIntegrationTest {
-
-    @SuppressWarnings("resource")
-    @Container
-    public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
-            .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
-
-    @SuppressWarnings("resource")
-    @Container
-    public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
-            .withUserName("minioadmin")
-            .withPassword("minioadmin")
-            .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+public abstract class BaseIntegrationTest extends BaseContainerTest {
 
     @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("s3.url", minioContainer::getS3URL);
+    static void registerExtraProperties(DynamicPropertyRegistry registry) {
         registry.add("s3.user", minioContainer::getUserName);
         registry.add("s3.password", minioContainer::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
         registry.add("scheduling.enabled", () -> false);
         registry.add("app.updateAtStart", () -> false);
-    }
-
-    @AfterAll
-    static void close() {
-        minioContainer.close();
-        redpandaContainer.close();
     }
 }

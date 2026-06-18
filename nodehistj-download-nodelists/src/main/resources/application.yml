@@ -29,6 +29,9 @@ s3:
   bucket: ${S3_BUCKET:nodehistj}
   region: ${S3_REGION:us-east-1}
   path-style-url: ${S3_PATH_STYLE_URL:true}
+  connection-timeout: 5s
+server:
+  shutdown: graceful
 logging:
   level:
     ru:

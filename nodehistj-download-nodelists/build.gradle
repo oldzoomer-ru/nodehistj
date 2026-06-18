@@ -6,4 +6,5 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-redpanda'
     testImplementation 'org.testcontainers:testcontainers-minio'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation project(':lib:test-common')
 }

@@ -72,7 +72,7 @@ subprojects {
     }
 
     checkstyle {
-        sourceSets = [sourceSets.main]
+        sourceSets = [sourceSets.main, sourceSets.test]
     }
 
     tasks.withType(JavaCompile).configureEach {
