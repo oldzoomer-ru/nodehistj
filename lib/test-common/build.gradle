@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    api platform('org.springframework.boot:spring-boot-dependencies:4.1.0')
+    api 'org.springframework.boot:spring-boot-starter-test'
+    api 'org.testcontainers:testcontainers:1.20.1'
+    api 'org.testcontainers:postgresql:1.20.1'
+    api 'org.testcontainers:redpanda:1.20.1'
+    api 'org.testcontainers:minio:1.20.1'
+    api 'org.testcontainers:junit-jupiter:1.20.1'
+    api 'com.redis:testcontainers-redis:2.2.2'
+}
