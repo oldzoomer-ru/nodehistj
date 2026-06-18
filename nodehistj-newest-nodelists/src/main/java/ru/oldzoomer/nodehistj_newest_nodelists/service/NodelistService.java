@@ -1,8 +1,9 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.service;
 
-import java.util.Set;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
+
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Nodelist service layer interface.
@@ -39,7 +40,7 @@ public interface NodelistService {
      * @param zone the zone of the nodelist entry
      * @param network the network of the nodelist entry
      * @param node the node address of the nodelist entry
-     * @return a NodeEntryDto object representing the specific nodelist entry
+     * @return an Optional containing the NodeEntryDto, or empty if not found
      */
-    NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node);
+    Optional<NodeEntryDto> getNodelistEntry(Integer zone, Integer network, Integer node);
 }

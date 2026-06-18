@@ -3,7 +3,9 @@ package ru.oldzoomer.nodehistj_newest_nodelists.controller;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -69,21 +73,35 @@ public class NodelistController {
      * @throws IllegalArgumentException if invalid parameter combination (400)
      */
     @GetMapping
-    @Cacheable(value = "nodelistRequests", unless = "#result == null || #result.isEmpty()")
-    public Set<NodeEntryDto> getNodelistEntry(
+    public ResponseEntity<List<NodeEntryDto>> getNodelistEntry(
             @RequestParam(required = false) @Min(1) @Max(32767) Integer zone,
             @RequestParam(required = false) @Min(1) @Max(32767) Integer network,
-            @RequestParam(required = false) @Min(0) @Max(32767) Integer node) {
+            @RequestParam(required = false) @Min(0) @Max(32767) Integer node,
+            @RequestParam(defaultValue = "0") @Min(0) Integer page,
+            @RequestParam(defaultValue = "1000") @Min(1) @Max(10000) Integer size) {
 
+        Set<NodeEntryDto> result;
         if (node != null && network != null && zone != null) {
-            NodeEntryDto result = nodelistService.getNodelistEntry(zone, network, node);
-            return result != null ? Set.of(result) : Set.of();
+            var optional = nodelistService.getNodelistEntry(zone, network, node);
+            result = optional.map(Set::of).orElseGet(Set::of);
         } else if (network != null && zone != null) {
-            return nodelistService.getNodelistEntry(zone, network);
+            result = nodelistService.getNodelistEntry(zone, network);
         } else if (zone != null) {
-            return nodelistService.getNodelistEntry(zone);
+            result = nodelistService.getNodelistEntry(zone);
         } else {
-            return nodelistService.getNodelistEntries();
+            result = nodelistService.getNodelistEntries();
         }
+
+        Pageable pageable = PageRequest.of(page, size);
+        List<NodeEntryDto> paginatedEntries = result.stream()
+            .sorted(Comparator.comparing(NodeEntryDto::zone)
+                .thenComparing(NodeEntryDto::network)
+                .thenComparing(NodeEntryDto::node))
+            .skip(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .toList();
+        return ResponseEntity.ok()
+            .header("X-Total-Count", String.valueOf(result.size()))
+            .body(paginatedEntries);
     }
 }

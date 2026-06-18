@@ -1,17 +1,18 @@
 package ru.oldzoomer.nodehistj_newest_nodelists.service.impl;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_newest_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_newest_nodelists.service.NodelistService;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of service for working with Fidonet nodelists (FTS-0005 standard).
@@ -36,6 +37,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries
      */
     @Override
+    @Cacheable(value = "nodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntries() {
         log.debug("Fetching all nodelist entries");
         return getFilteredNodeEntries(null, null, null);
@@ -48,6 +50,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
+    @Cacheable(value = "nodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntry(Integer zone) {
         log.debug("Fetching nodelist entries for zone: {}", zone);
         return getFilteredNodeEntries(zone, null, null);
@@ -61,6 +64,7 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
+    @Cacheable(value = "nodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntry(Integer zone, Integer network) {
         log.debug("Fetching nodelist entries for zone: {} and network: {}", zone, network);
         return getFilteredNodeEntries(zone, network, null);
@@ -75,14 +79,15 @@ public class NodelistServiceImpl implements NodelistService {
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
     @Override
-    public NodeEntryDto getNodelistEntry(Integer zone, Integer network, Integer node) {
+    @Cacheable(value = "nodelistRequests", unless = "#result == null")
+    public Optional<NodeEntryDto> getNodelistEntry(Integer zone, Integer network, Integer node) {
         log.debug("Fetching nodelist entry for zone: {}, network: {}, node: {}", zone, network, node);
         var result = getFilteredNodeEntries(zone, network, node);
         if (result.isEmpty()) {
             log.warn("No nodelist entry found for zone: {}, network: {}, node: {}", zone, network, node);
-            throw new IllegalArgumentException("Nodelist entry not found for specified criteria");
+            return Optional.empty();
         }
-        return result.stream().findFirst().orElseThrow();
+        return result.stream().findFirst();
     }
 
     /**
@@ -99,9 +104,9 @@ public class NodelistServiceImpl implements NodelistService {
             log.warn("No nodelist entry found");
             return Set.of();
         }
-        
+
         var nodeEntries = nodelistEntry.getNodeEntries().stream();
-        
+
         if (zone != null) {
             nodeEntries = nodeEntries.filter(x -> x.getZone().equals(zone));
         }
@@ -111,7 +116,7 @@ public class NodelistServiceImpl implements NodelistService {
         if (node != null) {
             nodeEntries = nodeEntries.filter(x -> x.getNode().equals(node));
         }
-        
+
         return nodeEntries
                 .map(nodeEntryMapper::toDto)
                 .collect(Collectors.toUnmodifiableSet());

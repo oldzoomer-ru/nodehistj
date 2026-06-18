@@ -3,7 +3,6 @@ package ru.oldzoomer.nodehistj_newest_nodelists.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
-
 import ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
 
@@ -11,7 +10,7 @@ import ru.oldzoomer.nodehistj_newest_nodelists.entity.NodeEntry;
  * Mapper interface for converting NodeEntry entities to NodeEntryDto objects.
  * Uses Spring component model and ignores unmapped target properties.
  */
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
+@Mapper(unmappedTargetPolicy = ReportingPolicy.WARN,
         componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NodeEntryMapper {
     /**

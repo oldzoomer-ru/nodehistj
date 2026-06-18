@@ -18,16 +18,23 @@ public class NodelistMcpRepository {
     @Tool(description = "Get node data by their 3D (node) address (eg. 2:5015/519)")
     public NodeEntryDto getNodeByAddress(String address) {
         Matcher matcher = Pattern.compile("(\\d+):(\\d+)/(\\d+)").matcher(address);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid address format: " + address);
+        }
         int zone = Integer.parseInt(matcher.group(1));
         int network = Integer.parseInt(matcher.group(2));
         int node = Integer.parseInt(matcher.group(3));
 
-        return nodelistService.getNodelistEntry(zone, network, node);
+        return nodelistService.getNodelistEntry(zone, network, node)
+            .orElseThrow(() -> new java.util.NoSuchElementException("No node found for address: " + address));
     }
 
     @Tool(description = "Get list of node data by their 2D (zone:network) address (eg. 2:5015)")
     public Set<NodeEntryDto> getNodesByNetwork(String address) {
         Matcher matcher = Pattern.compile("(\\d+):(\\d+)").matcher(address);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid address format: " + address);
+        }
         int zone = Integer.parseInt(matcher.group(1));
         int network = Integer.parseInt(matcher.group(2));
 
