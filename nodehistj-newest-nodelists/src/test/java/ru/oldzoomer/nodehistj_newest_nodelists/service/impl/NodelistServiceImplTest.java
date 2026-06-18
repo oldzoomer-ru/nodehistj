@@ -16,6 +16,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static ru.oldzoomer.nodehistj_newest_nodelists.dto.NodeEntryDtoBuilder.aNodeEntryDto;
 
 @ExtendWith(MockitoExtension.class)
 class NodelistServiceImplTest {
@@ -52,7 +53,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -92,7 +93,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -117,7 +118,7 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -142,23 +143,25 @@ class NodelistServiceImplTest {
 
         when(nodelistEntryRepository.findFirstBy()).thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
-        NodeEntryDto result = nodelistService.getNodelistEntry(TEST_ZONE, TEST_NETWORK, TEST_NODE);
+        var result = nodelistService.getNodelistEntry(TEST_ZONE, TEST_NETWORK, TEST_NODE);
 
         // Then
-        assertNotNull(result);
+        assertTrue(result.isPresent());
     }
 
     @Test
-    void testGetNodelistEntry_WithNoMatchingEntry_ThrowsException() {
+    void testGetNodelistEntry_WithNoMatchingEntry_ReturnsEmptyOptional() {
         // Given
         when(nodelistEntryRepository.findFirstBy()).thenReturn(null);
 
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                nodelistService.getNodelistEntry(TEST_ZONE, TEST_NETWORK, TEST_NODE));
+        // When
+        var result = nodelistService.getNodelistEntry(TEST_ZONE, TEST_NETWORK, TEST_NODE);
+
+        // Then
+        assertTrue(result.isEmpty());
     }
 }

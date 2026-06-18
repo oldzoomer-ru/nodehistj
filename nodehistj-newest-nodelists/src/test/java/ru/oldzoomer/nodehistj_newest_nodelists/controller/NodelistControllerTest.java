@@ -6,8 +6,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.oldzoomer.nodehistj_newest_nodelists.BaseIntegrationTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for NodelistController.
@@ -103,5 +102,44 @@ class NodelistControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].baudRate").value(1200))
                 .andExpect(jsonPath("$[0].flags[0]").value("FLAG1"))
                 .andExpect(jsonPath("$[0].flags[1]").value("FLAG2"));
+    }
+
+    @Test
+    void testGetNodelistEntry_invalidZone() throws Exception {
+        mockMvc.perform(get("/nodelist")
+                .param("zone", "99999"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetNodelistEntry_invalidTypeConversion() throws Exception {
+        mockMvc.perform(get("/nodelist")
+                .param("zone", "abc"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetNodelistEntry_negativePage() throws Exception {
+        mockMvc.perform(get("/nodelist")
+                .param("page", "-1"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetNodelistEntry_zeroSize() throws Exception {
+        mockMvc.perform(get("/nodelist")
+                .param("size", "0"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetNodelistEntry_emptyResults() throws Exception {
+        mockMvc.perform(get("/nodelist")
+                .param("zone", "99")
+                .param("network", "99")
+                .param("node", "99"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("X-Total-Count", "0"))
+            .andExpect(jsonPath("$.length()").value(0));
     }
 }

@@ -13,10 +13,12 @@ import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 
 import java.time.Year;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDtoBuilder.aNodeEntryDto;
 
 @ExtendWith(MockitoExtension.class)
 class HistoricNodelistServiceImplTest {
@@ -58,7 +60,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -103,7 +105,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -131,7 +133,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -159,7 +161,7 @@ class HistoricNodelistServiceImplTest {
         when(nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(nodelistEntry);
 
-        NodeEntryDto nodeEntryDto = new NodeEntryDto(null, null, null, null, null, null, null, null, null, null);
+        NodeEntryDto nodeEntryDto = aNodeEntryDto().build();
         when(nodeEntryMapper.toDto(any(NodeEntry.class))).thenReturn(nodeEntryDto);
 
         // When
@@ -178,7 +180,7 @@ class HistoricNodelistServiceImplTest {
                 .thenReturn(null);
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(NoSuchElementException.class, () ->
                 historicNodelistService.getNodelistEntry(TEST_YEAR, TEST_DAY_OF_YEAR, TEST_ZONE, TEST_NETWORK, TEST_NODE));
     }
 }

@@ -6,8 +6,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.oldzoomer.nodehistj_historic_nodelists.BaseIntegrationTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for HistoricNodelistController.
@@ -115,5 +114,59 @@ class HistoricNodelistControllerIntegrationTest extends BaseIntegrationTest {
                         .param("dayOfYear", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_invalidZone() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("year", "2023")
+                .param("dayOfYear", "1")
+                .param("zone", "99999"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_invalidYearType() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("year", "abc")
+                .param("dayOfYear", "1"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_missingRequiredYear() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("dayOfYear", "1"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_negativePage() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("year", "2023")
+                .param("dayOfYear", "1")
+                .param("page", "-1"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_zeroSize() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("year", "2023")
+                .param("dayOfYear", "1")
+                .param("size", "0"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistoricNodelistEntry_emptyResults() throws Exception {
+        mockMvc.perform(get("/historicNodelist")
+                .param("year", "2023")
+                .param("dayOfYear", "1")
+                .param("zone", "99")
+                .param("network", "99"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("X-Total-Count", "0"))
+            .andExpect(jsonPath("$.length()").value(0));
     }
 }

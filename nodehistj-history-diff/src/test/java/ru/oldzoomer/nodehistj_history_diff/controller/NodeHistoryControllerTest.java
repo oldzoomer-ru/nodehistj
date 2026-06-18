@@ -3,11 +3,11 @@ package ru.oldzoomer.nodehistj_history_diff.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.oldzoomer.nodehistj_history_diff.BaseIntegrationTest;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import ru.oldzoomer.nodehistj_history_diff.BaseIntegrationTest;
 
 class NodeHistoryControllerTest extends BaseIntegrationTest {
 
@@ -36,5 +36,24 @@ class NodeHistoryControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].nodeName").exists())
                 .andExpect(jsonPath("$.content[0].changeType").exists());
+    }
+
+    @Test
+    void testGetHistory_invalidZone() throws Exception {
+        mockMvc.perform(get("/history?zone=99999"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistory_invalidTypeConversion() throws Exception {
+        mockMvc.perform(get("/history?zone=abc"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetHistory_emptyResults() throws Exception {
+        mockMvc.perform(get("/history?zone=99&network=99&node=99"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content.length()").value(0));
     }
 }
