@@ -5,7 +5,7 @@
 <module name="Checker">
   <property name="charset" value="UTF-8"/>
   <property name="severity" value="error"/>
-  
+
   <module name="FileLength">
     <property name="max" value="1000"/>
   </module>
@@ -14,28 +14,32 @@
     <property name="max" value="120"/>
   </module>
 
-  <module name="SuppressWarningsFilter"/>
-  
-  <module name="TreeWalker">
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/suppressions.xml"/>
+    </module>
+
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="TreeWalker">
     <!-- Подавление ошибок через аннотацию -->
     <module name="SuppressWarningsHolder"/>
     <!-- Импорты -->
     <module name="UnusedImports"/>
-    
-    <!-- Форматирование -->
+
+        <!-- Форматирование -->
     <module name="Indentation">
       <property name="basicOffset" value="4"/>
     </module>
-    
-    <!-- Лучшие практики -->
+
+        <!-- Лучшие практики -->
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
     <module name="NeedBraces"/>
-    
-    <!-- Аннотации -->
+
+        <!-- Аннотации -->
     <module name="AnnotationLocation"/>
-    
-    <!-- Именование -->
+
+        <!-- Именование -->
     <module name="TypeName"/>
     <module name="MethodName">
       <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+    <!-- Allow underscore in test method names (e.g. should_return_X_when_Y) -->
+    <suppress files="[\\/]test[\\/]" checks="MethodName"/>
+    <!-- Allow longer lines (up to 150) in test files for builder chains -->
+    <suppress files="[\\/]test[\\/].*\.java" checks="LineLength"/>
+</suppressions>
