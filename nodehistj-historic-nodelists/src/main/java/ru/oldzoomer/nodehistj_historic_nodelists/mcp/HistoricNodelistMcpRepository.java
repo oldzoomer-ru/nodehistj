@@ -19,6 +19,9 @@ public class HistoricNodelistMcpRepository {
     @Tool(description = "Get node data by their 3D (node) address (eg. 2:5015/519), year, and day of nodelist")
     public NodeEntryDto getNodeByAddressAndYearAndDay(String address, Year year, Integer day) {
         Matcher matcher = Pattern.compile("(\\d+):(\\d+)/(\\d+)").matcher(address);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid address format: " + address);
+        }
         int zone = Integer.parseInt(matcher.group(1));
         int network = Integer.parseInt(matcher.group(2));
         int node = Integer.parseInt(matcher.group(3));
@@ -30,6 +33,9 @@ public class HistoricNodelistMcpRepository {
             "address (eg. 2:5015), year, and day of nodelist")
     public Set<NodeEntryDto> getNodesByNetworkAndYearAndDay(String address, Year year, Integer day) {
         Matcher matcher = Pattern.compile("(\\d+):(\\d+)").matcher(address);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid address format: " + address);
+        }
         int zone = Integer.parseInt(matcher.group(1));
         int network = Integer.parseInt(matcher.group(2));
 

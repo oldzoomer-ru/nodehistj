@@ -1,18 +1,19 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.service.impl;
 
-import java.time.Year;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
+
+import java.time.Year;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of service for working with historic Fidonet nodelists.
@@ -39,6 +40,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries
      */
     @Override
+    @Cacheable(value = "historicNodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntries(Year year, Integer dayOfYear) {
         log.debug("Fetching all historic nodelist entries for year: {}, day: {}", year, dayOfYear);
         return getFilteredNodeEntries(year, dayOfYear, null, null, null);
@@ -53,6 +55,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified zone
      */
     @Override
+    @Cacheable(value = "historicNodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}", year, dayOfYear, zone);
         return getFilteredNodeEntries(year, dayOfYear, zone, null, null);
@@ -68,6 +71,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a set of NodeEntryDto objects representing the nodelist entries for the specified network
      */
     @Override
+    @Cacheable(value = "historicNodelistRequests", sync = true)
     public Set<NodeEntryDto> getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network) {
         log.debug("Fetching historic nodelist entries for year: {}, day: {}, zone: {}, network: {}",
                 year, dayOfYear, zone, network);
@@ -85,6 +89,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
      * @return a NodeEntryDto object representing the specific nodelist entry
      */
     @Override
+    @Cacheable(value = "historicNodelistRequests", sync = true)
     public NodeEntryDto getNodelistEntry(Year year, Integer dayOfYear, Integer zone, Integer network, Integer node) {
         log.debug("Fetching historic nodelist entry for year: {}, day: {}, zone: {}, network: {}, node: {}",
                 year, dayOfYear, zone, network, node);
@@ -92,7 +97,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         if (result.isEmpty()) {
             log.warn("No nodelist entry found for year: {}, day: {}, zone: {}, network: {}, node: {}",
                     year, dayOfYear, zone, network, node);
-            throw new IllegalArgumentException("Nodelist entry not found for specified criteria");
+            throw new NoSuchElementException("Nodelist entry not found for specified criteria");
         }
         return result.stream().findFirst().orElseThrow();
     }
@@ -113,15 +118,15 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
             log.warn("No nodelist entry found for year: {}, day: {}", year, dayOfYear);
             return Set.of();
         }
-        
+
         var nodelistEntry = nodelistEntryRepository.findFirstByNodelistYearAndDayOfYear(year.getValue(), dayOfYear);
         if (nodelistEntry == null) {
             log.warn("No nodelist entry found for year: {}, day: {}", year, dayOfYear);
             return Set.of();
         }
-        
+
         var nodeEntries = nodelistEntry.getNodeEntries().stream();
-        
+
         if (zone != null) {
             nodeEntries = nodeEntries.filter(x -> x.getZone().equals(zone));
         }
@@ -131,7 +136,7 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         if (node != null) {
             nodeEntries = nodeEntries.filter(x -> x.getNode().equals(node));
         }
-        
+
         return nodeEntries
                 .map(nodeEntryMapper::toDto)
                 .collect(Collectors.toUnmodifiableSet());
