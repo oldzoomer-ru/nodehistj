@@ -40,3 +40,4 @@ out/
 
 .env
 traefik/acme.json
+/.tasks/
