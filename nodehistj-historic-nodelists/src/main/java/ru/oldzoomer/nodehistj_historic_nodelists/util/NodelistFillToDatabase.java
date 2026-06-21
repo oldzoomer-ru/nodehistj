@@ -69,8 +69,8 @@ public class NodelistFillToDatabase {
      * Processes each modified nodelist file from MinIO storage.
      * @param modifiedObjects list of MinIO object paths that were modified
      */
-    @CacheEvict(value = "historicNodelistRequests", allEntries = true)
     @Transactional
+    @CacheEvict(value = "historicNodelistRequests", allEntries = true)
     public void updateNodelist(List<String> modifiedObjects) {
         log.info("Update nodelists is started");
 
