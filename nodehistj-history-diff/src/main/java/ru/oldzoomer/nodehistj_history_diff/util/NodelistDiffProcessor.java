@@ -46,10 +46,10 @@ public class NodelistDiffProcessor {
             nodeHistoryEntryRepository.deleteAll(); // for correct diffing order
 
             nodelistEntryRepository.findAllAsStreamWithSort()
-                                    .gather(Gatherers.windowSliding(2))
+                    .gather(Gatherers.windowSliding(2))
                     .map(window -> processDiffBetweenNodelists(window.getFirst(), window.get(1)))
                     .flatMap(Collection::stream)
-                                    .forEach(nodeHistoryEntryRepository::save);
+                    .forEach(nodeHistoryEntryRepository::save);
 
             log.info("Nodelist diff processing completed");
 
