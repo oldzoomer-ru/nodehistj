@@ -135,42 +135,6 @@ services:
       redis:
         condition: service_healthy
 
-  # Сервис работы с актуальными данными nodelist
-  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
-  nodehistj-newest-nodelists:
-    image: gavrilovegor519/nodehistj-newest-nodelists:master
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE_NAME: nodehistj-newest-nodelists
-        SKIP_TESTS: "true"
-      secrets:
-        - github_username
-        - github_token
-    networks:
-      - nodehistj
-    ports:
-      - "8082:8080"
-    restart: unless-stopped
-    environment:
-      - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
-      - REDIS_HOST=redis
-      - S3_URL=http://minio:9000
-      - S3_USER=${S3_USER:-user}
-      - S3_PASSWORD=${S3_PASSWORD:-password}
-      - S3_BUCKET=nodehistj
-      - POSTGRES_HOST=postgres:5432
-    depends_on:
-      minio:
-        condition: service_healthy
-      redpanda:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
   # Сервис сравнения исторических и актуальных данных
   # Основные зависимости: Kafka, PostgreSQL, Redis
   nodehistj-history-diff:

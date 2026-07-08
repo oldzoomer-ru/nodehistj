@@ -107,45 +107,6 @@ services:
       redis:
         condition: service_healthy
 
-  # Сервис работы с актуальными данными nodelist
-  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
-  nodehistj-newest-nodelists:
-    image: gavrilovegor519/nodehistj-newest-nodelists:master
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE_NAME: nodehistj-newest-nodelists
-        SKIP_TESTS: "true"
-      secrets:
-        - github_username
-        - github_token
-    networks:
-      - nodehistj
-      - traefik
-    expose:
-      - 8080
-    restart: unless-stopped
-    environment:
-      - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
-      - REDIS_HOST=redis
-      - POSTGRES_HOST=postgres:5432
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
-    env_file: .env
-    labels:
-      - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`) && PathPrefix(`/newest`)"
-      - "traefik.http.routers.newest.entrypoints=websecure"
-      - "traefik.http.routers.newest.tls.certresolver=myresolver"
-      - "traefik.http.routers.newest.tls.domains[0].main=${DOMAIN}"
-    depends_on:
-      redpanda:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
   # Сервис сравнения исторических и актуальных данных
   # Основные зависимости: Kafka, PostgreSQL, Redis
   nodehistj-history-diff:

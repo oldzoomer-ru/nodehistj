@@ -61,21 +61,9 @@ docker compose -f compose-traefik.yml up -d
 
 ### Prerequisites
 
-- Docker and Docker Compose
+- Docker
 - Java 25
 - Gradle
-
-### Building the Project
-
-```bash
-./gradlew build
-```
-
-### Running Tests
-
-```bash
-./gradlew test
-```
 
 ### Running Locally
 
