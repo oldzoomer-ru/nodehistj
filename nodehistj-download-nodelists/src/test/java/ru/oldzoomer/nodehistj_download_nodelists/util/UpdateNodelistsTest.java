@@ -54,6 +54,7 @@ class UpdateNodelistsTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void updateNodelists_WithNewFiles_DownloadsAndSendsToKafka() throws IOException {
         // Given
         String[] filesCurrentYear = {CURRENT_YEAR + "/nodelist.001", CURRENT_YEAR + "/nodelist.002"};

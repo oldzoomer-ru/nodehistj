@@ -32,6 +32,7 @@ public class NodelistDiffProcessor {
      * Compares consecutive nodelist versions in reverse order (newest to oldest)
      * to ensure correct comparison direction.
      */
+    @SuppressWarnings("null")
     @Transactional
     public void processNodelistDiffs() {
         try {
