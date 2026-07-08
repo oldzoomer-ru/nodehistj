@@ -8,9 +8,9 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -18,7 +18,7 @@ import lombok.ToString;
  * Contains information about a specific nodelist.
  */
 @Getter
-@Setter
+@Builder
 @ToString
 @EqualsAndHashCode(of = {"nodelistYear", "dayOfYear"})
 @Table("nodelist_entry")

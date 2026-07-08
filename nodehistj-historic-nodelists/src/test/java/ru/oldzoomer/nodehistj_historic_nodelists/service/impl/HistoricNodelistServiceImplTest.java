@@ -16,6 +16,7 @@ import java.time.Year;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,13 +46,7 @@ class HistoricNodelistServiceImplTest {
     @Test
     void testGetNodelistEntries_WithValidData_ReturnsExpectedSet() {
         // Given
-        NodelistEntry nodelistEntry = new NodelistEntry();
-        NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setZone(TEST_ZONE);
-        nodeEntry.setNetwork(TEST_NETWORK);
-        nodeEntry.setNode(TEST_NODE);
-        Set<NodeEntry> nodeEntries = Set.of(nodeEntry);
-        nodelistEntry.setNodeEntries(nodeEntries);
+        NodelistEntry nodelistEntry = getNodelistEntry();
 
         when(nodelistEntryRepository.existsByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(true);
@@ -90,13 +85,7 @@ class HistoricNodelistServiceImplTest {
     @Test
     void testGetNodelistEntry_WithZone_ReturnsExpectedSet() {
         // Given
-        NodelistEntry nodelistEntry = new NodelistEntry();
-        NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setZone(TEST_ZONE);
-        nodeEntry.setNetwork(TEST_NETWORK);
-        nodeEntry.setNode(TEST_NODE);
-        Set<NodeEntry> nodeEntries = Set.of(nodeEntry);
-        nodelistEntry.setNodeEntries(nodeEntries);
+        NodelistEntry nodelistEntry = getNodelistEntry();
 
         when(nodelistEntryRepository.existsByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(true);
@@ -118,13 +107,7 @@ class HistoricNodelistServiceImplTest {
     @Test
     void testGetNodelistEntry_WithNetwork_ReturnsExpectedSet() {
         // Given
-        NodelistEntry nodelistEntry = new NodelistEntry();
-        NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setZone(TEST_ZONE);
-        nodeEntry.setNetwork(TEST_NETWORK);
-        nodeEntry.setNode(TEST_NODE);
-        Set<NodeEntry> nodeEntries = Set.of(nodeEntry);
-        nodelistEntry.setNodeEntries(nodeEntries);
+        NodelistEntry nodelistEntry = getNodelistEntry();
 
         when(nodelistEntryRepository.existsByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(true);
@@ -146,13 +129,7 @@ class HistoricNodelistServiceImplTest {
     @Test
     void testGetNodelistEntry_WithNode_ReturnsExpectedDto() {
         // Given
-        NodelistEntry nodelistEntry = new NodelistEntry();
-        NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setZone(TEST_ZONE);
-        nodeEntry.setNetwork(TEST_NETWORK);
-        nodeEntry.setNode(TEST_NODE);
-        Set<NodeEntry> nodeEntries = Set.of(nodeEntry);
-        nodelistEntry.setNodeEntries(nodeEntries);
+        NodelistEntry nodelistEntry = getNodelistEntry();
 
         when(nodelistEntryRepository.existsByNodelistYearAndDayOfYear(TEST_YEAR.getValue(), TEST_DAY_OF_YEAR))
                 .thenReturn(true);
@@ -180,5 +157,18 @@ class HistoricNodelistServiceImplTest {
         // When & Then
         assertThrows(IllegalArgumentException.class, () ->
                 historicNodelistService.getNodelistEntry(TEST_YEAR, TEST_DAY_OF_YEAR, TEST_ZONE, TEST_NETWORK, TEST_NODE));
+    }
+
+    private static NodelistEntry getNodelistEntry() {
+        NodelistEntry nodelistEntry = NodelistEntry.builder().build();
+
+        NodeEntry.NodeEntryBuilder nodeEntry = NodeEntry.builder();
+        nodeEntry.zone(TEST_ZONE);
+        nodeEntry.network(TEST_NETWORK);
+        nodeEntry.node(TEST_NODE);
+        Set<NodeEntry> nodeEntries = Set.of(nodeEntry.build());
+
+        nodelistEntry.getNodeEntries().addAll(nodeEntries);
+        return nodelistEntry;
     }
 }

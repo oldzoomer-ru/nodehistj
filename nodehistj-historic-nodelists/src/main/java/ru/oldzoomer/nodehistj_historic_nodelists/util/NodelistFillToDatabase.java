@@ -49,19 +49,22 @@ public class NodelistFillToDatabase {
     private static NodeEntry getNodeEntry(
             ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry
     ) {
-        NodeEntry nodeEntryNew = new NodeEntry();
+        NodeEntry.NodeEntryBuilder nodeEntryNew = NodeEntry.builder();
 
-        nodeEntryNew.setZone(nodeListEntry.zone());
-        nodeEntryNew.setNetwork(nodeListEntry.network());
-        nodeEntryNew.setNode(nodeListEntry.node());
-        nodeEntryNew.setBaudRate(nodeListEntry.baudRate());
-        nodeEntryNew.setKeywords(nodeListEntry.keywords());
-        nodeEntryNew.setLocation(nodeListEntry.location());
-        nodeEntryNew.setNodeName(nodeListEntry.nodeName());
-        nodeEntryNew.setPhone(nodeListEntry.phone());
-        nodeEntryNew.setSysOpName(nodeListEntry.sysOpName());
-        nodeEntryNew.setFlags(Arrays.asList(nodeListEntry.flags()));
-        return nodeEntryNew;
+        nodeEntryNew.zone(nodeListEntry.zone());
+        nodeEntryNew.network(nodeListEntry.network());
+        nodeEntryNew.node(nodeListEntry.node());
+        nodeEntryNew.baudRate(nodeListEntry.baudRate());
+        nodeEntryNew.keywords(nodeListEntry.keywords());
+        nodeEntryNew.location(nodeListEntry.location());
+        nodeEntryNew.nodeName(nodeListEntry.nodeName());
+        nodeEntryNew.phone(nodeListEntry.phone());
+        nodeEntryNew.sysOpName(nodeListEntry.sysOpName());
+
+        NodeEntry nodeEntry = nodeEntryNew.build();
+        nodeEntry.getFlags().addAll(Arrays.asList(nodeListEntry.flags()));
+
+        return nodeEntry;
     }
 
     /**
@@ -104,15 +107,17 @@ public class NodelistFillToDatabase {
     private NodelistEntry updateNodelist(Nodelist nodelist, Year year, int dayOfYear) {
         log.info("Update nodelist from {} year and name {} is started", year, dayOfYear);
 
-        NodelistEntry nodelistEntryNew = new NodelistEntry();
-        nodelistEntryNew.setNodelistYear(year.getValue());
-        nodelistEntryNew.setDayOfYear(dayOfYear);
+        NodelistEntry.NodelistEntryBuilder nodelistEntryNew = NodelistEntry.builder();
+        nodelistEntryNew.nodelistYear(year.getValue());
+        nodelistEntryNew.dayOfYear(dayOfYear);
+
+        NodelistEntry nodelistEntry = nodelistEntryNew.build();
 
         for (ru.oldzoomer.nodelistj.entries.NodelistEntry nodeListEntry : nodelist.getNodelist()) {
-            nodelistEntryNew.getNodeEntries().add(getNodeEntry(nodeListEntry));
+            nodelistEntry.getNodeEntries().add(getNodeEntry(nodeListEntry));
         }
 
-        return nodelistEntryNew;
+        return nodelistEntry;
     }
 
     /**

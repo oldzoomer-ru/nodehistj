@@ -159,36 +159,36 @@ public class NodelistDiffProcessor {
     private NodeHistoryEntry createHistoryEntry(NodeEntry node, Integer nodelistYear,
                                     Integer dayOfYear, LocalDate changeDate,
             NodeHistoryEntry.ChangeType changeType, NodeEntry previousNode) {
-        NodeHistoryEntry historyEntry = new NodeHistoryEntry();
+        NodeHistoryEntry.NodeHistoryEntryBuilder historyEntry = NodeHistoryEntry.builder();
 
-        historyEntry.setZone(node.getZone());
-        historyEntry.setNetwork(node.getNetwork());
-        historyEntry.setNode(node.getNode());
-        historyEntry.setChangeDate(changeDate);
-        historyEntry.setNodelistYear(nodelistYear);
-        historyEntry.setDayOfYear(dayOfYear);
-        historyEntry.setChangeType(changeType);
+        historyEntry.zone(node.getZone());
+        historyEntry.network(node.getNetwork());
+        historyEntry.node(node.getNode());
+        historyEntry.changeDate(changeDate);
+        historyEntry.nodelistYear(nodelistYear);
+        historyEntry.dayOfYear(dayOfYear);
+        historyEntry.changeType(changeType);
 
         // Current values
-        historyEntry.setKeywords(node.getKeywords());
-        historyEntry.setNodeName(node.getNodeName());
-        historyEntry.setLocation(node.getLocation());
-        historyEntry.setSysOpName(node.getSysOpName());
-        historyEntry.setPhone(node.getPhone());
-        historyEntry.setBaudRate(node.getBaudRate());
-        historyEntry.setFlags(node.getFlags());
+        historyEntry.keywords(node.getKeywords());
+        historyEntry.nodeName(node.getNodeName());
+        historyEntry.location(node.getLocation());
+        historyEntry.sysOpName(node.getSysOpName());
+        historyEntry.phone(node.getPhone());
+        historyEntry.baudRate(node.getBaudRate());
+        historyEntry.flags(node.getFlags());
 
         // Previous values (for MODIFIED entries)
         if (previousNode != null && changeType == NodeHistoryEntry.ChangeType.MODIFIED) {
-            historyEntry.setPrevKeywords(previousNode.getKeywords());
-            historyEntry.setPrevNodeName(previousNode.getNodeName());
-            historyEntry.setPrevLocation(previousNode.getLocation());
-            historyEntry.setPrevSysOpName(previousNode.getSysOpName());
-            historyEntry.setPrevPhone(previousNode.getPhone());
-            historyEntry.setPrevBaudRate(previousNode.getBaudRate());
-            historyEntry.setPrevFlags(previousNode.getFlags());
+            historyEntry.prevKeywords(previousNode.getKeywords());
+            historyEntry.prevNodeName(previousNode.getNodeName());
+            historyEntry.prevLocation(previousNode.getLocation());
+            historyEntry.prevSysOpName(previousNode.getSysOpName());
+            historyEntry.prevPhone(previousNode.getPhone());
+            historyEntry.prevBaudRate(previousNode.getBaudRate());
+            historyEntry.prevFlags(previousNode.getFlags());
         }
 
-        return historyEntry;
+        return historyEntry.build();
     }
 }

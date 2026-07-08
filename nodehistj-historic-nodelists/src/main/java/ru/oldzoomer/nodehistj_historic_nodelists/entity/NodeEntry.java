@@ -7,9 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
@@ -18,7 +18,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  * Contains information about a specific node in a nodelist.
  */
 @Getter
-@Setter
+@Builder
 @ToString
 @EqualsAndHashCode(of = {"zone", "network", "node"})
 @Table("node_entry")

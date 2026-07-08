@@ -8,9 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import ru.oldzoomer.nodelistj.enums.Keywords;
 
@@ -19,7 +19,7 @@ import ru.oldzoomer.nodelistj.enums.Keywords;
  * Contains information about changes to a specific node over time.
  */
 @Getter
-@Setter
+@Builder
 @ToString
 @EqualsAndHashCode
 @Table("node_history_entry")

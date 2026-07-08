@@ -71,21 +71,21 @@ public abstract class BaseIntegrationTest {
     }
 
     private static @NotNull NodeHistoryEntry getNodeHistoryEntry() {
-        NodeHistoryEntry addedEntry = new NodeHistoryEntry();
-        addedEntry.setZone(1);
-        addedEntry.setNetwork(1);
-        addedEntry.setNode(1);
-        addedEntry.setChangeDate(LocalDate.of(2023, 1, 1));
-        addedEntry.setNodelistYear(2023);
-        addedEntry.setDayOfYear(1);
-        addedEntry.setChangeType(NodeHistoryEntry.ChangeType.ADDED);
-        addedEntry.setNodeName("Test Node");
-        addedEntry.setLocation("Test Location");
-        addedEntry.setSysOpName("Test SysOp");
-        addedEntry.setPhone("1234567890");
-        addedEntry.setBaudRate(1200);
-        addedEntry.setFlags(List.of("FLAG1", "FLAG2"));
-        return addedEntry;
+        NodeHistoryEntry.NodeHistoryEntryBuilder addedEntry = NodeHistoryEntry.builder();
+        addedEntry.zone(1);
+        addedEntry.network(1);
+        addedEntry.node(1);
+        addedEntry.changeDate(LocalDate.of(2023, 1, 1));
+        addedEntry.nodelistYear(2023);
+        addedEntry.dayOfYear(1);
+        addedEntry.changeType(NodeHistoryEntry.ChangeType.ADDED);
+        addedEntry.nodeName("Test Node");
+        addedEntry.location("Test Location");
+        addedEntry.sysOpName("Test SysOp");
+        addedEntry.phone("1234567890");
+        addedEntry.baudRate(1200);
+        addedEntry.flags(List.of("FLAG1", "FLAG2"));
+        return addedEntry.build();
     }
 
     @BeforeEach
@@ -101,18 +101,18 @@ public abstract class BaseIntegrationTest {
         NodeHistoryEntry addedEntry = getNodeHistoryEntry();
         nodeHistoryEntryRepository.save(addedEntry);
 
-        NodeHistoryEntry modifiedEntry = new NodeHistoryEntry();
-        modifiedEntry.setZone(1);
-        modifiedEntry.setNetwork(1);
-        modifiedEntry.setNode(2);
-        modifiedEntry.setChangeDate(LocalDate.of(2023, 1, 2));
-        modifiedEntry.setNodelistYear(2023);
-        modifiedEntry.setDayOfYear(2);
-        modifiedEntry.setChangeType(NodeHistoryEntry.ChangeType.MODIFIED);
-        modifiedEntry.setNodeName("Modified Node");
-        modifiedEntry.setLocation("New Location");
-        modifiedEntry.setPrevNodeName("Old Node");
-        modifiedEntry.setPrevLocation("Old Location");
-        return modifiedEntry;
+        NodeHistoryEntry.NodeHistoryEntryBuilder modifiedEntry = NodeHistoryEntry.builder();
+        modifiedEntry.zone(1);
+        modifiedEntry.network(1);
+        modifiedEntry.node(2);
+        modifiedEntry.changeDate(LocalDate.of(2023, 1, 2));
+        modifiedEntry.nodelistYear(2023);
+        modifiedEntry.dayOfYear(2);
+        modifiedEntry.changeType(NodeHistoryEntry.ChangeType.MODIFIED);
+        modifiedEntry.nodeName("Modified Node");
+        modifiedEntry.location("New Location");
+        modifiedEntry.prevNodeName("Old Node");
+        modifiedEntry.prevLocation("Old Location");
+        return modifiedEntry.build();
     }
 }

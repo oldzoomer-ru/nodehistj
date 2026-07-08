@@ -15,6 +15,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
+
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
@@ -73,20 +74,23 @@ public abstract class BaseIntegrationTest {
     void setUpDatabase() {
         nodelistEntryRepository.deleteAll();
 
-        NodelistEntry nodelistEntry = new NodelistEntry();
-        nodelistEntry.setNodelistYear(2023);
-        nodelistEntry.setDayOfYear(1);
+        NodelistEntry.NodelistEntryBuilder nodelistEntryBuild = NodelistEntry.builder();
+        nodelistEntryBuild.nodelistYear(2023);
+        nodelistEntryBuild.dayOfYear(1);
 
-        NodeEntry nodeEntry = new NodeEntry();
-        nodeEntry.setZone(1);
-        nodeEntry.setNetwork(1);
-        nodeEntry.setNode(1);
-        nodeEntry.setNodeName("Test Node");
-        nodeEntry.setLocation("Test Location");
-        nodeEntry.setSysOpName("Test SysOp");
-        nodeEntry.setPhone("1234567890");
-        nodeEntry.setBaudRate(1200);
-        nodeEntry.setFlags(List.of("FLAG1", "FLAG2"));
+        NodeEntry.NodeEntryBuilder nodeEntryBuild = NodeEntry.builder();
+        nodeEntryBuild.zone(1);
+        nodeEntryBuild.network(1);
+        nodeEntryBuild.node(1);
+        nodeEntryBuild.nodeName("Test Node");
+        nodeEntryBuild.location("Test Location");
+        nodeEntryBuild.sysOpName("Test SysOp");
+        nodeEntryBuild.phone("1234567890");
+        nodeEntryBuild.baudRate(1200);
+        nodeEntryBuild.flags(List.of("FLAG1", "FLAG2"));
+
+        NodelistEntry nodelistEntry = nodelistEntryBuild.build();
+        NodeEntry nodeEntry = nodeEntryBuild.build();
 
         nodelistEntry.getNodeEntries().add(nodeEntry);
         nodelistEntryRepository.save(nodelistEntry);

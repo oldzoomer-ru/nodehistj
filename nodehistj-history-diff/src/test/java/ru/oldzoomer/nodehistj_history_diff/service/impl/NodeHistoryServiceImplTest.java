@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +48,7 @@ class NodeHistoryServiceImplTest {
     void testGetNodeHistory_WithValidData_ReturnsExpectedPage() {
         // Given
         Pageable pageable = Pageable.ofSize(10);
-        NodeHistoryEntry historyEntry = new NodeHistoryEntry();
+        NodeHistoryEntry historyEntry = NodeHistoryEntry.builder().build();
         Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZoneAndNetworkAndNode(TEST_ZONE, TEST_NETWORK, TEST_NODE, pageable))
@@ -69,7 +70,7 @@ class NodeHistoryServiceImplTest {
     void testGetNetworkHistory_WithValidData_ReturnsExpectedPage() {
         // Given
         Pageable pageable = Pageable.ofSize(10);
-        NodeHistoryEntry historyEntry = new NodeHistoryEntry();
+        NodeHistoryEntry historyEntry = NodeHistoryEntry.builder().build();
         Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZoneAndNetwork(TEST_ZONE, TEST_NETWORK, pageable))
@@ -91,7 +92,7 @@ class NodeHistoryServiceImplTest {
     void testGetZoneHistory_WithValidData_ReturnsExpectedPage() {
         // Given
         Pageable pageable = Pageable.ofSize(10);
-        NodeHistoryEntry historyEntry = new NodeHistoryEntry();
+        NodeHistoryEntry historyEntry = NodeHistoryEntry.builder().build();
         Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findByZone(TEST_ZONE, pageable))
@@ -113,7 +114,7 @@ class NodeHistoryServiceImplTest {
     void testGetAllHistory_WithValidData_ReturnsExpectedPage() {
         // Given
         Pageable pageable = Pageable.ofSize(10);
-        NodeHistoryEntry historyEntry = new NodeHistoryEntry();
+        NodeHistoryEntry historyEntry = NodeHistoryEntry.builder().build();
         Page<@NonNull NodeHistoryEntry> page = new PageImpl<>(List.of(historyEntry));
 
         when(nodeHistoryEntryRepository.findAll(pageable))
