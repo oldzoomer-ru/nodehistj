@@ -49,7 +49,6 @@ COPY lib/s3/build.gradle $APP_HOME/lib/s3/
 COPY nodehistj-download-nodelists/build.gradle $APP_HOME/nodehistj-download-nodelists/
 COPY nodehistj-historic-nodelists/build.gradle $APP_HOME/nodehistj-historic-nodelists/
 COPY nodehistj-history-diff/build.gradle $APP_HOME/nodehistj-history-diff/
-COPY nodehistj-newest-nodelists/build.gradle $APP_HOME/nodehistj-newest-nodelists/
 
 RUN --mount=type=secret,id=github_username \
     --mount=type=secret,id=github_token \
@@ -67,7 +66,6 @@ COPY lib/s3/src/main/ $APP_HOME/lib/s3/src/main/
 COPY nodehistj-download-nodelists/src/main/ $APP_HOME/nodehistj-download-nodelists/src/main/
 COPY nodehistj-historic-nodelists/src/main/ $APP_HOME/nodehistj-historic-nodelists/src/main/
 COPY nodehistj-history-diff/src/main/ $APP_HOME/nodehistj-history-diff/src/main/
-COPY nodehistj-newest-nodelists/src/main/ $APP_HOME/nodehistj-newest-nodelists/src/main/
 
 RUN --mount=type=secret,id=github_username \
     --mount=type=secret,id=github_token \
