@@ -35,5 +35,6 @@ public class NodelistEntry {
 
     @MappedCollection(idColumn = "nodelist_entry_id")
     @ToString.Exclude
+    @Builder.Default
     private final Set<NodeEntry> nodeEntries = new HashSet<>();
 }

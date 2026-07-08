@@ -55,5 +55,6 @@ public class NodeEntry {
     private Integer baudRate;
 
     @Column("flags")
+    @Builder.Default
     private List<String> flags = new ArrayList<>();
 }
