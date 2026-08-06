@@ -5,6 +5,9 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_history_diff}
     username: ${POSTGRES_USER:user}
     password: ${POSTGRES_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: -1
   cache:
     redis:
       time-to-live: 12h

@@ -1,39 +1,49 @@
 #
-# Unified Dockerfile for all NodehistJ services (optimized)
+# Unified Dockerfile for all NodehistJ services (GraalVM Native Image + Distroless)
 #
 # Features:
-# - Multi-stage сборка (build + runtime)
+# - Multi-stage сборка: GraalVM native compilation + Distroless cc runtime
 # - Поддержка всех сервисов NodehistJ
 # - Пропуск тестов при сборке (по умолчанию)
 # - Поддержка GitHub credentials через Docker secrets
 # - Кэширование зависимостей Gradle
+# - PGO-оптимизации (опционально, через сборочные аргументы)
 #
 # Требования:
 # - Docker 20.10+
+# - Доступно ≥ 8 GB RAM для native-сборки
 #
 # Использование:
-# docker build --build-arg SERVICE_NAME=nodehistj-download-nodelists -t nodehistj-download .
+#   docker build --build-arg SERVICE_NAME=nodehistj-download-nodelists -t nodehistj-download .
+#
+# С PGO (двухпроходная сборка):
+#   # Шаг 1 — инструментированная сборка
+#   docker build --build-arg SERVICE_NAME=... --build-arg PGO_MODE=instrument -t nodehistj-instrumented .
+#   # Шаг 2 — сбор профиля запуском контейнера с тестовой нагрузкой
+#   # Шаг 3 — финальная сборка с профилем
+#   docker build --build-arg SERVICE_NAME=... --build-arg PGO_MODE=optimized \
+#     --secret id=default_iprof,src=default.iprof -t nodehistj-optimized .
 #
 # Переменные сборки:
-# SERVICE_NAME - обязательный, имя сервиса для сборки (например nodehistj-download-nodelists)
-# SKIP_TESTS - пропускать тесты (по умолчанию true)
+#   SERVICE_NAME  — обязательный, имя сервиса (например nodehistj-download-nodelists)
+#   SKIP_TESTS    — пропускать тесты (по умолчанию true)
+#   PGO_MODE      — режим PGO: 'instrument' | 'optimized' (по умолчанию пусто — без PGO)
 #
 # Secrets:
-# github_username - логин GitHub для доступа к приватным репозиториям
-# github_token - токен GitHub с правами чтения
+#   github_username — логин GitHub для доступа к приватным репозиториям
+#   github_token    — токен GitHub с правами чтения
+#   default_iprof   — PGO-профиль (только при PGO_MODE=optimized)
 #
 ARG BUILD_HOME=/build
 
 #
-# Gradle image for the build stage.
+# Stage 1: GraalVM Native Image compilation
 #
-FROM eclipse-temurin:25-jdk-alpine AS build-image
+FROM ghcr.io/graalvm/native-image-community:25 AS build-image
 
-#
-# Set the working directory.
-#
 ARG SERVICE_NAME
 ARG BUILD_HOME
+ARG PGO_MODE
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
@@ -50,16 +60,10 @@ COPY nodehistj-download-nodelists/build.gradle $APP_HOME/nodehistj-download-node
 COPY nodehistj-historic-nodelists/build.gradle $APP_HOME/nodehistj-historic-nodelists/
 COPY nodehistj-history-diff/build.gradle $APP_HOME/nodehistj-history-diff/
 
-RUN --mount=type=secret,id=github_username \
-    --mount=type=secret,id=github_token \
-    if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
-        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
-        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
-    fi; \
-    ./gradlew :dependencies --no-daemon;
+RUN ./gradlew :dependencies --no-daemon
 
 #
-# Build the specified service
+# Build the native image for the specified service
 #
 COPY config/ $APP_HOME/config/
 COPY lib/s3/src/main/ $APP_HOME/lib/s3/src/main/
@@ -67,32 +71,33 @@ COPY nodehistj-download-nodelists/src/main/ $APP_HOME/nodehistj-download-nodelis
 COPY nodehistj-historic-nodelists/src/main/ $APP_HOME/nodehistj-historic-nodelists/src/main/
 COPY nodehistj-history-diff/src/main/ $APP_HOME/nodehistj-history-diff/src/main/
 
-RUN --mount=type=secret,id=github_username \
-    --mount=type=secret,id=github_token \
-    if [ -f /run/secrets/github_username ] && [ -f /run/secrets/github_token ]; then \
-        export GITHUB_USERNAME=$(cat /run/secrets/github_username); \
-        export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+RUN --mount=type=secret,id=default_iprof \
+    export NATIVE_BUILD_ARGS=""; \
+    if [ "${PGO_MODE}" = "instrument" ]; then \
+        export NATIVE_BUILD_ARGS="-Pbootstrap"; \
+    elif [ "${PGO_MODE}" = "optimized" ] && [ -f /run/secrets/default_iprof ]; then \
+        mkdir -p /tmp/pgo; \
+        cp /run/secrets/default_iprof /tmp/pgo/default.iprof; \
+        export NATIVE_BUILD_ARGS="-Ppgo=/tmp/pgo/default.iprof"; \
     fi; \
-    ./gradlew :${SERVICE_NAME}:build --no-daemon -x check;
+    ./gradlew :${SERVICE_NAME}:nativeCompile --no-daemon -x check ${NATIVE_BUILD_ARGS}
 
 #
-# Java image for the application to run in.
+# Stage 2: Distroless base runtime
 #
-FROM gcr.io/distroless/java25-debian13:nonroot
+FROM gcr.io/distroless/base-debian13:nonroot
 
-#
-# Build arguments
-#
 ARG BUILD_HOME
 ARG SERVICE_NAME
 ENV APP_HOME=$BUILD_HOME
 
 #
-# Copy the jar file and name it app.jar
+# Copy the native executable
 #
-COPY --from=build-image $APP_HOME/${SERVICE_NAME}/build/libs/${SERVICE_NAME}-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build-image $APP_HOME/${SERVICE_NAME}/build/native/nativeCompile/${SERVICE_NAME} /app
 
 #
 # The command to run when the container starts.
+# The native image is a standalone executable — no JVM needed.
 #
-CMD ["app.jar"]
+ENTRYPOINT ["/app"]

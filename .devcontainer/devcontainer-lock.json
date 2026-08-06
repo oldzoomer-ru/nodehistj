@@ -1,6 +1,11 @@
 {
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {
+    "ghcr.io/devcontainers-extra/features/graalvm-asdf:2": {
+      "version": "2.0.16",
+      "resolved": "ghcr.io/devcontainers-extra/features/graalvm-asdf@sha256:9aceab58ec21b9122de2abf8f8141c6158e729807b6a3a39b86b9c29a52ac3f8",
+      "integrity": "sha256:9aceab58ec21b9122de2abf8f8141c6158e729807b6a3a39b86b9c29a52ac3f8"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {
       "version": "4.0.0",
       "resolved": "ghcr.io/devcontainers/features/docker-in-docker@sha256:4fa87399214366e320d489991769c4f3f461e1ffe461f54eea78a41b34945bb5",
       "integrity": "sha256:4fa87399214366e320d489991769c4f3f461e1ffe461f54eea78a41b34945bb5"

@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'java-library'
     id 'checkstyle'
+    id 'jacoco'
+    id 'org.graalvm.buildtools.native' version '1.1.7' apply false
     id 'org.springframework.boot' version '4.1.0' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
 }
@@ -13,13 +15,7 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/oldzoomer-ru/nodelistj/")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME") ?: ""
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN") ?: ""
-            }
-        }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -28,11 +24,13 @@ subprojects {
         apply plugin: 'java-library'
     } else {
         apply plugin: 'java'
+        apply plugin: 'org.graalvm.buildtools.native'
     }
 
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
 
     if (project.path.startsWith(':lib')) {
         bootJar {
@@ -42,12 +40,50 @@ subprojects {
         jar {
             enabled = true
         }
+    } else {
+        //
+        // GraalVM Native Image configuration and optimizations
+        //
+        graalvmNative {
+            binaries {
+                main {
+                    // Production-optimised defaults
+                    buildArgs.add('-H:+ReportExceptionStackTraces')
+                    buildArgs.add('-Os')
+                    buildArgs.add('-H:+StripDebugInfo')
+                    buildArgs.add('--no-fallback')
+
+                    // PGO bootstrap property  (set -Pbootstrap for instrumented build)
+                    if (project.hasProperty('bootstrap')) {
+                        buildArgs.add('--pgo-instrument')
+                    }
+                    // PGO optimisation property  (set -Ppgo=/path/to/default.iprof)
+                    if (project.hasProperty('pgo')) {
+                        buildArgs.add("--pgo=${project.property('pgo')}")
+                    }
+
+                    // Quick build for local development  (–no-fallback, –parallelism)
+                    if (project.hasProperty('quickBuild')) {
+                        buildArgs.add('-Ob')
+                        buildArgs.add('--parallelism=2')
+                    }
+                }
+            }
+        }
     }
 
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(25)
         }
+    }
+
+    test {
+        finalizedBy jacocoTestReport // report is always generated after tests run
+    }
+
+    jacocoTestReport {
+        dependsOn test // tests are required to run before generating the report
     }
 
     configurations {
@@ -59,7 +95,7 @@ subprojects {
     ext {
         mapstructVersion = '1.6.3'
         therapiVersion = '0.15.0'
-        nodelistjVersion = '2.0.0'
+        nodelistjVersion = '2.0.1'
     }
 
     dependencies {

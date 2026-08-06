@@ -11,11 +11,11 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.postgresql:postgresql'
-    implementation "ru.oldzoomer:nodelistj:${nodelistjVersion}"
+    implementation "com.github.oldzoomer-ru:nodelistj:${nodelistjVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation 'org.springframework.boot:spring-boot-jackson2'
-    implementation "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+    developmentOnly "com.github.therapi:therapi-runtime-javadoc:${therapiVersion}"
+    developmentOnly 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     annotationProcessor "com.github.therapi:therapi-runtime-javadoc-scribe:${therapiVersion}"
@@ -26,6 +26,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.testcontainers:testcontainers-postgresql'
     testImplementation 'org.testcontainers:testcontainers-redpanda'
     testImplementation 'org.testcontainers:testcontainers-minio'

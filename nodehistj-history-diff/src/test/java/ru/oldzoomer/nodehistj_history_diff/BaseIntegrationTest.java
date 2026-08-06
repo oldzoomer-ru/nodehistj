@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,15 +22,15 @@ import ru.oldzoomer.nodehistj_history_diff.repo.NodeHistoryEntryRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
-@Transactional
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
+    @ServiceConnection // Автоматическая конфигурация DataSource и Liquibase
     public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:alpine")
             .withDatabaseName("testdb")
             .withUsername("testuser")
@@ -39,35 +39,31 @@ public abstract class BaseIntegrationTest {
 
     @SuppressWarnings("resource")
     @Container
+    @ServiceConnection // Автоматическая конфигурация Kafka
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
     @SuppressWarnings("resource")
     @Container
+    @ServiceConnection // Автоматическая конфигурация Redis
+    public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
+            .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
+
+    @SuppressWarnings("resource")
+    @Container // Кастомный контейнер для S3 хранилища
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")
             .withPassword("minioadmin")
             .waitingFor(Wait.forSuccessfulCommand("mc ready local"));
 
-    @SuppressWarnings("resource")
-    @Container
-    public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
-            .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
-
     @Autowired
     private NodeHistoryEntryRepository nodeHistoryEntryRepository;
 
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:alpine:///testdb");
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    @DynamicPropertySource // Оставляем только специфичные для MinIO свойства
+    static void registerMinioProperties(DynamicPropertyRegistry registry) {
         registry.add("s3.url", minioContainer::getS3URL);
         registry.add("s3.accessKey", minioContainer::getUserName);
         registry.add("s3.secretKey", minioContainer::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
-        registry.add("spring.data.redis.host", redisContainer::getRedisHost);
-        registry.add("spring.data.redis.port", redisContainer::getRedisPort);
     }
 
     private static @NotNull NodeHistoryEntry getNodeHistoryEntry() {
