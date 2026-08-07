@@ -45,6 +45,23 @@ subprojects {
         // GraalVM Native Image configuration and optimizations
         //
         graalvmNative {
+            metadataRepository {
+                enabled = true
+            }
+
+            agent {
+                // Use "standard" mode, not "conditional". In conditional mode, each entry gets a
+                // "condition: typeReached: <caller>" attached. When tests are the callers, the
+                // condition becomes "typeReached: PluginLoaderIntegrationTest" — a class that
+                // doesn't exist in the production binary. The condition is never true, so the
+                // entries are inactive and Class.forName() fails at runtime.
+                //
+                // Standard mode records unconditional entries. The reachability metadata
+                // repository (enabled above) already handles Spring/library internals, so any
+                // extra entries captured here are deduplicated at build time.
+                defaultMode = "standard"
+            }
+
             binaries {
                 main {
                     // Production-optimised defaults
@@ -67,6 +84,8 @@ subprojects {
                         buildArgs.add('-Ob')
                         buildArgs.add('--parallelism=2')
                     }
+
+                    resources.autodetect()
                 }
             }
         }
