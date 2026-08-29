@@ -1,78 +1,173 @@
-# NodehistJ — Руководство для контрибьютеров
-
-NodehistJ — система управления историческими данными FidoNet nodelist. Мульти-модульный Gradle-проект на Java 25 +
-Spring Boot 4.1.0.
+# NodehistJ — Contributor Guide
 
 ## Структура проекта
 
+NodehistJ — мульти-модульный Gradle-проект на Spring Boot 4.1.1 (Java 25).
+
 ```
-nodehistj/                          # Корень проекта (Groovy-билд)
-├── nodehistj-historic-nodelists/   # Сервис исторических nodelists (/historic)
-├── nodehistj-history-diff/         # Сервис diff и истории узлов (/diff)
-├── nodehistj-download-nodelists/   # Сервис загрузки nodelists
-├── lib/s3/                         # Общая библиотека для S3-операций
-├── config/checkstyle/              # Общие checkstyle-конфиги
-└── build.gradle                    # Билд корня и подпроектов
+├── lib/s3/                          # Библиотека для работы с S3 (jar, не bootJar)
+├── nodehistj-historic-nodelists/    # Сервис historic (/historic)
+├── nodehistj-download-nodelists/    # Сервис download (/newest)
+├── nodehistj-history-diff/          # Сервис diff (/diff)
+├── config/checkstyle/               # Checkstyle-конфигурация
+├── .github/workflows/               # GitHub Actions CI/CD
+├── Dockerfile                       # Единый Dockerfile для всех сервисов (GraalVM Native)
+├── compose-dev.yml                  # Dev-окружение (MinIO + сервисы)
+└── compose-traefik.yml              # Продакшн (Traefik routing)
 ```
 
-Каждый модуль использует стандартную Maven-структуру: `src/main/java`, `src/main/resources`, `src/test/java`.
+Каждый сервис следует стандартной Spring Boot структуре:
 
-Пакет: `ru.oldzoomer.<module_with_underscores>`.
+- `controller/` — REST-контроллеры
+- `service/` и `service/impl/` — бизнес-логика (interface + implementation)
+- `repo/` — Spring Data JPA репозитории
+- `entity/` — JPA-сущности (Lombok `@Builder`, `@RequiredArgsConstructor`)
+- `dto/` — DTO для API
+- `mapper/` — MapStruct-мапперы
+- `kafka/` — Kafka-консьюмеры/продюсеры
+- `config/` — конфигурации Spring
+- `mcp/` — MCP-сервисы
+- `util/` — утилиты
 
-## Сборка и запуск
+Тесты находятся в `src/test/java` рядом с основным кодом. Интеграционные тесты наследуются от `BaseIntegrationTest` (
+Testcontainers: PostgreSQL, Redpanda, Redis, MinIO).
 
-| Команда                       | Описание                    |
-|-------------------------------|-----------------------------|
-| `./gradlew build`             | Сборка всех модулей + тесты |
-| `./gradlew test`              | Запуск unit-тестов          |
-| `./gradlew checkstyleMain`    | Проверка стиля кода         |
-| `./gradlew :<module>:bootRun` | Запуск сервиса локально     |
+## Команды сборки и запуска
 
-### Зависимости среды
+| Команда                           | Описание                                                  |
+|-----------------------------------|-----------------------------------------------------------|
+| `./gradlew build`                 | Собрать все модули, запустить тесты, проверить checkstyle |
+| `./gradlew test`                  | Запустить только unit-тесты                               |
+| `./gradlew check`                 | Проверка кода (checkstyle + тесты)                        |
+| `./gradlew :module:bootRun`       | Запустить сервис локально                                 |
+| `./gradlew :module:nativeCompile` | Собрать GraalVM Native Image                              |
+| `./gradlew jacocoTestReport`      | Сгенерировать отчёт по покрытию                           |
+| `./gradlew dependencies`          | Показать дерево зависимостей                              |
 
-Локальная разработка требует запущенных бэкенд-сервисов:
+**PGO-оптимизация:**
 
 ```bash
-docker compose -f compose-dev.yml up -d   # MinIO, PostgreSQL, Redis, Redpanda
-./gradlew :nodehistj-history-diff:bootRun  # Запуск сервиса
+# Шаг 1: инструментированная сборка
+./gradlew :module:nativeCompile -Pbootstrap
+
+# Шаг 2: сбор профиля (запуск контейнера с нагрузкой)
+
+# Шаг 3: финальная сборка с профилем
+./gradlew :module:nativeCompile -Ppgo=/path/to/default.iprof
 ```
 
-## Стиль кода
+**Быстрая сборка:** `./gradlew :module:nativeCompile -PquickBuild`
 
-- **4 пробела** для отступов, **120 символов** — максимальная длина строки.
-- **Именование:** `PascalCase` для типов, `camelCase` для методов/параметров/полей.
-- **Checkstyle** — обязательная проверка (конфиг: `config/checkstyle/checkstyle.xml`).
-- Lombok (`@RequiredArgsConstructor`, `@Builder`, `@Getter` и т.д.) — для boilerplate.
-- MapStruct — для маппинга DTO ↔ Entity.
-- Аннотации Spring Data JDBC (`@Table`, `@Column`, `@Id`) — для маппинга сущностей.
+## Стиль кода и правила
 
-## Тесты
+- **Отступы:** 4 пробела (Checkstyle `Indentation`)
+- **Макс. длина строки:** 120 символов
+- **Макс. длина файла:** 1000 строк
+- **Именование методов/параметров:** camelCase, начинается со строчной (`^[a-z][a-zA-Z0-9]*$`)
+- **Именование классов:** PascalCase
+- **Checkstyle:** запускается автоматически при `build`/`check`
+- **Jacoco:** отчёт генерируется автоматически после тестов
 
-- JUnit 5 + Spring Boot Test (`@SpringBootTest`).
-- Запуск: `./gradlew test` или `./gradlew :<module>:test`.
-- Именованный паттерн: `<MethodName>_<Scenario>_<ExpectedResult>`.
+### Паттерны кода
 
-## Коммиты
+- Сущности: Lombok `@Builder` + `@RequiredArgsConstructor` + `@Entity`
+- Сервисы: `@Service`, `@RequiredArgsConstructor`, `@Transactional(readOnly = true)` на классе
+- Мапперы: MapStruct (`@Mapper`)
+- DTO:record или классы с Lombok
+- Логирование: `@Log4j2` (Lombok)
 
-Используйте префиксы:
+### Тестирование
 
-| Префикс       | Назначение                              |
-|---------------|-----------------------------------------|
-| `Fix`         | Исправление багов                       |
-| `Refactoring` | Изменение структуры без смены поведения |
-| `Test`        | Изменения в тестах                      |
-| `Bump`        | Обновление зависимостей                 |
-| `Merge`       | Слияние PR                              |
+- **Фреймворк:** JUnit 5 + JUnit Platform
+- **Интеграционные тесты:** `@Testcontainers` с `BaseIntegrationTest`
+- **Название тестовых классов:** `*Test` (unit), `*IntegrationTest` (integration)
+- **Запуск конкретного теста:** `./gradlew :module:test --tests "ClassName"`
+- **Покрытие:** JaCoCo (автоматически после `test`)
 
-Формат: `Prefix: краткое описание` (англ.).
+## Ветви и коммиты
 
-## PR
+- **Основная ветвь:** `master`
+- **Conventional Commits:** `type(scope): description`
+  - `feat:` — новая функциональность
+  - `fix:` — исправление багов
+  - `refactor:` — рефакторинг (без изменения поведения)
+  - `test:` — изменения в тестах
+  - `docs:` — документация
+  - `chore:` — рутинные изменения (deps, config)
+  - `build:` — изменения системы сборки
+  - `ci:` — изменения CI/CD
+- **PR от Dependabot:** `Bump <dependency> from X to Y`
+- **Слияние PR:** `Merge pull request #NNN from ...`
 
-- Связывайте PR с issue (если есть).
-- Опишите контекст изменений и ожидаемое поведение.
-- Dependabot-PRы обычно мерджатся без дополнительного ревью.
+## Docker и развёртывание
 
-## Архитектура
+### Локальная разработка
+```bash
+# Запуск зависимостей (MinIO + сервисы)
+docker compose -f compose-dev.yml up -d
 
-Модули взаимодействуют через PostgreSQL, Redis (кэш) и Redpanda/Kafka (асинхронные события). Каждая служба имеет свой
-контекст API (`/historic`, `/diff`, `/newest`).
+# Запуск конкретного сервиса
+./gradlew :nodehistj-historic-nodelists:bootRun
+```
+
+### Сборка образов
+
+```bash
+# Базовая сборка
+docker compose -f compose.yml up -d
+
+# С PGO-оптимизацией (3 шага)
+# 1. docker build --build-arg SERVICE_NAME=... --build-arg PGO_MODE=instrument -t image-instrumented .
+# 2. Запустить контейнер для сбора профиля
+# 3. docker build --build-arg SERVICE_NAME=... --build-arg PGO_MODE=optimized --secret id=default_iprof,src=default.iprof -t image-optimized .
+```
+
+### Переменные окружения
+
+| Переменная               | Описание            | По умолчанию    |
+|--------------------------|---------------------|-----------------|
+| `S3_USER`                | MinIO user          | —               |
+| `S3_PASSWORD`            | MinIO password      | —               |
+| `POSTGRES_PASSWORD`      | PostgreSQL password | —               |
+| `KAFKA_BOOTSTRAP_SERVER` | Kafka адрес         | `redpanda:9092` |
+| `REDIS_HOST`             | Redis адрес         | `redis`         |
+| `DOMAIN`                 | Домен для Traefik   | —               |
+
+## Зависимости
+
+- **Spring Boot** 4.1.1
+- **GraalVM Native Image** plugin 1.1.10
+- **PostgreSQL** — основная БД
+- **Redis** — кэширование
+- **Redpanda** (Kafka-compatible) — messaging
+- **MinIO** (S3-compatible) — хранение архивов
+- **MapStruct** 1.6.3 — маппинг DTO
+- **Lombok** — генерация boilerplate-кода
+- **SpringDoc OpenAPI** — Swagger UI
+
+## DevContainer
+
+Проект поддерживает VS Code DevContainers (`.devcontainer/devcontainer.json`):
+
+- Образ: `mcr.microsoft.com/devcontainers/base:trixie`
+- Features: Docker-in-Docker, GraalVM (asdf)
+- Для запуска: откройте проект в VS Code → "Reopen in Container"
+
+## Полезные команды
+
+```bash
+# Остановить все сервисы
+docker compose -f compose.yml down
+
+# Просмотр логов
+docker compose -f compose.yml logs -f
+
+# Пересобрать образы
+docker compose -f compose.yml build
+
+# Проверка checkstyle отдельно
+./gradlew checkstyleMain
+
+# Запуск одного интеграционного теста
+./gradlew :nodehistj-historic-nodelists:test --tests "HistoricNodelistControllerIntegrationTest"
+```
