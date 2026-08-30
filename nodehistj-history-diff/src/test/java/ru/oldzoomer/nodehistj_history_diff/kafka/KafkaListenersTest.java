@@ -79,9 +79,7 @@ class KafkaListenersTest {
         List<String> files = List.of("/path/to/file.nodelist");
         doThrow(new RuntimeException("Database error")).when(nodelistFillToDatabase).updateNodelist(files);
 
-        assertThrows(IllegalStateException.class, () -> {
-            listener.downloadNodelistsIsFinishedListener(files, ack);
-        });
+        assertThrows(IllegalStateException.class, () -> listener.downloadNodelistsIsFinishedListener(files, ack));
 
         verify(nodelistDiffProcessor, never()).processNodelistDiffs();
         verify(ack, never()).acknowledge();
@@ -92,9 +90,7 @@ class KafkaListenersTest {
         List<String> files = List.of("/path/to/file.nodelist");
         doThrow(new RuntimeException("Diff processing error")).when(nodelistDiffProcessor).processNodelistDiffs();
 
-        assertThrows(IllegalStateException.class, () -> {
-            listener.downloadNodelistsIsFinishedListener(files, ack);
-        });
+        assertThrows(IllegalStateException.class, () -> listener.downloadNodelistsIsFinishedListener(files, ack));
 
         verify(nodelistFillToDatabase).updateNodelist(files);
         verify(ack, never()).acknowledge();
@@ -110,7 +106,7 @@ class KafkaListenersTest {
 
         listener.downloadNodelistsIsFinishedListener(files, ack);
 
-        ArgumentCaptor<List<String>> captor = ArgumentCaptor.forClass(List.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<List<String>> captor = ArgumentCaptor.forClass(List.class);
         verify(nodelistFillToDatabase).updateNodelist(captor.capture());
 
         List<String> capturedFiles = captor.getValue();

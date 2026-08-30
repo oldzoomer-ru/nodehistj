@@ -28,7 +28,6 @@ import java.util.List;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматическая конфигурация DataSource и Liquibase
     public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:alpine")
@@ -37,19 +36,16 @@ public abstract class BaseIntegrationTest {
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматическая конфигурация Kafka
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматическая конфигурация Redis
     public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
 
-    @SuppressWarnings("resource")
     @Container // Кастомный контейнер для S3 хранилища
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")

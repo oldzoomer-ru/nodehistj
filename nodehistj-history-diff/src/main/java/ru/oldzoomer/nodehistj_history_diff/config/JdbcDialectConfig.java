@@ -8,6 +8,7 @@ import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 @Configuration
 public class JdbcDialectConfig {
 
+    @SuppressWarnings("SameReturnValue")
     @Bean JdbcDialect jdbcDialect() {
         return JdbcPostgresDialect.INSTANCE;
     }

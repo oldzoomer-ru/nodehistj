@@ -10,12 +10,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MinIOContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
-
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
@@ -28,7 +27,6 @@ import java.util.List;
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматически настраивает DataSource и Liquibase для Postgres
     public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:alpine")
@@ -37,19 +35,16 @@ public abstract class BaseIntegrationTest {
             .withPassword("testpass")
             .waitingFor(Wait.forListeningPort());
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматически настраивает spring.kafka.bootstrap-servers
     public static final RedpandaContainer redpandaContainer = new RedpandaContainer("redpandadata/redpanda")
             .waitingFor(Wait.forSuccessfulCommand("rpk cluster health"));
 
-    @SuppressWarnings("resource")
     @Container
     @ServiceConnection // Автоматически настраивает пулы Redis (Jedis/Lettuce)
     public static final RedisContainer redisContainer = new RedisContainer("redis:alpine")
             .waitingFor(Wait.forSuccessfulCommand("redis-cli ping"));
 
-    @SuppressWarnings("resource")
     @Container // Специфичный контейнер, настраивается вручную ниже
     public static final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
             .withUserName("minioadmin")

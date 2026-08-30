@@ -12,16 +12,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for FtpClient.
@@ -41,7 +35,7 @@ class FtpClientTest {
     private static final String TEST_PASSWORD = "testpass";
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         ftpClient = new FtpClient();
         ReflectionTestUtils.setField(ftpClient, "server", TEST_SERVER);
         ReflectionTestUtils.setField(ftpClient, "port", TEST_PORT);
@@ -51,7 +45,7 @@ class FtpClientTest {
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown() {
         if (ftpClient != null) {
             ReflectionTestUtils.setField(ftpClient, "ftp", null);
         }
@@ -123,7 +117,7 @@ class FtpClientTest {
 
         verify(mockApacheFtp).disconnect();
         Object ftpField = ReflectionTestUtils.getField(ftpClient, "ftp");
-        assertEquals(null, ftpField);
+        assertNull(ftpField);
     }
 
     @Test
@@ -134,7 +128,7 @@ class FtpClientTest {
         assertThrows(IOException.class, () -> ftpClient.close());
         // ftp should still be nullified in finally block
         Object ftpField = ReflectionTestUtils.getField(ftpClient, "ftp");
-        assertEquals(null, ftpField);
+        assertNull(ftpField);
     }
 
     @Test

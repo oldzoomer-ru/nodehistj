@@ -1,17 +1,16 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity class representing a nodelist entry in the database.
@@ -36,5 +35,5 @@ public class NodelistEntry {
     @MappedCollection(idColumn = "nodelist_entry_id")
     @ToString.Exclude
     @Builder.Default
-    private Set<NodeEntry> nodeEntries = new HashSet<>();
+    private final Set<NodeEntry> nodeEntries = new HashSet<>();
 }
