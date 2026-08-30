@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.oldzoomer.nodehistj.common.exception.ResourceNotFoundException;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodeEntry;
 import ru.oldzoomer.nodehistj_historic_nodelists.entity.NodelistEntry;
@@ -172,7 +173,7 @@ class HistoricNodelistServiceImplTest {
         when(repository.existsByNodelistYearAndDayOfYear(2024, 1)).thenReturn(true);
         when(repository.findFirstByNodelistYearAndDayOfYear(2024, 1)).thenReturn(nodelistWithDifferentNode);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ResourceNotFoundException.class, () ->
                 service.getNodelistEntry(TEST_YEAR, TEST_DAY_OF_YEAR, TEST_ZONE, TEST_NETWORK, TEST_NODE));
     }
 

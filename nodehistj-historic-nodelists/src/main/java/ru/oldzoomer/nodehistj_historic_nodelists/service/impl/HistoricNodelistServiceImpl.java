@@ -1,18 +1,18 @@
 package ru.oldzoomer.nodehistj_historic_nodelists.service.impl;
 
-import java.time.Year;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.oldzoomer.nodehistj.common.exception.ResourceNotFoundException;
 import ru.oldzoomer.nodehistj_historic_nodelists.dto.NodeEntryDto;
 import ru.oldzoomer.nodehistj_historic_nodelists.mapper.NodeEntryMapper;
 import ru.oldzoomer.nodehistj_historic_nodelists.repo.NodelistEntryRepository;
 import ru.oldzoomer.nodehistj_historic_nodelists.service.HistoricNodelistService;
+
+import java.time.Year;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of service for working with historic Fidonet nodelists.
@@ -92,7 +92,8 @@ public class HistoricNodelistServiceImpl implements HistoricNodelistService {
         if (result.isEmpty()) {
             log.warn("No nodelist entry found for year: {}, day: {}, zone: {}, network: {}, node: {}",
                     year, dayOfYear, zone, network, node);
-            throw new IllegalArgumentException("Nodelist entry not found for specified criteria");
+            throw new ResourceNotFoundException("Nodelist entry not found for year=" + year +
+                    ", dayOfYear=" + dayOfYear + ", zone=" + zone + ", network=" + network + ", node=" + node);
         }
         return result.stream().findFirst().orElseThrow();
     }
