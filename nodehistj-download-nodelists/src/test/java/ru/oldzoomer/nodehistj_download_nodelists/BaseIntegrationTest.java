@@ -30,7 +30,6 @@ public abstract class BaseIntegrationTest {
         registry.add("s3.user", minioContainer::getUserName);
         registry.add("s3.password", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
-        registry.add("scheduling.enabled", () -> false);
         registry.add("app.updateAtStart", () -> false);
     }
 

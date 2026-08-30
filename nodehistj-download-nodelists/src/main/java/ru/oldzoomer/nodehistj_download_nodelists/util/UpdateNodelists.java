@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,10 +17,10 @@ import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateExcepti
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Year;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Service for downloading and updating nodelist files from FTP server.
@@ -42,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Component
 @EnableScheduling
+@ConditionalOnProperty(value = "app.updateAtStart", havingValue = "true", matchIfMissing = true)
 @Log4j2
 public class UpdateNodelists {
     private final S3Utils s3Utils;
@@ -57,6 +61,16 @@ public class UpdateNodelists {
     @Value("${s3.bucket}")
     private String bucket;
 
+    @Scheduled(cron = "0 0 3 * * ?", zone = "UTC")
+    public void scheduleTask() {
+        updateNodelists();
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void runAtStart() {
+        updateNodelists();
+    }
+
     /**
      * Main method for updating nodelist files.
      * Downloads files for current and previous years (starting from
@@ -64,8 +78,7 @@ public class UpdateNodelists {
      *
      * @throws NodelistUpdateException if update error occurs
      */
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
-    public void updateNodelists() {
+    void updateNodelists() {
         log.info("Starting nodelist update process");
         try {
             validateInputs();
@@ -76,7 +89,7 @@ public class UpdateNodelists {
             int processedYears = 0;
             int totalFiles = 0;
             List<String> downloadedFiles = new ArrayList<>(); // Local list for this execution
-            int currentYear = Year.now().getValue(); // Local current year for this execution
+            int currentYear = Year.now(ZoneId.of("UTC")).getValue(); // Local current year for this execution
 
             for (int year = currentYear; year >= downloadFromYear; year--) {
                 int filesInYear = processYearFiles(year, downloadedFiles);
@@ -191,9 +204,9 @@ public class UpdateNodelists {
             throw new IllegalArgumentException("Minio bucket cannot be empty or null");
         }
 
-        if (downloadFromYear > Year.now().getValue()) {
+        if (downloadFromYear > Year.now(ZoneId.of("UTC")).getValue()) {
             throw new IllegalArgumentException("Download from year (" + downloadFromYear +
-                    ") cannot be greater than current year (" + Year.now().getValue() + ")");
+                    ") cannot be greater than current year (" + Year.now(ZoneId.of("UTC")).getValue() + ")");
         }
 
         if (downloadFromYear < 1980) {

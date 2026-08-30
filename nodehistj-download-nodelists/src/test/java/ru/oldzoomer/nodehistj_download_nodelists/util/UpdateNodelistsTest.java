@@ -15,6 +15,7 @@ import ru.oldzoomer.nodehistj_download_nodelists.exception.NodelistUpdateExcepti
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Year;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,8 +55,8 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_noNewFiles_shouldSendEmptyKafkaMessage() throws Exception {
-        int currentYear = Year.now().getValue();
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear))).thenReturn(new String[0]);
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear)).thenReturn(new String[0]);
 
         updateNodelists.updateNodelists();
 
@@ -67,13 +68,13 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_newFilesFound_shouldDownloadAndSendToKafka() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String filePath = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String normalizedName = "pub/fidonet/" + currentYear + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{filePath});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedName)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedName))
                 .thenReturn(false);
 
         ByteArrayOutputStream fileContent = new ByteArrayOutputStream();
@@ -93,13 +94,13 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_fileAlreadyExists_shouldSkip() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String filePath = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String normalizedName = "pub/fidonet/" + currentYear + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{filePath});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedName)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedName))
                 .thenReturn(true);
 
         updateNodelists.updateNodelists();
@@ -111,19 +112,19 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_multipleYears_shouldProcessEach() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String filePathCurrent = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String filePathPrev = "/pub/fidonet/" + (currentYear - 1) + "/nodelist.001";
         String normalizedCurrent = "pub/fidonet/" + currentYear + "/nodelist.001";
         String normalizedPrev = "pub/fidonet/" + (currentYear - 1) + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{filePathCurrent});
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + (currentYear - 1))))
+        when(ftpClient.listFiles(TEST_FTP_PATH + (currentYear - 1)))
                 .thenReturn(new String[]{filePathPrev});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedCurrent)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedCurrent))
                 .thenReturn(false);
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedPrev)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedPrev))
                 .thenReturn(false);
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -140,8 +141,8 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_noFilesForYear_shouldSkipYear() throws Exception {
-        int currentYear = Year.now().getValue();
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[0]);
 
         updateNodelists.updateNodelists();
@@ -152,8 +153,8 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_nullFilesForYear_shouldSkipYear() throws Exception {
-        int currentYear = Year.now().getValue();
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(null);
 
         updateNodelists.updateNodelists();
@@ -164,7 +165,7 @@ class UpdateNodelistsTest {
     @Test
     void updateNodelists_ftpOpenThrowsIoException_shouldThrowNodelistUpdateException() throws Exception {
         IOException ioException = new IOException("Connection refused");
-        org.mockito.Mockito.doThrow(ioException).when(ftpClient).open();
+        doThrow(ioException).when(ftpClient).open();
 
         assertThrows(NodelistUpdateException.class, () -> updateNodelists.updateNodelists());
         verify(ftpClient).close();
@@ -172,9 +173,9 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_listFilesThrowsIoException_shouldThrowNodelistUpdateException() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         IOException ioException = new IOException("FTP read error");
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenThrow(ioException);
 
         assertThrows(NodelistUpdateException.class, () -> updateNodelists.updateNodelists());
@@ -183,17 +184,17 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_downloadFailsForOneFile_shouldContinueWithOtherFiles() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String goodFile = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String badFile = "/pub/fidonet/" + currentYear + "/nodelist.002";
         String normalizedGood = "pub/fidonet/" + currentYear + "/nodelist.001";
         String normalizedBad = "pub/fidonet/" + currentYear + "/nodelist.002";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{goodFile, badFile});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedGood)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedGood))
                 .thenReturn(false);
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedBad)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedBad))
                 .thenReturn(false);
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -216,14 +217,14 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_filesNotMatchingPattern_shouldBeFilteredOut() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String matchingFile = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String nonMatchingFile = "/pub/fidonet/" + currentYear + "/README.txt";
         String normalizedGood = "pub/fidonet/" + currentYear + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{matchingFile, nonMatchingFile});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedGood)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedGood))
                 .thenReturn(false);
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -240,13 +241,13 @@ class UpdateNodelistsTest {
 
     @Test
     void updateNodelists_allDownloadsFail_shouldStillNotThrow() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String file = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String normalizedFile = "pub/fidonet/" + currentYear + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{file});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(normalizedFile)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, normalizedFile))
                 .thenReturn(false);
         when(ftpClient.downloadFile(file)).thenThrow(new IOException("Download error"));
 
@@ -287,7 +288,7 @@ class UpdateNodelistsTest {
 
     @Test
     void validateInputs_downloadFromYearGreaterThanCurrent_shouldThrowIllegalArgumentException() {
-        ReflectionTestUtils.setField(updateNodelists, "downloadFromYear", Year.now().getValue() + 10);
+        ReflectionTestUtils.setField(updateNodelists, "downloadFromYear", Year.now(ZoneId.of("UTC")).getValue() + 10);
 
         assertThrows(NodelistUpdateException.class, () -> updateNodelists.updateNodelists());
     }
@@ -301,13 +302,13 @@ class UpdateNodelistsTest {
 
     @Test
     void normalizeObjectName_leadingSlash_shouldBeRemoved() throws Exception {
-        int currentYear = Year.now().getValue();
+        int currentYear = Year.now(ZoneId.of("UTC")).getValue();
         String filePath = "/pub/fidonet/" + currentYear + "/nodelist.001";
         String expectedNormalized = "pub/fidonet/" + currentYear + "/nodelist.001";
 
-        when(ftpClient.listFiles(eq(TEST_FTP_PATH + currentYear)))
+        when(ftpClient.listFiles(TEST_FTP_PATH + currentYear))
                 .thenReturn(new String[]{filePath});
-        when(s3Utils.isObjectExist(eq(TEST_BUCKET), eq(expectedNormalized)))
+        when(s3Utils.isObjectExist(TEST_BUCKET, expectedNormalized))
                 .thenReturn(false);
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
