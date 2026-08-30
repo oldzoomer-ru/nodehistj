@@ -3,12 +3,14 @@ package ru.oldzoomer.nodehistj.s3.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration properties for S3 connection.
  * This class holds the properties required to connect to a S3 server.
  */
 @ConfigurationProperties(prefix = "s3")
+@Component
 @RequiredArgsConstructor
 @Getter
 public class S3ConnectionProperties {

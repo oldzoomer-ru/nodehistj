@@ -10,6 +10,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.redpanda.RedpandaContainer;
 
+import java.time.Year;
+import java.time.ZoneId;
+
 @SpringBootTest
 @Testcontainers
 public abstract class BaseIntegrationTest {
@@ -27,10 +30,10 @@ public abstract class BaseIntegrationTest {
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
         registry.add("s3.url", minioContainer::getS3URL);
-        registry.add("s3.user", minioContainer::getUserName);
-        registry.add("s3.password", minioContainer::getPassword);
+        registry.add("s3.access-key", minioContainer::getUserName);
+        registry.add("s3.secret-key", minioContainer::getPassword);
         registry.add("spring.kafka.bootstrap-servers", redpandaContainer::getBootstrapServers);
-        registry.add("app.updateAtStart", () -> false);
+        registry.add("ftp.download-from-year", () -> Year.now(ZoneId.of("UTC")).getValue());
     }
 
     @AfterAll

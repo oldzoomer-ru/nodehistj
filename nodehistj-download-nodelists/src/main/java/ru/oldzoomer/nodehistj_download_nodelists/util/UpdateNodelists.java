@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -45,7 +44,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 @EnableScheduling
-@ConditionalOnProperty(value = "app.updateAtStart", havingValue = "true", matchIfMissing = true)
 @Log4j2
 public class UpdateNodelists {
     private final S3Utils s3Utils;
