@@ -82,9 +82,6 @@ services:
       args:
         SERVICE_NAME: nodehistj-historic-nodelists
         SKIP_TESTS: "true"
-      secrets:
-        - github_username
-        - github_token
     networks:
       - nodehistj
       - traefik
@@ -124,9 +121,6 @@ services:
       args:
         SERVICE_NAME: nodehistj-history-diff
         SKIP_TESTS: "true"
-      secrets:
-        - github_username
-        - github_token
     networks:
       - nodehistj
       - traefik
@@ -154,12 +148,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-
-secrets:
-  github_username:
-    environment: GITHUB_USERNAME
-  github_token:
-    environment: GITHUB_TOKEN
 
 networks:
   nodehistj:
