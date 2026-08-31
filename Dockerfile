@@ -5,7 +5,6 @@
 # - Multi-stage сборка: GraalVM native compilation + Distroless cc runtime
 # - Поддержка всех сервисов NodehistJ
 # - Пропуск тестов при сборке (по умолчанию)
-# - Поддержка GitHub credentials через Docker secrets
 # - Кэширование зависимостей Gradle
 # - PGO-оптимизации (опционально, через сборочные аргументы)
 #
@@ -30,8 +29,6 @@
 #   PGO_MODE      — режим PGO: 'instrument' | 'optimized' (по умолчанию пусто — без PGO)
 #
 # Secrets:
-#   github_username — логин GitHub для доступа к приватным репозиториям
-#   github_token    — токен GitHub с правами чтения
 #   default_iprof   — PGO-профиль (только при PGO_MODE=optimized)
 #
 ARG BUILD_HOME=/build
@@ -56,6 +53,7 @@ RUN ./gradlew --no-daemon --version
 
 COPY settings.gradle build.gradle $APP_HOME/
 COPY lib/s3/build.gradle $APP_HOME/lib/s3/
+COPY lib/common/build.gradle $APP_HOME/lib/common/
 COPY nodehistj-download-nodelists/build.gradle $APP_HOME/nodehistj-download-nodelists/
 COPY nodehistj-historic-nodelists/build.gradle $APP_HOME/nodehistj-historic-nodelists/
 COPY nodehistj-history-diff/build.gradle $APP_HOME/nodehistj-history-diff/
@@ -67,6 +65,7 @@ RUN ./gradlew :dependencies --no-daemon
 #
 COPY config/ $APP_HOME/config/
 COPY lib/s3/src/main/ $APP_HOME/lib/s3/src/main/
+COPY lib/common/src/main/ $APP_HOME/lib/common/src/main/
 COPY nodehistj-download-nodelists/src/main/ $APP_HOME/nodehistj-download-nodelists/src/main/
 COPY nodehistj-historic-nodelists/src/main/ $APP_HOME/nodehistj-historic-nodelists/src/main/
 COPY nodehistj-history-diff/src/main/ $APP_HOME/nodehistj-history-diff/src/main/

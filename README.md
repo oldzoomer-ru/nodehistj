@@ -9,7 +9,6 @@ NodehistJ is a system for managing and accessing FidoNet nodelist data, includin
 The system consists of multiple microservices that work together to provide complete nodelist management:
 
 - **Historic Nodelists Service** (`/historic` context) - Stores and retrieves historical FidoNet nodelist data
-- **Newest Nodelists Service** (`/newest` context) - Provides access to current nodelist data
 - **History Diff Service** (`/diff` context) - Manages node history and difference tracking
 
 ## Dependencies
@@ -43,8 +42,8 @@ docker compose -f compose-traefik.yml up -d
 
 | Variable                 | Description                                     | Required               | Default         |
 |--------------------------|-------------------------------------------------|------------------------|-----------------|
-| `S3_USER`                | MinIO user                                      | Yes                    | –               |
-| `S3_PASSWORD`            | MinIO password                                  | Yes                    | –               |
+| `S3_USER`                | S3 user                                         | Yes                    | –               |
+| `S3_PASSWORD`            | S3 password                                     | Yes                    | –               |
 | `POSTGRES_PASSWORD`      | PostgreSQL password                             | Yes                    | –               |
 | `KAFKA_BOOTSTRAP_SERVER` | Kafka address                                   | No                     | `redpanda:9092` |
 | `REDIS_HOST`             | Redis address                                   | No                     | `redis`         |
