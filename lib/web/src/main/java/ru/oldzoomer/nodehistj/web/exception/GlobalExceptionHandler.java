@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj.common.exception;
+package ru.oldzoomer.nodehistj.web.exception;
 
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import ru.oldzoomer.nodehistj.common.exception.BusinessException;
 
 import java.util.stream.Collectors;
 
@@ -23,23 +24,17 @@ import java.util.stream.Collectors;
 @Log4j2
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    /**
-     * Handles business exceptions (ResourceNotFoundException, ValidationException, etc.)
-     */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
         log.warn("Business exception: {} - {}", ex.getErrorCode(), ex.getMessage());
         ErrorResponse error = ErrorResponse.of(
-                ex.getStatus().value(),
+                ex.getStatus(),
                 ex.getErrorCode(),
                 ex.getMessage()
         );
         return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
-    /**
-     * Handles missing required request parameters (overrides base class to return custom JSON).
-     */
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, @NonNull HttpHeaders headers,
@@ -53,9 +48,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    /**
-     * Handles type mismatch for query/path parameters (e.g., year=abc instead of year=2024)
-     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         log.warn("Type mismatch for parameter {}: value='{}'", ex.getName(), ex.getValue());
@@ -67,9 +59,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    /**
-     * Handles @Valid annotation failures on request body
-     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, @NonNull HttpHeaders headers,
@@ -86,9 +75,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    /**
-     * Handles illegal state exceptions (e.g., resource already exists, invalid state transition)
-     */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
         log.warn("Illegal state: {}", ex.getMessage());
@@ -100,9 +86,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(409).body(error);
     }
 
-    /**
-     * Handles all uncaught exceptions as 500 Internal Server Error
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         log.error("Unhandled exception", ex);

@@ -1,4 +1,4 @@
-package ru.oldzoomer.nodehistj.common.exception;
+package ru.oldzoomer.nodehistj.web.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;

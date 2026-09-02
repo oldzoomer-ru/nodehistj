@@ -1,6 +1,5 @@
 package ru.oldzoomer.nodehistj_download_nodelists.exception;
 
-import org.springframework.http.HttpStatus;
 import ru.oldzoomer.nodehistj.common.exception.BusinessException;
 
 /**
@@ -11,6 +10,6 @@ import ru.oldzoomer.nodehistj.common.exception.BusinessException;
 public class NodelistUpdateException extends BusinessException {
 
     public NodelistUpdateException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.INTERNAL_SERVER_ERROR, "NODELIST_UPDATE_ERROR");
+        super(message, cause, 500, "NODELIST_UPDATE_ERROR");
     }
 }
