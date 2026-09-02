@@ -2,7 +2,6 @@ dependencies {
     implementation project(':lib:s3')
     implementation project(':lib:common')
     implementation 'org.springframework.boot:spring-boot-starter-kafka'
-    implementation 'org.springframework.boot:spring-boot-jackson2'
     implementation 'commons-net:commons-net:3.13.0'
     testImplementation 'org.testcontainers:testcontainers-redpanda'
     testImplementation 'org.testcontainers:testcontainers-minio'
