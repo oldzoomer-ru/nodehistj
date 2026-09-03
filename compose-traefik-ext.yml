@@ -37,7 +37,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     volumes:
-      - postgres_storage:/var/lib/postgresql/data
+      - postgres_storage:/var/lib/postgresql
       - ./pgsql:/docker-entrypoint-initdb.d/
     healthcheck:
       test: pg_isready -U postgres || exit 1
