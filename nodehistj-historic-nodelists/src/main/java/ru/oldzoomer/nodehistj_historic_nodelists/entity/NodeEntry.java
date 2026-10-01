@@ -1,0 +1,59 @@
+package ru.oldzoomer.nodehistj_historic_nodelists.entity;
+
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import ru.oldzoomer.nodelistj.enums.Keywords;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Entity class representing a node entry in the database.
+ * Contains information about a specific node in a nodelist.
+ */
+@Getter
+@Builder
+@ToString
+@EqualsAndHashCode(of = {"zone", "network", "node"})
+@Table("node_entry")
+public class NodeEntry {
+    @Id
+    @Column("node_id")
+    private Long id;
+
+    @Column("zone")
+    private Integer zone;
+
+    @Column("network")
+    private Integer network;
+
+    @Column("node")
+    private Integer node;
+
+    @Column("keywords")
+    private Keywords keywords;
+
+    @Column("node_name")
+    private String nodeName;
+
+    @Column("location")
+    private String location;
+
+    @Column("sys_op_name")
+    private String sysOpName;
+
+    @Column("phone")
+    private String phone;
+
+    @Column("baud_rate")
+    private Integer baudRate;
+
+    @Column("flags")
+    @Builder.Default
+    private final List<String> flags = new ArrayList<>();
+}

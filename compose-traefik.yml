@@ -1,0 +1,181 @@
+services:
+  redis:
+    image: redis:alpine
+    networks:
+      - nodehistj
+    healthcheck:
+      test: redis-cli ping || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+  redpanda:
+    image: redpandadata/redpanda
+    restart: unless-stopped
+    hostname: redpanda
+    networks:
+      - nodehistj
+    command:
+      - redpanda
+      - start
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health"]
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  postgres:
+    image: postgres:18-alpine
+    networks:
+      - nodehistj
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_storage:/var/lib/postgresql
+      - ./pgsql:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: pg_isready -U postgres || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - nodehistj
+    command: |
+      --providers.docker=true
+      --entrypoints.web.address=:80
+      --entrypoints.web.http.redirections.entryPoint.to=websecure
+      --entrypoints.web.http.redirections.entryPoint.scheme=https
+      --entrypoints.websecure.address=:443
+      --certificatesresolvers.myresolver.acme.tlschallenge=true
+      --certificatesresolvers.myresolver.acme.email=${TRAEFIK_EMAIL}
+      --certificatesresolvers.myresolver.acme.storage=/acme/acme.json
+    volumes:
+      - acme:/acme
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # Сервис загрузки файлов nodelist с FTP
+  # Основные зависимости: MinIO, Kafka
+  # Бинарник: GraalVM native image на Distroless java-base
+  nodehistj-download-nodelists:
+    image: oldzoomer-ru/nodehistj-download-nodelists:master
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-download-nodelists
+        SKIP_TESTS: "true"
+    networks:
+      - nodehistj
+    labels:
+      - "traefik.enable=false"
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 128m
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
+    env_file: .env
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
+  # Сервис работы с историческими данными nodelist
+  # Основные зависимости: MinIO, Kafka, PostgreSQL, Redis
+  # Бинарник: GraalVM native image на Distroless java-base
+  nodehistj-historic-nodelists:
+    image: oldzoomer-ru/nodehistj-historic-nodelists:master
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-historic-nodelists
+        SKIP_TESTS: "true"
+    networks:
+      - nodehistj
+    expose:
+      - "8080"
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 128m
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    env_file: .env
+    labels:
+      - "traefik.http.routers.historic.rule=Host(`${DOMAIN}`) && PathPrefix(`/historic`)"
+      - "traefik.http.routers.historic.entrypoints=websecure"
+      - "traefik.http.routers.historic.tls.certresolver=myresolver"
+      - "traefik.http.routers.historic.tls.domains[0].main=${DOMAIN}"
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Сервис сравнения исторических и актуальных данных
+  # Основные зависимости: Kafka, PostgreSQL, Redis
+  # Бинарник: GraalVM native image на Distroless java-base
+  nodehistj-history-diff:
+    image: oldzoomer-ru/nodehistj-history-diff:master
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: nodehistj-history-diff
+        SKIP_TESTS: "true"
+    networks:
+      - nodehistj
+    expose:
+      - 8080
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 128m
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=redpanda:9092
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres:5432
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    env_file: .env
+    labels:
+      - "traefik.http.routers.history-diff.rule=Host(`${DOMAIN}`) && PathPrefix(`/diff`)"
+      - "traefik.http.routers.history-diff.entrypoints=websecure"
+      - "traefik.http.routers.history-diff.tls.certresolver=myresolver"
+      - "traefik.http.routers.history-diff.tls.domains[0].main=${DOMAIN}"
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+networks:
+  nodehistj:
+    driver: bridge
+
+volumes:
+  postgres_storage:
+  redpanda_data:
+  acme:

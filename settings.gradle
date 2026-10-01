@@ -1,0 +1,8 @@
+rootProject.name = 'nodehistj'
+
+include 'nodehistj-download-nodelists'
+include 'nodehistj-historic-nodelists'
+include 'nodehistj-history-diff'
+include 'lib:s3'
+include 'lib:common'
+include 'lib:web'

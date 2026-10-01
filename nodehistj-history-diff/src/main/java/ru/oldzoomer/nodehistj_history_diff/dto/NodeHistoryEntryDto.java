@@ -1,0 +1,51 @@
+package ru.oldzoomer.nodehistj_history_diff.dto;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import ru.oldzoomer.nodehistj_history_diff.entity.NodeHistoryEntry;
+import ru.oldzoomer.nodelistj.enums.Keywords;
+
+/**
+ * DTO for {@link NodeHistoryEntry}.
+ * Contains information about a node's history entry, including current and previous values.
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+public class NodeHistoryEntryDto implements Serializable {
+    private Integer zone;
+    private Integer network;
+    private Integer node;
+    private LocalDate changeDate;
+    private Integer nodelistYear;
+    private Integer dayOfYear;
+    private ChangeType changeType;
+    private Keywords keywords;
+    private String nodeName;
+    private String location;
+    private String sysOpName;
+    private String phone;
+    private Integer baudRate;
+    private List<String> flags;
+
+    // Previous values for MODIFIED entries
+    private Keywords prevKeywords;
+    private String prevNodeName;
+    private String prevLocation;
+    private String prevSysOpName;
+    private String prevPhone;
+    private Integer prevBaudRate;
+    private List<String> prevFlags;
+
+    /**
+     * Enum representing the type of change made to a node.
+     */
+    public enum ChangeType {
+        ADDED, REMOVED, MODIFIED
+    }
+}

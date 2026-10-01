@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: nodehistj-history-diff
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB:nodehistj_history_diff}
+    username: ${POSTGRES_USER:user}
+    password: ${POSTGRES_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: -1
+  cache:
+    redis:
+      time-to-live: 12h
+      cache-null-values: false
+      key-prefix: 'diff:'
+      use-key-prefix: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
+    consumer:
+      group-id: nodehistj-history-diff
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        max.poll.interval.ms: ${KAFKA_MAX_TASK_RUN_TIME:1800000}
+      enable-auto-commit: false
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+  threads:
+    virtual:
+      enabled: true
+server:
+  servlet:
+    context-path: /diff
+s3:
+  url: ${S3_URL:http://localhost:9000/}
+  access-key: ${S3_USER}
+  secret-key: ${S3_PASSWORD}
+  bucket: ${S3_BUCKET:nodehistj}
+  region: ${S3_REGION:us-east-1}
+  path-style-url: ${S3_PATH_STYLE_URL:true}
+logging:
+  level:
+    ru:
+      oldzoomer: ${LOG_LEVEL:INFO}

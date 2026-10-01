@@ -1,0 +1,29 @@
+### ============================================================
+### NodehistJ — Historic Nodelists Service Test Scripts
+### Service: nodehistj-historic-nodelists
+### Base URL: http://localhost:8080/historic
+### ============================================================
+
+### 1. Получить все ноды за 180-й день 2024 года
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=180
+
+### 2. Ноды зоны 2 за 180-й день 2024 года
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=180&zone=2
+
+### 3. Ноды зоны 2, сети 5015 за 180-й день 2024 года
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=180&zone=2&network=5015
+
+### 4. Конкретная нода (зона 2, сеть 5015, нода 519) за 180-й день 2024 года
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=180&zone=2&network=5015&node=519
+
+### 5. Ноды зоны 255 за 1-й день 2025 года
+GET http://localhost:8080/historic/historicNodelist?year=2025&dayOfYear=1&zone=255
+
+### 6. Валидация: dayOfYear вне диапазона (должно вернуть 400)
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=400
+
+### 7. Валидация: zone вне диапазона (должно вернуть 400)
+GET http://localhost:8080/historic/historicNodelist?year=2024&dayOfYear=180&zone=50000
+
+### 8. Данные не найдены (будущая дата)
+GET http://localhost:8080/historic/historicNodelist?year=2030&dayOfYear=1

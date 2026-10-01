@@ -1,0 +1,29 @@
+name: Mirror to GitVerse
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - '*'
+  delete:
+
+concurrency: 
+  group: gitverse
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitVerse
+        run: |
+          GITVERSE_URL="https://${{ secrets.GITVERSE_USER }}:${{ secrets.GITVERSE_TOKEN }}@gitverse.ru/oldzoomer/nodehistj.git"
+          git push --force --prune "$GITVERSE_URL" "refs/remotes/origin/*:refs/heads/*"
+          git push --force --prune "$GITVERSE_URL" "refs/tags/*:refs/tags/*"

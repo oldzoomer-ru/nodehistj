@@ -1,0 +1,29 @@
+### ============================================================
+### NodehistJ — History Diff Service Test Scripts
+### Service: nodehistj-history-diff
+### Base URL: http://localhost:8081/diff
+### ============================================================
+
+### 1. Получить всю историю (первая страница, по 20 записей)
+GET http://localhost:8081/diff/history
+
+### 2. История зоны 2
+GET http://localhost:8081/diff/history?zone=2
+
+### 3. История сети 5015 в зоне 2
+GET http://localhost:8081/diff/history?zone=2&network=5015
+
+### 4. История конкретной ноды (зона 2, сеть 5015, нода 519)
+GET http://localhost:8081/diff/history?zone=2&network=5015&node=519
+
+### 5. Вторая страница истории зоны 2 (10 записей на странице)
+GET http://localhost:8081/diff/history?zone=2&page=1&size=10
+
+### 6. Большая страница (50 записей)
+GET http://localhost:8081/diff/history?size=50
+
+### 7. Валидация: zone вне диапазона (должно вернуть 400)
+GET http://localhost:8081/diff/history?zone=50000
+
+### 8. Пустая зона (данные не найдены)
+GET http://localhost:8081/diff/history?zone=999&page=0&size=20
